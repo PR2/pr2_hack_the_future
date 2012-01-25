@@ -247,6 +247,8 @@ def start():
   
   global traj_client_r
   global traj_client_l
+  global place_client_r
+  global place_client_l
   traj_client_r = TrajClient("r_arm_controller/joint_trajectory_action")
   traj_client_l = TrajClient("l_arm_controller/joint_trajectory_action")
 
