@@ -5,6 +5,7 @@ import roslib
 roslib.load_manifest('pr2_simple_interface')
 import rospy
 import actionlib
+import math
 
 from pr2_controllers_msgs.msg import *
 from pr2_gripper_sensor_msgs.msg import *
@@ -159,7 +160,7 @@ class RobotArm:
         # First trajectory point
         # Positions
         ind = 0
-        goal.trajectory.points[ind].positions = angles
+        goal.trajectory.points[ind].positions = [ a * math.pi / 180.0 for a in angles ]
         # Velocities
         goal.trajectory.points[ind].velocities = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         goal.trajectory.points[ind].time_from_start = rospy.Duration.from_sec(duration)
@@ -174,7 +175,7 @@ class RobotArm:
         if (s == LEFT):
             print "Moving left arm to:", goal
         if (s == BOTH):
-            print "WARNING: you can't send a goal of both to the arm"
+            print "WARNING: you can't send a goal of both to the arms"
         self.startTrajectory(self.arm_trajectoryPoint(goal, 2.0, arm), arm)
 
     def wait_for(self, s):
