@@ -1,0 +1,5 @@
+from robosite.pqr.models import Programmer, Program
+from django.contrib import admin
+
+admin.site.register(Programmer)
+admin.site.register(Program)

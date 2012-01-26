@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+Welcome to PQR, an easy way to make a real robot do your bidding.
+
+Sign in as a <a href="/programmer">Programmer</a> to begin.
+{% endblock %}

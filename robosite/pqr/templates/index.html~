@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Welcome to PQR, an easy way to make a real robot do your bidding.</p>
+
+{% if programmer == None %}
+<p>Sign in as a <a href="/programmer">Programmer</a> to begin.</p>
+{% endif %}
+
+{% endblock %}

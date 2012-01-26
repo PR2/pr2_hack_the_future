@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+<li>Name: {{ programmer.name }}
+<li>Email: {{ programmer.email }}
+</ul>
+(Edit button goes here)
+{% endblock %}

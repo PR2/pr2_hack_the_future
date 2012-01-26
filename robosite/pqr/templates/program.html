@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+<li>Name: {{ program.program_name }}
+<li>Code:<br><pre>{{ program.code }}</pre>
+<li>Language: {{ program.language }}
+</ul>
+(Edit button goes here)
+{% endblock %}

@@ -1,0 +1,21 @@
+{% include "header.html" %}
+	
+    <div id="content" class="col span-9 {{ slug }}">
+		<div class="col last span-9">
+            <div class="col span-7 nudge-2">
+                {% block page_title %}
+                <h4>{{ title }}</h4>
+                {% endblock %}
+			</div>
+		</div>
+		
+		<div class="post span-9">
+            <div class="post-content last span-7 nudge-2">
+                {% block content %}
+                No content
+                {% endblock %}
+			</div>
+		</div>
+	</div>
+
+{% include "footer.html" %}
