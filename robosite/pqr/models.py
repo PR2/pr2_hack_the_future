@@ -26,3 +26,13 @@ class Program(models.Model):
     def __unicode__(self):
         return "%s-%s" % (self.programmer_name, self.program_name)
     
+class Output(models.Model):
+   date_run = models.DateTimeField(auto_now_add=True)
+   stdout = models.TextField()
+   stderr = models.TextField()
+   program = models.ForeignKey(Program)
+
+   def __unicode__(self):
+      return "%s-%s at %s" % (self.program.programmer_name, 
+            self.program.program_name, self.date_run)
+    

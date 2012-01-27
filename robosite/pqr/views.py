@@ -1,5 +1,6 @@
 from django.template import Context, loader, Template
 from robosite.pqr.models import Program
+from robosite.pqr.models import Output
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.context_processors import csrf
 from django.template import RequestContext
@@ -84,10 +85,22 @@ def runProgram(request, id):
     if program.language == "py":
         print "RUN PYTHON:"
         print program.code
+        program.ready_to_run = False
+        program.save()
+        output = Output.objects.create(stderr="", stdout="RUN PYTHON",
+              program=program)
+        output.save()
+        t = loader.get_template('output.html')
+        c = buildContext(request, RequestContext(request), 'Admin')
+        c['program'] = program
+        c['output'] = output
+        c.update(csrf(request))
+        return HttpResponse(t.render(c))
     elif program.language == "pu":
         print "RUN PUPPET SCRIPT:"
         print program.code
     else:
+        print "Unrecognized program language"
         pass
     return HttpResponseRedirect('/administer')
 

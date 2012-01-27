@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+<li>Name: {{ program.program_name }}
+<li>By: {{ program.programmer_name }}
+<li>Language: {{ program.language }}
+<li>Run time: {{ output.date_run }}
+</ul>
+
+<b>Output:</b>
+<p>{{ output.stdout }}</p>
+
+<b>Errors:</b>
+<p>{{ output.stderr }}</p>
+
+{% endblock %}
