@@ -1,0 +1,22 @@
+<Location "/">
+   SetHandler python-program
+   PythonHandler django.core.handlers.modpython
+   SetEnv DJANGO_SETTINGS_MODULE robosite.settings
+   PythonDebug On
+   PythonPath "['/u/ahendrix/ros/pr2_hack_the_future', '/u/ahendrix/ros/pr2_hack_the_future/robosite'] + sys.path"
+</Location>
+
+Alias /static /u/ahendrix/ros/pr2_hack_the_future/robosite/static
+Alias /media /u/ahendrix/ros/pr2_hack_the_future/robosite/media
+
+<Location "/static">
+   SetHandler None
+</Location>
+
+<Location "/media">
+   SetHandler None
+</Location>
+
+<Location "/cgi-bin">
+   SetHandler None
+</Location>
