@@ -2,11 +2,13 @@
 
 import roslib
 roslib.load_manifest('pr2_simple_interface')
+roslib.load_manifest('sound_play')
 #import rospy
 
 #rospy.init_node('steve_demo')
 from pr2_simple_interface import *
-
+from sound_play.msg import SoundRequest
+from sound_play.libsoundplay import SoundClient
 start()
 #############################################################
 # HowTo:
@@ -39,11 +41,15 @@ gripper = Gripper()
 arm = RobotArm()
 head = Head()
 torso = Torso()
+sound = SoundClient()
 
-
+rospy.sleep(1)
 
 # move torso up
 torso.set(0.1)
+
+#robot speaks
+sound.say("I'm Kiko.")
 
 # nod head
 head.look_at(1.0, 0.0, 0.5) # look down
@@ -62,7 +68,6 @@ torso.set(0.0)
 head.look_at(1.0, 0.0, 1.0)
 head.wait_for()
 
-
 #arms
 arm.move_to([-80, 40, 30, -110, 200, -30, -900], RIGHT)
 arm.move_to([80, 40, -30, -110, -200, 30, 900], LEFT)
@@ -73,10 +78,10 @@ gripper.wait_for(BOTH)
 
 rospy.sleep(2)
 
-
 arm.move_to([-20, -15, -20, -50, 60, -5, 700], RIGHT)
 arm.move_to([20, -15, 20, -50, -60, 5, -700], LEFT)
 
+sound.say("Double high fives.")
 
 gripper.wait_for_slap(BOTH)
 
@@ -85,15 +90,15 @@ head.wait_for()
 head.look_at(1.0, 0.0, 1.0)
 head.wait_for()
 
+sound.say("Slap one hand.")
+
 if (gripper.determine_slap() == LEFT):
     head.look_at(1.0, 1.0, 0.5)
     head.wait_for()
 else:
     head.look_at(1.0, -1.0, 0.0)
     head.wait_for()
-
 #arms
-
 arm.move_to([70, 50, 40, -120, 100, -20, 20], LEFT)
 arm.move_to([-70, 50, -40, -120, -100, -20, -20], RIGHT)
 arm.wait_for(BOTH)
@@ -104,3 +109,4 @@ gripper.wait_for(BOTH)
 head.look_at(1.0, 0.0, 1.0)
 head.wait_for()
 
+sound.say("Goodbye.")
