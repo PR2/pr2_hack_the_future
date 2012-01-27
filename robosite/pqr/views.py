@@ -11,6 +11,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib.admin.views.decorators import staff_member_required
 
+import subprocess
+import tempfile
+import stat
+import os
+
 def buildContext(request, c, title = 'Home'):
     c['program'] = request.session.get('program',None)
     c['admin'] = request.session.get('admin',None)
@@ -87,7 +92,25 @@ def runProgram(request, id):
         print program.code
         program.ready_to_run = False
         program.save()
-        output = Output.objects.create(stderr="", stdout="RUN PYTHON",
+
+        (tmp, path) = tempfile.mkstemp(prefix="pqr", suffix=".py")
+        os.write(tmp, "#!/bin/bash\n")
+        os.write(tmp, "source /u/future/setup.sh\n")
+        os.write(tmp, "python << EOF \n")
+        os.write(tmp, program.code)
+        os.write(tmp, "\n")
+        os.write(tmp, "EOF\n")
+        os.close(tmp)
+        
+        os.chmod(path, stat.S_IRUSR | stat.S_IXUSR)
+        
+        tmp = subprocess.Popen(path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (o,e) = tmp.communicate()
+        tmp.wait()
+
+        os.remove(path)
+        
+        output = Output.objects.create(stderr=e, stdout=o,
               program=program)
         output.save()
         t = loader.get_template('output.html')

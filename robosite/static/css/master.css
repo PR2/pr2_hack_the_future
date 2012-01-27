@@ -116,6 +116,10 @@ kbd {
 	text-transform: uppercase;
 }
 
+pre {
+   font-size: 1.8em;
+}
+
 #wrapper {
 	margin: 0 auto;
 	margin-top: 4em;
