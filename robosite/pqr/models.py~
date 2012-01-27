@@ -26,12 +26,15 @@ PROGRAMMING_LANGUAGE_CHOICES = (
 # post_save.connect(create_user_profile, sender=User)
 
 class Program(models.Model):
-    programmer = models.ForeignKey(User, editable=False)
+#    programmer = models.ForeignKey(User, editable=False)
+    programmer_name = models.CharField(max_length=200)
     program_name = models.CharField(max_length=200)
     code = models.TextField()
     language = models.CharField(choices=PROGRAMMING_LANGUAGE_CHOICES,
-                                max_length=200)
+                                max_length=200,
+                                default='py')
     date_added = models.DateTimeField(auto_now_add=True)
+    ready_to_run = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.program_name

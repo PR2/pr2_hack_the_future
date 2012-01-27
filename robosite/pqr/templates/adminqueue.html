@@ -4,7 +4,11 @@
 
 <ul>
 {% for p in programs %}
-   <li><b>{{ p.programmer_name }}:</b> {{ p.program_name }}
+   <li><a href="/showProgram/{{ p.id }}/"><b>{{ p.programmer_name }}:</b> {{ p.program_name }}</a>
+     <a href="/runProgram/{{ p.id }}/">RUN</a>
 {% endfor %}
 </ul>
+
+<br>
+<p><b><a href="/admin">Admin Interface</a></b>
 {% endblock %}

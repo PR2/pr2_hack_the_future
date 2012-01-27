@@ -2,8 +2,9 @@
 
 {% block content %}
 <ul>
-<li>Name: {{ programmer.name }}
-<li>Email: {{ programmer.email }}
+<li>Name: {{ program.program_name }}
+<li>Code:<br><pre>{{ program.code }}</pre>
+<li>Language: {{ program.language }}
 </ul>
 (Edit button goes here)
 {% endblock %}

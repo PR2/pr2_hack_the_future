@@ -13,20 +13,7 @@ PROGRAMMING_LANGUAGE_CHOICES = (
     ('pu', 'Puppet Script'),
 )
 
-# class Programmer(models.Model):
-#     user = models.OneToOneField(User)
-#     age = models.IntegerField(validators=[validate_age], null=True)
-# #    picture = models.ImageField()
-
-
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Programmer.objects.create(user=instance)
-
-# post_save.connect(create_user_profile, sender=User)
-
 class Program(models.Model):
-#    programmer = models.ForeignKey(User, editable=False)
     programmer_name = models.CharField(max_length=200)
     program_name = models.CharField(max_length=200)
     code = models.TextField()
@@ -37,5 +24,5 @@ class Program(models.Model):
     ready_to_run = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return self.program_name
+        return "%s-%s" % (self.programmer_name, self.program_name)
     

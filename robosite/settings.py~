@@ -146,4 +146,5 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'robosite.Programmer'
+# AUTH_PROFILE_MODULE = 'robosite.Programmer'
+LOGIN_REDIRECT_URL = '/program/'

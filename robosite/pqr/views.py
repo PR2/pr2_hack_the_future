@@ -11,8 +11,8 @@ from django.contrib.auth import logout
 from django.contrib.admin.views.decorators import staff_member_required
 
 def buildContext(request, c, title = 'Home'):
-    c['programmer'] = request.session.get('programmer',None)
     c['program'] = request.session.get('program',None)
+    c['admin'] = request.session.get('admin',None)
     c['title'] = title
     c['slug'] = slugify(title)
     return c
@@ -44,13 +44,6 @@ def index(request):
 
 def program(request):
     program = request.session.get('program',None)
-#     programmer = request.session.get('programmer',None)
-#     if programmer and not program:
-#         programs = Program.objects.filter(programmer=programmer)
-#         if len(programs) == 0:
-#             program = None
-#         else:
-#             program = programs[0]
     if program:
         request.session['program'] = program
     form = ProgramForm(instance=program)
@@ -76,6 +69,27 @@ def addProgram(request):
         c['form'] = form
         c.update(csrf(request))
         return HttpResponse(t.render(c))
+
+def showProgram(request,id):
+    program = Program.objects.get(id=id)
+    t = loader.get_template('program.html')
+    c = buildContext(request, RequestContext(request), 'Program')
+    c['program'] = program
+    c.update(csrf(request))
+    return HttpResponse(t.render(c))
+    
+@staff_member_required
+def runProgram(request, id):
+    program = Program.objects.get(id=id)
+    if program.language == "py":
+        print "RUN PYTHON:"
+        print program.code
+    elif program.language == "pu":
+        print "RUN PUPPET SCRIPT:"
+        print program.code
+    else:
+        pass
+    return HttpResponseRedirect('/administer')
 
 def run(request):
     program = request.session.get('program',None)
@@ -106,63 +120,8 @@ def admin(request):
     t = loader.get_template('adminqueue.html')
     c = buildContext(request, RequestContext(request), 'Admin')
     c['programs'] = programs
+    request.session['admin'] = True
     c.update(csrf(request))
     return HttpResponse(t.render(c))
     
 
-
-# def newProgrammer(request):
-#     t = loader.get_template('programmerForm.html')
-#     c = buildContext(request, RequestContext(request), 'Program')
-#     c['form'] = ProgrammerForm()
-#     c.update(csrf(request))
-#     return HttpResponse(t.render(c))
-
-# def addProgrammer(request):
-#     form = ProgrammerForm(request.POST)
-#     if form.is_valid():
-#         programmer = User.objects.create_user(form.data['username'],
-#                          form.data['email'],
-#                          form.data['password'])
-#         request.session['programmer'] = programmer
-#         return HttpResponseRedirect('/program')
-#     else:
-#         t = loader.get_template('programmerForm.html')
-#         c = buildContext(request, RequestContext(request), 'Programmer')
-#         c['form'] = form
-#         c.update(csrf(request))
-#         return HttpResponse(t.render(c))
-
-# def programmer(request):
-#     programmer = request.session.get('programmer',None)
-#     if programmer:
-#         t = loader.get_template('programmer.html')
-#         c = buildContext(request, RequestContext(request), 'Programmer')
-#     else:
-#         form = ProgrammerForm()
-#         loginform = LoginForm()
-#         t = loader.get_template('loginPage.html')
-#         c = buildContext(request, RequestContext(request), 'Programmer')
-#         c['form'] = form
-#         c['loginform'] = loginform
-#         c.update(csrf(request))
-#     return HttpResponse(t.render(c))
-
-# def signIn(request):
-#     form = LoginForm(request.POST)
-#     username = form.data['username']
-#     password = form.data['password']
-#     try:
-#         programmer = Programmer.objects.get(username=username)
-#         if password == programmer.password:
-#             request.session['programmer'] = programmer
-#             return HttpResponseRedirect('/program')
-#         else:
-#             raise forms.ValidationError('Invalid Username or Password')
-#     except Programmer.DoesNotExist:
-#         t = loader.get_template('loginPage.html')
-#         c = buildContext(request, RequestContext(request), 'Programmer')
-#         c['loginform'] = form
-#         c['form'] = ProgrammerForm()
-#         c.update(csrf(request))
-#         return HttpResponse(t.render(c))
