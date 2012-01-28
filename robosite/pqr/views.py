@@ -88,8 +88,6 @@ def showProgram(request,id):
 def runProgram(request, id):
     program = Program.objects.get(id=id)
     if program.language == "py":
-        print "RUN PYTHON:"
-        print program.code
         program.ready_to_run = False
         program.save()
 
@@ -122,6 +120,68 @@ def runProgram(request, id):
     elif program.language == "pu":
         print "RUN PUPPET SCRIPT:"
         print program.code
+        program.ready_to_run = False
+        program.save()
+
+        (tmp, path) = tempfile.mkstemp(prefix="pqr", suffix=".py")
+        os.write(tmp, "#!/bin/bash\n")
+        os.write(tmp, "source /u/future/setup.sh\n")
+        os.write(tmp, "python << EOF \n")
+        os.write(tmp, """import roslib; roslib.load_manifest('gesture_builder_headless')
+import rospy
+import actionlib
+
+from gesture_builder_headless.msg import *
+
+GOAL_TIMEOUT = 40.0; # sec
+
+if __name__ == '__main__':
+    rospy.init_node('headless_test')
+    client = actionlib.SimpleActionClient('gesture_run_program', gesture_run_programAction);
+    rospy.loginfo("Waiting for gesture_builder_headless service...");
+    client.wait_for_server()
+    rospy.loginfo("gesture_builder_headless service is online.");
+
+    goal = gesture_run_programGoal();
+
+    goal.programID = "Jimmy's program";
+    goal.program = [""")
+
+        code = program.code.split("\n")
+        for c in code:
+           os.write(tmp, "\"%s\","%c)    
+        os.write(tmp, """                    ];
+    client.send_goal(goal)
+    programRunFinished = client.wait_for_result(rospy.Duration.from_sec(GOAL_TIMEOUT));
+    if programRunFinished:
+        resultMsg = client.get_result();
+        rospy.loginfo("Program " + goal.programID + " finished. Result msg: programID: " +\\
+                      resultMsg.programID +\\
+                      "; outcome: " + str(resultMsg.outcome) + ". ErrorMsg: '" + resultMsg.errorMessage + "'");
+    else:
+        rospy.loginfo("Program " + goal.programID + " never finished; timed out.");""")
+        os.write(tmp, program.code)
+        os.write(tmp, "\n")
+        os.write(tmp, "EOF\n")
+        os.close(tmp)
+        
+        os.chmod(path, stat.S_IRUSR | stat.S_IXUSR)
+        
+        tmp = subprocess.Popen(path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (o,e) = tmp.communicate()
+        tmp.wait()
+
+        os.remove(path)
+        
+        output = Output.objects.create(stderr=e, stdout=o,
+              program=program)
+        output.save()
+        t = loader.get_template('output.html')
+        c = buildContext(request, RequestContext(request), 'Admin')
+        c['program'] = program
+        c['output'] = output
+        c.update(csrf(request))
+        return HttpResponse(t.render(c))
     else:
         print "Unrecognized program language"
         pass
