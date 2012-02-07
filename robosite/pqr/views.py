@@ -151,7 +151,7 @@ import actionlib
 
 from gesture_builder_headless.msg import *
 
-GOAL_TIMEOUT = 40.0; # sec
+GOAL_TIMEOUT = 120.0; # sec
 
 if __name__ == '__main__':
     rospy.init_node('headless_test')
@@ -162,12 +162,12 @@ if __name__ == '__main__':
 
     goal = gesture_run_programGoal();
 
-    goal.programID = "Jimmy's program";
-    goal.program = [""")
+    goal.programID = "%s";
+    goal.program = ["""%program)
 
-        code = program.code.split("\n")
-        for c in code:
-           os.write(tmp, "\"%s\","%c)    
+        lines = program.code.split("\r\n")
+        for l in lines:
+           os.write(tmp, "\"%s\","%l)    
         os.write(tmp, """                    ];
     client.send_goal(goal)
     programRunFinished = client.wait_for_result(rospy.Duration.from_sec(GOAL_TIMEOUT));
@@ -178,7 +178,6 @@ if __name__ == '__main__':
                       "; outcome: " + str(resultMsg.outcome) + ". ErrorMsg: '" + resultMsg.errorMessage + "'");
     else:
         rospy.loginfo("Program " + goal.programID + " never finished; timed out.");""")
-        os.write(tmp, program.code)
         os.write(tmp, "\n")
         os.write(tmp, "EOF\n")
         os.close(tmp)
