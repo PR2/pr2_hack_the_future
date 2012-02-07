@@ -14,6 +14,7 @@ from trajectory_msgs.msg import *
 from sensor_msgs.msg import *
 from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
+import std_srvs.srv
 
 LEFT = 1
 RIGHT = 2
@@ -237,6 +238,14 @@ class Torso:
             self.torso_pub.publish(traj)
             rospy.sleep(rospy.Duration.from_sec(0.2))
 
+def hug():
+   rospy.wait_for_service('/pr2_props/hug')
+   hug_client = rospy.ServiceProxy('/pr2_props/hug', std_srvs.srv.Empty)
+   try:
+      hug_client()
+      print "Hug successful!"
+   except rospy.ServiceException, e:
+      print "Hug serivce call failed"
 
 def start():
   print "Initializing pr2_simple_interface"
