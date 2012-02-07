@@ -15,6 +15,7 @@
   <depend package="pr2_gripper_sensor_controller"/>
   <depend package="pr2_gripper_sensor_msgs"/>
   <depend package="sound_play"/>
+  <depend package="face_detector"/>
 
 </package>
 

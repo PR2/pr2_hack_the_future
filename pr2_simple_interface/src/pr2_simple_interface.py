@@ -14,7 +14,9 @@ from trajectory_msgs.msg import *
 from sensor_msgs.msg import *
 from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
+from face_detector.msg import *
 import std_srvs.srv
+
 
 LEFT = 1
 RIGHT = 2
@@ -28,6 +30,11 @@ def convert_s(s):
     if (s == BOTH):
         return "both"
     return "ERROR"
+
+#def Face():
+#    c = actionLib.SimpleActionClient('face_detector_action',face_detector.msg.FaceDetectorAction)
+#    c.wait_for_server()
+#    return c
 
 def TrajClient(t):
     print t
@@ -129,11 +136,6 @@ class Gripper:
             rospy.sleep(0.01)
 
 
-
-
-
-
-
 class RobotArm:
     def __init__(self):
         pass
@@ -193,9 +195,6 @@ class RobotArm:
             traj_client_r.wait_for_result()
 
 
-
-
-
 class Head:
     def __init__(self):
         pass
@@ -207,6 +206,20 @@ class Head:
         g.target.point.x = x
         g.target.point.y = y
         g.target.point.z = z
+        g.min_duration = rospy.Duration(1.0)
+        head_client.send_goal(g)
+
+    def look_at_face(self):
+        print "Looking at a face"
+        fgoal = FaceDetectorGoal()
+        face_client.send_goal(fgoal)
+        face_client.wait_for_result()
+        f = face_client.get_result()
+        g = PointHeadGoal()
+        g.target.header.frame_id = f.face_positions[0].header.frame_id
+        g.target.point.x = f.face_positions[0].pos.x
+        g.target.point.y = f.face_positions[0].pos.y
+        g.target.point.z = f.face_positions[0].pos.z
         g.min_duration = rospy.Duration(1.0)
         head_client.send_goal(g)
 
@@ -247,6 +260,7 @@ def hug():
    except rospy.ServiceException, e:
       print "Hug serivce call failed"
 
+
 def start():
   print "Initializing pr2_simple_interface"
   rospy.init_node('pr2_simple_interface')
@@ -277,6 +291,11 @@ def start():
     gripper_client_r = GripperClient("r_gripper_controller/gripper_action")
     sim = True
 
+  global face_client
+  face_client = actionlib.SimpleActionClient('face_detector_action',FaceDetectorAction)
+  face_client.wait_for_server()
+  print "Got face server"
+
   global head_client
   head_client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
   head_client.wait_for_server()
@@ -303,6 +322,7 @@ def start():
 # 
 # Look around:
 # head.look_at( 1.0, [left+/right-], [ up>1, down <1 ])
+# head.look_at_face()
 #
 # Open grippers:
 # gripper.rel( [LEFT | RIGHT | BOTH] )
