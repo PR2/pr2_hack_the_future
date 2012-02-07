@@ -50,21 +50,39 @@ def index(request):
 
 def program(request):
     program = request.session.get('program',None)
+    output = None
     if program:
         request.session['program'] = program
+        output = Output.objects.filter(program=program).order_by('date_run')
     form = ProgramForm(instance=program)
     del form.__dict__['fields']['ready_to_run']
     t = loader.get_template('programForm.html')
     c = buildContext(request, RequestContext(request), 'Program')
     c['form'] = form
+    c['output'] = output
     c.update(csrf(request))
     return HttpResponse(t.render(c))
 
+def output(request,program_id):
+    program = Program.objects.get(id=program_id)
+    if program:
+        outputs = Output.objects.filter(program=program).order_by('date_run')
+        if len(outputs) > 0:
+            output = outputs[0]
+        else:
+            output = None
+        t = loader.get_template('output.html')
+        c = buildContext(request, RequestContext(request), 'Output')
+        c['program'] = program
+        c['output'] = output
+        c.update(csrf(request))
+        return HttpResponse(t.render(c))
+    else:
+        return HttpResponseRedirect('/')
+        
 
 def addProgram(request):
     form = ProgramForm(request.POST)
-#     programmer = request.session.get('programmer',None)
-#     form.instance.__dict__['programmer_id'] = programmer.id
     if form.is_valid():
         program = form.save()
         request.session['program'] = program
@@ -202,6 +220,7 @@ def queue(request):
     t = loader.get_template('queue.html')
     c = buildContext(request, RequestContext(request), 'Queue')
     c['programs'] = programs
+    c['allprograms'] = Program.objects.all()
     c.update(csrf(request))
     return HttpResponse(t.render(c))
     
@@ -216,8 +235,8 @@ def admin(request):
     t = loader.get_template('adminqueue.html')
     c = buildContext(request, RequestContext(request), 'Admin')
     c['programs'] = programs
+    c['allprograms'] = Program.objects.all()
     request.session['admin'] = True
     c.update(csrf(request))
     return HttpResponse(t.render(c))
     
-
