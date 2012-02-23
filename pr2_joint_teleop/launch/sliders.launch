@@ -1,0 +1,8 @@
+<launch>
+   <include file="$(find pr2_gazebo)/pr2_empty_world.launch"/>
+
+   <node pkg="korg_nanokontrol" type="kontrol.py" name="kontrol" args="3" />
+
+   <node pkg="pr2_joint_teleop" type="pose.py" name="pose" />
+
+</launch>
