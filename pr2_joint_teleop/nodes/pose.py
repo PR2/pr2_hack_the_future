@@ -11,7 +11,7 @@
 #  pose.py <1.yaml> <2.yaml> <steps>
 
 
-import roslib; roslib.load_manifest('pr2_pose')
+import roslib; roslib.load_manifest('pr2_joint_teleop')
 import rospy
 import actionlib
 import yaml
