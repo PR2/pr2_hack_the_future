@@ -61,8 +61,8 @@ def pose_l(axes):
 
 def pose_head(axes):
    joints = [ 'head_pan_joint', 'head_tilt_joint' ]
-   min_limit = [ -170, -30 ]
-   max_limit = [ 170, 90 ]
+   min_limit = [ -160, -30 ]
+   max_limit = [ 160, 90 ]
    position = scale(axes, min_limit, max_limit)
    pose_(position, joints, traj_client_head)
 
@@ -97,37 +97,33 @@ def TrajClient(t):
 def joy_callback(joy_msg):
    if len(joy_msg.buttons) >= 25:
       mode = joy_msg.buttons[24]
+      right = []
+      right.extend(joy_msg.axes)
+      right[1] = -right[1]
+      left = []
+      left.extend(joy_msg.axes)
+      left[0] = -left[0]
+      left[1] = -left[1]
+      left[2] = -left[2]
+      left[4] = -left[4]
+      left[6] = -left[6]
       if 0 == mode:
          # right arm
          pose_r(joy_msg.axes[0:7])
          pose_gripper_r(joy_msg.axes[7:8])
       elif 1 == mode:
          # left arm
-         axes = []
-         axes.extend(joy_msg.axes)
-         axes[0] = -axes[0]
-         axes[2] = -axes[2]
-         axes[4] = -axes[4]
-         axes[6] = -axes[6]
-         pose_l(axes[0:7])
-         pose_gripper_l(axes[7:8])
+         pose_l(left[0:7])
+         pose_gripper_l(left[7:8])
       elif 2 == mode:
          # head
          pose_head(joy_msg.axes[0:2])
       else:
          # both arms mirror mode
-         pose_r(joy_msg.axes[0:7])
-         pose_gripper_r(joy_msg.axes[7:8])
-         axes = []
-         axes.extend(joy_msg.axes)
-         axes[0] = -axes[0]
-         axes[2] = -axes[2]
-         axes[4] = -axes[4]
-         axes[6] = -axes[6]
-         pose_l(axes[0:7])
-         pose_gripper_l(axes[7:8])
-
-
+         pose_r(right[0:7])
+         pose_gripper_r(right[7:8])
+         pose_l(left[0:7])
+         pose_gripper_l(left[7:8])
 
 if __name__ == '__main__':
    rospy.init_node('pr2_joint_teleop')
