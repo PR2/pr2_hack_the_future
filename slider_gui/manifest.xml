@@ -1,0 +1,18 @@
+<package>
+  <description brief="slider_gui">
+
+     slider_gui
+
+  </description>
+  <author>Dirk Thomas</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/slider_gui</url>
+  <depend package="actionlib"/>
+  <depend package="rospy"/>
+  <depend package="pr2_controllers_msgs"/>
+  <depend package="trajectory_msgs"/>
+
+</package>
+
+
