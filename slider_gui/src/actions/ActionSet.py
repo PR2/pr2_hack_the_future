@@ -10,8 +10,13 @@ class ActionSet(Action):
     def add_action(self, action):
         self._actions.append(action)
 
+    def to_string(self):
+        data = []
+        for action in self._actions:
+            data.append(action.to_string())
+        return ';'.join(data)
+
     def execute(self):
-        super(ActionSet, self).execute()
         print('ActionSet.execute() %d' % len(self._actions))
         self._executing = len(self._actions)
         for action in self._actions:
