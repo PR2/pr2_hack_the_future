@@ -7,6 +7,10 @@ class Action(object):
         self.execute_finished_signal = Signal()
 
     #@abstractmethod
+    def to_string(self):
+        pass
+
+    #@abstractmethod
     def execute(self):
         pass
 

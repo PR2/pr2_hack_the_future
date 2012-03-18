@@ -26,6 +26,12 @@ class Pr2JointTrajectoryAction(Action):
             # clamp values to valid range
             self._values[i] = max(desc['min'], min(values[i], desc['max']))
 
+    def to_string(self):
+        data = []
+        for value in self._values:
+            data.append('%.1f' % value)
+        return ','.join(data)
+
     def _add_joint(self, label, min, max):
         self._joints.append({'label': label, 'min': min, 'max': max})
         # default value between min and max
