@@ -1,4 +1,4 @@
-String name
-String password
+string name
+string password
 ---
-uin64 token
+uint64 token
