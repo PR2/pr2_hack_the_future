@@ -1,1 +1,11 @@
+.*/build
+.*/srv_gen
+.*/msg_gen
+.*/bin
+.*\.so$
 .*\.pyc
+^pr2_joint_teleop/src/pr2_joint_teleop
+^pr2_simple_interface/src/pr2_simple_interface
+^program_queue/src/program_queue
+^robosite/src/robosite
+^slider_gui/src/slider_gui
