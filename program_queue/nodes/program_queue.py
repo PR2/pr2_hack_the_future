@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+#
+# A program management and queueing system with a ROS service interface
+#
+# Author: Austin Hendrix
 
 import roslib; roslib.load_manifest('program_queue')
 import rospy
@@ -9,24 +13,26 @@ from std_srvs.srv import Empty
 
 import sqlite3
 import bcrypt
+import random
 
 class Queue:
    def __init__(self):
-      # TODO: set up database
-      dbpath = 'programs.db' # TODO: put this in the user's .ros
-      self.db = sqlite3.connect(dbpath)
+      # set up database
+      self.dbpath = 'programs.db' # TODO: put this in the user's .ros
+      db = sqlite3.connect(self.dbpath)
       # create tables if they don't exist. TODO: detect if tables already exist
-      self.db.execute('create table if not exists users(id integer primary key asc autoincrement, username text unique not null, password_hash text not null, admin int not null)')
-      self.db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))')
-      self.db.execute('create table if not exists programs(id integer primary key asc autoincrement, name text, type integer, code text)')
-      self.db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
-      self.db.execute('create table if not exists queue(id integer primary key asc autoincrement, program_id integer unique references programs(id))')
+      db.execute('create table if not exists users(id integer primary key asc autoincrement, username text unique not null, password_hash text not null, admin int not null)')
+      db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))') # TODO: add an issue/expiration date to tokens
+      db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text, type integer, code text)')
+      db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
+      db.execute('create table if not exists queue(id integer primary key asc autoincrement, program_id integer unique references programs(id))')
 
       # create an admin user
       admin_hash = bcrypt.hashpw('admin', bcrypt.gensalt())
-      self.db.execute("insert or ignore into users (username, password_hash, admin) values (?, ?, ?)", ('admin', admin_hash, 1,))
+      db.execute("insert or ignore into users (username, password_hash, admin) values (?, ?, ?)", ('admin', admin_hash, 1,))
 
-      self.db.commit()
+      db.commit()
+      db.close()
 
       # set up services
       rospy.Service('clear_queue',     ClearQueue,     self.handle_clear_queue)
@@ -55,17 +61,72 @@ class Queue:
 
       rospy.loginfo("Queue ready")
 
+   def db(self):
+      return sqlite3.connect(self.dbpath)
+
+   class User:
+      def __init__(self, id, name, pwhash, admin):
+         self.id = id
+         self.name = name
+         self.pwhash = pwhash
+         self.admin = admin
+
+   def get_user(self, db, token):
+      cur = db.cursor()
+      cur.execute('select users.id, users.username, users.password_hash, users.admin from users join tokens on users.id = tokens.user_id where tokens.id = ?', (token,))
+      row = cur.fetchone()
+      if row:
+         return Queue.User(row[0], row[1], row[2], row[3])
+      else:
+         # no tokens; return none
+         return None
+
    # TODO: Fill in services
    def handle_clear_queue(self, req):
-      self.db.execute('delete from queue')
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user and user.admin:
+         db.execute('delete from queue')
+         db.commit()
+      elif user:
+         rospy.loginfo("ClearQueue called by non-admin user %s" % user.name)
+      db.close()
       return ClearQueueResponse()
 
    def handle_create_program(self, req):
-      program_id = 0
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user:
+         rospy.loginfo("Creating new program for user %s"%user.name)
+      else:
+         # TODO: handle this failure case better
+         rospy.logwarn("No user for token %d"%req.token)
+         return False
+
+      c = db.cursor()
+      c.execute('insert into programs (user_id) values (?)', (user.id,))
+      program_id = c.lastrowid
+      c.close()
+      db.commit()
+      db.close()
       return CreateProgramResponse(program_id)
 
    def handle_create_user(self, req):
-      return CreateUserResponse()
+      # TODO: handle username collisions more gracefully
+      pwhash = bcrypt.hashpw(req.password, bcrypt.gensalt())
+      db = self.db()
+      cur = db.cursor()
+      cur.execute('insert or ignore into users (username, password_hash, admin) values (?, ?, ?)', (req.name, pwhash, 0,))
+      if cur.rowcount > 0:
+         userid = cur.lastrowid
+         token = random.getrandbits(63) # random 63-bit token
+         cur.execute('insert into tokens values (?, ?)', (token, userid,))
+         db.commit()
+         db.close()
+         return CreateUserResponse(token)
+      else:
+         rospy.loginfo("User %s already exists"%req.name)
+         return CreateUserResponse(0)
 
    def handle_dequeue_program(self, req):
       return DequeueProgramResponse()
@@ -86,7 +147,27 @@ class Queue:
       return GetQueueResponse()
 
    def handle_login(self, req):
-      return LoginResponse()
+      db = self.db()
+      cur = db.cursor()
+      cur.execute('select id, password_hash from users where username = ?', (req.name,))
+      row = cur.fetchone()
+      if row == None:
+         rospy.loginfo("No user named %s"%req.name)
+         return LoginResponse(0)
+      else:
+         if bcrypt.hashpw(req.password, row[1]) == row[1]:
+            token = random.getrandbits(63) # random token
+            cur.execute('insert into tokens values (?, ?)', (token, row[0]))
+            cur.close()
+            db.commit()
+            db.close()
+            rospy.loginfo("Logged in %s"%req.name)
+            return LoginResponse(token)
+         else:
+            rospy.loginfo("Password failed for %s"%req.name)
+            return LoginResponse(0)
+
+      return LoginResponse(0)
 
    def handle_logout(self, req):
       return LogoutResponse()
