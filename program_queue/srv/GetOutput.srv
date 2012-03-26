@@ -1,3 +1,4 @@
+# Get the output from the most recent N runs of program_id
 uint64 token
 uint64 program_id
 # limit on number of outputs, or 0 for all

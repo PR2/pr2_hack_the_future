@@ -1,3 +1,4 @@
+# get a login token for a user
 string name
 string password
 ---
