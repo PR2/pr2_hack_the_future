@@ -4,6 +4,21 @@
 #
 # Author: Austin Hendrix
 
+# Design notes:
+#  At the moment, the db backend is sqlite. In the process of making things
+#   concise I think I've abstacted this to the point that it could be easily
+#   changed
+#  Token IDs are random 63-bit numbers.
+#  * When there are 4.31E8 tokens in existence, the probability of a collision
+#    is 0.01
+#  * When there are 1 million tokens in existence, the probability of a
+#    collision is 5.4E-8
+#  * See the Birthday problem for more in-depth coverage of the statistics
+#    that makes this possible
+#  * Token generation is checked and will retry until a new unique token is 
+#    created
+#  
+
 import roslib; roslib.load_manifest('program_queue')
 import rospy
 
@@ -81,7 +96,21 @@ class Queue:
          # no tokens; return none
          return None
 
-   # TODO: Fill in services
+   def token(self, cur, uid):
+      rows = 0
+      t = 0
+      while rows < 1:
+         # generate a random 63-bit token
+         t = random.getrandbits(63)
+         # ensure that our token is never 0
+         while t == 0:
+            t = random.getrandbits(63)
+         cur.execute('insert or ignore into tokens values (?, ?)', (t, uid))
+         rows = cur.rowcount
+         if rows < 1:
+            rospy.logwarn("Tried to insert duplicate token %d"%t)
+      return t
+
    def handle_clear_queue(self, req):
       db = self.db()
       user = self.get_user(db, req.token)
@@ -119,8 +148,7 @@ class Queue:
       cur.execute('insert or ignore into users (username, password_hash, admin) values (?, ?, ?)', (req.name, pwhash, 0,))
       if cur.rowcount > 0:
          userid = cur.lastrowid
-         token = random.getrandbits(63) # random 63-bit token
-         cur.execute('insert into tokens values (?, ?)', (token, userid,))
+         token = self.token(cur, userid)
          db.commit()
          db.close()
          return CreateUserResponse(token)
@@ -129,24 +157,31 @@ class Queue:
          return CreateUserResponse(0)
 
    def handle_dequeue_program(self, req):
+      # TODO
       return DequeueProgramResponse()
 
    def handle_get_my_programs(self, req):
+      # TODO
       return GetMyProgramsResponse()
 
    def handle_get_output(self, req):
+      # TODO
       return GetOutputResponse()
 
    def handle_get_program(self, req):
+      # TODO
       return GetProgramResponse()
 
    def handle_get_programs(self, req):
+      # TODO
       return GetProgramsResponse()
 
    def handle_get_queue(self, req):
+      # TODO
       return GetQueueResponse()
 
    def handle_login(self, req):
+      # TODO: deal with errors more cleanly
       db = self.db()
       cur = db.cursor()
       cur.execute('select id, password_hash from users where username = ?', (req.name,))
@@ -156,8 +191,7 @@ class Queue:
          return LoginResponse(0)
       else:
          if bcrypt.hashpw(req.password, row[1]) == row[1]:
-            token = random.getrandbits(63) # random token
-            cur.execute('insert into tokens values (?, ?)', (token, row[0]))
+            token = self.token(cur, row[0])
             cur.close()
             db.commit()
             db.close()
@@ -170,21 +204,27 @@ class Queue:
       return LoginResponse(0)
 
    def handle_logout(self, req):
+      # TODO
       return LogoutResponse()
 
    def handle_queue_program(self, req):
+      # TODO
       return QueueProgramResponse()
 
    def handle_run_program(self, req):
+      # TODO
       return RunProgramResponse()
 
    def handle_start_queue(self, req):
+      # TODO
       return EmptyResponse()
 
    def handle_stop_queue(self, req):
+      # TODO
       return EmptyResponse()
 
    def handle_update_program(self, req):
+      # TODO
       return UpdateProgram()
 
 

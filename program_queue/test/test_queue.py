@@ -15,10 +15,10 @@ def client(name, t):
 if __name__ == '__main__':
    rospy.init_node('test_queue')
    
-   user = client('create_user', CreateUser)('testuser', 'testpw')
+   user = client('login', Login)('testuser', 'testpw')
    token = user.token
    if token == 0:
-      user = client('login', Login)('testuser', 'testpw')
+      user = client('create_user', CreateUser)('testuser', 'testpw')
       token = user.token
    print token
 
