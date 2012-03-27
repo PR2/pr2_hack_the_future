@@ -25,6 +25,12 @@ class Pr2GripperAction(Action):
     def to_string(self):
         return '%.3f' % self._values[0]
 
+    def serialize(self, stream):
+        stream.serialize_data(self._values)
+
+    def deserialize(self, stream):
+        self._values = stream.deserialize_data()
+
     def execute(self):
         super(Pr2GripperAction, self).execute()
         command = Pr2GripperCommand(0.04, 0)

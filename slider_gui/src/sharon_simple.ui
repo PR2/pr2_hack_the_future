@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>974</width>
+    <width>1011</width>
     <height>488</height>
    </rect>
   </property>
@@ -84,7 +84,7 @@
       <item>
        <widget class="QTabWidget" name="PoseList_tabWidget">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="triangle_tab">
          <attribute name="title">
@@ -92,7 +92,10 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QTableWidget" name="tableWidget">
+           <widget class="QTableWidget" name="triangle_tableWidget">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
             <attribute name="horizontalHeaderDefaultSectionSize">
              <number>350</number>
             </attribute>
@@ -137,45 +140,17 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_36">
-            <property name="spacing">
-             <number>0</number>
+           <widget class="QTableView" name="triangle_tableView">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
             </property>
-            <item>
-             <widget class="QPushButton" name="pushButton">
-              <property name="text">
-               <string>Delete Selected</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_2">
-              <property name="text">
-               <string>Edit Selected</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_3">
-              <property name="text">
-               <string>Test Selected</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -183,23 +158,116 @@
          <attribute name="title">
           <string>Square</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QTableView" name="square_tableView">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="x_tab">
          <attribute name="title">
           <string>X</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QTableView" name="x_tableView">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="circle_tab">
          <attribute name="title">
           <string>Circle</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QTableView" name="circle_tableView">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_36">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="add_current_pushButton">
+          <property name="text">
+           <string>Add Current</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Delete Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Edit Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="test_selected_pushButton">
+          <property name="text">
+           <string>Test Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
+     <layout class="QVBoxLayout" name="robot_view_verticalLayout" stretch="0,1,0">
       <property name="topMargin">
        <number>5</number>
       </property>
@@ -260,7 +328,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QRadioButton" name="front_radioButton">
+         <widget class="QRadioButton" name="front_view_radioButton">
           <property name="text">
            <string>Front View</string>
           </property>
@@ -271,19 +339,25 @@
           <property name="text">
            <string>Side View</string>
           </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="angled_radioButton">
+         <widget class="QRadioButton" name="angled_view_radioButton">
           <property name="text">
            <string>Angled View</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QWidget" name="gazebo_widget" native="true"/>
+       <widget class="QWidget" name="robot_view_widget" native="true"/>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -308,8 +382,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>974</width>
-     <height>22</height>
+     <width>1011</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuViewer">
@@ -322,23 +396,33 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_As_2"/>
-    <addaction name="actionClear_All_2"/>
-    <addaction name="actionSend_Program_2"/>
-    <addaction name="actionSave_Program"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="actionClear_All"/>
+    <addaction name="actionSend_Program"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuViewer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSave_As">
-   <property name="text">
-    <string>Save As..</string>
-   </property>
-  </action>
   <action name="actionSliders">
    <property name="text">
     <string>Sliders</string>
+   </property>
+  </action>
+  <action name="actionSave_Video">
+   <property name="text">
+    <string>Save Video</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save As...</string>
    </property>
   </action>
   <action name="actionClear_All">
@@ -351,29 +435,14 @@
     <string>Send Program</string>
    </property>
   </action>
-  <action name="actionSave_Video">
+  <action name="actionExit">
    <property name="text">
-    <string>Save Video</string>
+    <string>Exit</string>
    </property>
   </action>
-  <action name="actionSave_As_2">
+  <action name="actionOpen">
    <property name="text">
-    <string>Save As</string>
-   </property>
-  </action>
-  <action name="actionClear_All_2">
-   <property name="text">
-    <string>Clear All</string>
-   </property>
-  </action>
-  <action name="actionSend_Program_2">
-   <property name="text">
-    <string>Send Program</string>
-   </property>
-  </action>
-  <action name="actionSave_Program">
-   <property name="text">
-    <string>Save Program</string>
+    <string>Open...</string>
    </property>
   </action>
  </widget>

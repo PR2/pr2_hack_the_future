@@ -32,6 +32,12 @@ class Pr2JointTrajectoryAction(Action):
             data.append('%.1f' % value)
         return ','.join(data)
 
+    def serialize(self, stream):
+        stream.serialize_data(self._values)
+
+    def deserialize(self, stream):
+        self._values = stream.deserialize_data()
+
     def _add_joint(self, label, min, max):
         self._joints.append({'label': label, 'min': min, 'max': max})
         # default value between min and max

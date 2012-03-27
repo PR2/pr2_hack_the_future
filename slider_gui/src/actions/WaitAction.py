@@ -4,7 +4,7 @@ import rospy
 
 class WaitAction(Action):
 
-    def __init__(self, duration):
+    def __init__(self, duration=1.0):
         super(WaitAction, self).__init__()
         self._duration = duration
         self._timer = None
