@@ -18,6 +18,11 @@
 #  * Token generation is checked and will retry until a new unique token is 
 #    created
 #  
+#
+# TODO: 
+#  * more validation
+#  * add username to ProgramInfo
+
 
 import roslib; roslib.load_manifest('program_queue')
 import rospy
@@ -43,7 +48,7 @@ class Queue:
       # create tables if they don't exist. 
       db.execute('create table if not exists users(id integer primary key asc autoincrement, username text unique not null, password_hash text not null, admin int not null)')
       db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))') # TODO: add an issue/expiration date to tokens
-      db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text, type integer, code text)')
+      db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text default "myprogram" not null, type integer, code text default "")')
       db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
       db.execute('create table if not exists queue(id integer primary key asc autoincrement, program_id integer unique references programs(id))')
 
@@ -92,6 +97,7 @@ class Queue:
          self.admin = admin
 
    def get_user(self, db, token):
+      # take a token and return a User object
       cur = db.cursor()
       cur.execute('select users.id, users.username, users.password_hash, users.admin from users join tokens on users.id = tokens.user_id where tokens.id = ?', (token,))
       row = cur.fetchone()
@@ -100,6 +106,27 @@ class Queue:
       else:
          # no tokens; return none
          return None
+
+   def get_program_info(self, db, program_id):
+      # take a program_id and return a Program object
+      print program_id
+      cur = db.cursor()
+      cur.execute('select id, user_id, name, type from programs where id = ?', (program_id,))
+      row = cur.fetchone()
+      if row:
+         return (row[1], ProgramInfo(row[0], row[2].encode('ascii'), row[3]))
+      else:
+         return (None, None)
+
+   def get_program(self, db, program_id):
+      # take a program_id and return a Program object
+      cur = db.cursor()
+      cur.execute('select id, user_id, name, type, code from programs where id = ?', (program_id,))
+      row = cur.fetchone()
+      if row:
+         return (row[1], Program(ProgramInfo(row[0], row[2].encode('ascii'), row[3]), row[4].encode('ascii')))
+      else:
+         return (None, None)
 
    def token(self, cur, uid):
       rows = 0
@@ -146,7 +173,6 @@ class Queue:
       return CreateProgramResponse(program_id)
 
    def handle_create_user(self, req):
-      # TODO: handle username collisions more gracefully
       pwhash = bcrypt.hashpw(req.password, bcrypt.gensalt())
       db = self.db()
       cur = db.cursor()
@@ -174,19 +200,26 @@ class Queue:
       return GetOutputResponse()
 
    def handle_get_program(self, req):
-      # TODO
-      return GetProgramResponse()
+      db = self.db()
+      (owner, program) = self.get_program(db, req.id)
+      db.close()
+      return GetProgramResponse(program)
 
    def handle_get_programs(self, req):
       # TODO
       return GetProgramsResponse()
 
    def handle_get_queue(self, req):
-      # TODO
-      return GetQueueResponse()
+      db = self.db()
+      cur = db.cursor()
+      cur.execute('select programs.id, programs.name, programs.type from programs join queue on programs.id = queue.program_id')
+      resp = GetQueueResponse()
+      for r in cur.fetchall():
+         resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2]))
+
+      return resp
 
    def handle_login(self, req):
-      # TODO: deal with errors more cleanly
       db = self.db()
       cur = db.cursor()
       cur.execute('select id, password_hash from users where username = ?', (req.name,))
@@ -213,24 +246,59 @@ class Queue:
       return LogoutResponse()
 
    def handle_queue_program(self, req):
-      # TODO
-      return QueueProgramResponse()
+      db = self.db()
+      user = self.get_user(db, req.token)
+      (owner, program) = self.get_program_info(db, req.program_id)
+      p = 0
+      if user and program:
+         if user.admin or user.id == owner:
+            db.execute('insert or ignore into queue (program_id) values (?)',
+                  (req.program_id,))
+            cur = db.cursor()
+            # FIXME: only works when appending to queue. find an efficient way
+            #  to do this
+            cur.execute('select count(*) from queue')
+            row = cur.fetchone()
+            p = row[0] - 1
+            cur.close()
+            db.commit()
+         else:
+            rospy.loginfo("User %s does not have permission to put program %d into the queue"%(user.name, req.program_id))
+      else:
+         rospy.loginfo("Bad token %d or program id %d"%(token, req.program.info.id))
+
+      db.close()
+      return QueueProgramResponse(p)
 
    def handle_run_program(self, req):
       # TODO
       return RunProgramResponse()
 
    def handle_start_queue(self, req):
-      # TODO
+      # TODO: require an admin token
       return EmptyResponse()
 
    def handle_stop_queue(self, req):
-      # TODO
+      # TODO: require an admin token
       return EmptyResponse()
 
    def handle_update_program(self, req):
-      # TODO
-      return UpdateProgram()
+      db = self.db()
+      user = self.get_user(db, req.token)
+      (owner, program) = self.get_program_info(db, req.program.info.id)
+      if user and program:
+         if owner == user.id:
+            db.execute('update programs set name=?, type=?, code=? where id=?',
+                  (req.program.info.name, req.program.info.type, 
+                     req.program.code, req.program.info.id))
+            db.commit()
+         else:
+            rospy.loginfo("User %s does not own program %d"%(user.name, 
+               req.program.info.id))
+      else:
+         rospy.loginfo("Bad token %d or program id %d"%(token, req.program.info.id))
+      db.close()
+      return UpdateProgramResponse()
 
 
 if __name__ == '__main__':
