@@ -30,6 +30,7 @@ import rospy
 from program_queue.srv import *
 from program_queue.msg import *
 from std_srvs.srv import Empty
+from std_msgs.msg import Header
 
 import sqlite3
 import bcrypt
@@ -48,8 +49,8 @@ class Queue:
       # create tables if they don't exist. 
       db.execute('create table if not exists users(id integer primary key asc autoincrement, name text unique not null, password_hash text not null, admin int not null)')
       db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))') # TODO: add an issue/expiration date to tokens
-      db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text default "myprogram" not null, type integer, code text default "")')
-      db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
+      db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text default "myprogram" not null, type integer, code text default "" not null)')
+      db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id) not null, time double not null, output text not null)')
       db.execute('create table if not exists queue(id integer primary key asc autoincrement, program_id integer unique references programs(id))')
 
       # create an admin user if one doesn't exist
@@ -109,7 +110,6 @@ class Queue:
 
    def get_program_info(self, db, program_id):
       # take a program_id and return a Program object
-      print program_id
       cur = db.cursor()
       cur.execute('select programs.id, programs.user_id, programs.name, programs.type, users.name from programs join users on programs.user_id = users.id where programs.id = ?', (program_id,))
       row = cur.fetchone()
@@ -192,12 +192,41 @@ class Queue:
       return DequeueProgramResponse()
 
    def handle_get_my_programs(self, req):
-      # TODO
-      return GetMyProgramsResponse()
+      resp = GetMyProgramsResponse()
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if not user:
+         # if we don't have a user, return an empty list
+         return resp
+      cur = db.cursor()
+      cur.execute('select programs.id, programs.name, programs.type, users.name from programs join users on programs.user_id = users.id where users.id = ?', (user.id,))
+      for r in cur.fetchall():
+         resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2], r[3].encode('ascii')))
+
+      cur.close()
+      db.close()
+      return resp
 
    def handle_get_output(self, req):
-      # TODO
-      return GetOutputResponse()
+      resp = GetOutputResponse()
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user:
+         (owner, program) = self.get_program_info(db, req.program_id)
+         if user.id != owner:
+            rospy.loginfo("User %s is not allowed to get output from program %d"%(user.name, req.program_id))
+         else:
+            cur = db.cursor()
+            # TODO: enforce output limit
+            cur.execute('select time, output from output where program_id = ?',
+                  (req.program_id,))
+            for r in cur.fetchall():
+               resp.output.append(Output(Header(0, rospy.Time(r[0]), ''), r[1].encode('ascii')))
+            cur.close()
+
+      db.close()
+
+      return resp
 
    def handle_get_program(self, req):
       db = self.db()
@@ -271,7 +300,18 @@ class Queue:
       return QueueProgramResponse(p)
 
    def handle_run_program(self, req):
-      # TODO
+      # FIXME: stub
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user and user.admin:
+         db.execute('insert into output (program_id, time, output) values (?, ?, ?)',
+               (req.id, rospy.Time.now().to_sec(), 'Foo',))
+         db.commit()
+      else:
+         rospy.loginfo("%s is not allowed to run programs"%user.name)
+
+      db.close()
+
       return RunProgramResponse()
 
    def handle_start_queue(self, req):

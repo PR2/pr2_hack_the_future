@@ -101,7 +101,7 @@ if __name__ == '__main__':
    if len(output.output) != 1:
       print "Expected 1 output; got %d"%len(output.output)
    else:
-      print "Run date: " + output.output[0].header.stamp
+      print "Run date: " + str(output.output[0].header.stamp.to_sec())
       print "Output: %s"%output.output[0].output
 
    # TODO:
