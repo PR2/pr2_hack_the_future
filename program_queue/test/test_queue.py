@@ -104,9 +104,14 @@ if __name__ == '__main__':
       print "Run date: " + str(output.output[0].header.stamp.to_sec())
       print "Output: %s"%output.output[0].output
 
+
+   # test get_programs
+   programs = client('get_programs', GetPrograms)()
+
+   if len(programs.programs) != 1:
+      print "Expected 1 program, got %d"%len(programs.programs)
+
    # TODO:
-   # * services to test as anonymous
-   #  * get_programs
    # * services to test as admin:
    #  * clear_queue
    #  * start_queue

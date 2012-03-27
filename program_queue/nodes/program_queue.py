@@ -235,8 +235,13 @@ class Queue:
       return GetProgramResponse(program)
 
    def handle_get_programs(self, req):
-      # TODO
-      return GetProgramsResponse()
+      db = self.db()
+      cur = db.cursor()
+      cur.execute('select programs.id, programs.name, programs.type, users.name from programs join users on programs.user_id = users.id')
+      resp = GetProgramsResponse()
+      for r in cur.fetchall():
+         resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2], r[3].encode('ascii')))
+      return resp
 
    def handle_get_queue(self, req):
       db = self.db()
