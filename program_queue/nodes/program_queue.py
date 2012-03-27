@@ -33,16 +33,21 @@ import random
 class Queue:
    def __init__(self):
       # set up database
-      self.dbpath = 'programs.db' # TODO: put this in the user's .ros
+
+      # get the database path from the parameter server; or default to the
+      #  user's ~/.ros/ directory
+      self.dbpath = rospy.get_param('~dbpath', roslib.rosenv.get_ros_home() + '/program_queue.db')
+
       db = sqlite3.connect(self.dbpath)
-      # create tables if they don't exist. TODO: detect if tables already exist
+
+      # create tables if they don't exist. 
       db.execute('create table if not exists users(id integer primary key asc autoincrement, username text unique not null, password_hash text not null, admin int not null)')
       db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))') # TODO: add an issue/expiration date to tokens
       db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text, type integer, code text)')
       db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
       db.execute('create table if not exists queue(id integer primary key asc autoincrement, program_id integer unique references programs(id))')
 
-      # create an admin user
+      # create an admin user if one doesn't exist
       admin_hash = bcrypt.hashpw('admin', bcrypt.gensalt())
       db.execute("insert or ignore into users (username, password_hash, admin) values (?, ?, ?)", ('admin', admin_hash, 1,))
 
