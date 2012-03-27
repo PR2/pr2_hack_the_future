@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
    # test that we can update our program
    client('update_program', UpdateProgram)(token, Program(ProgramInfo(
-      program_id, 'testprogram', ProgramInfo.PYTHON), 'print "Hello World"\n'))
+      program_id, 'testprogram', ProgramInfo.PYTHON, 'testuser'), 'print "Hello World"\n'))
 
    # test that logout works
    client('logout', Logout)(token)

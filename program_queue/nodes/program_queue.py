@@ -46,7 +46,7 @@ class Queue:
       db = sqlite3.connect(self.dbpath)
 
       # create tables if they don't exist. 
-      db.execute('create table if not exists users(id integer primary key asc autoincrement, username text unique not null, password_hash text not null, admin int not null)')
+      db.execute('create table if not exists users(id integer primary key asc autoincrement, name text unique not null, password_hash text not null, admin int not null)')
       db.execute('create table if not exists tokens(id integer primary key, user_id integer references users(id))') # TODO: add an issue/expiration date to tokens
       db.execute('create table if not exists programs(id integer primary key asc autoincrement, user_id integer references users(id), name text default "myprogram" not null, type integer, code text default "")')
       db.execute('create table if not exists output(id integer primary key asc autoincrement, program_id integer references programs(id), time text, output text)')
@@ -54,7 +54,7 @@ class Queue:
 
       # create an admin user if one doesn't exist
       admin_hash = bcrypt.hashpw('admin', bcrypt.gensalt())
-      db.execute("insert or ignore into users (username, password_hash, admin) values (?, ?, ?)", ('admin', admin_hash, 1,))
+      db.execute("insert or ignore into users (name, password_hash, admin) values (?, ?, ?)", ('admin', admin_hash, 1,))
 
       db.commit()
       db.close()
@@ -99,7 +99,7 @@ class Queue:
    def get_user(self, db, token):
       # take a token and return a User object
       cur = db.cursor()
-      cur.execute('select users.id, users.username, users.password_hash, users.admin from users join tokens on users.id = tokens.user_id where tokens.id = ?', (token,))
+      cur.execute('select users.id, users.name, users.password_hash, users.admin from users join tokens on users.id = tokens.user_id where tokens.id = ?', (token,))
       row = cur.fetchone()
       if row:
          return Queue.User(row[0], row[1], row[2], row[3])
@@ -111,20 +111,20 @@ class Queue:
       # take a program_id and return a Program object
       print program_id
       cur = db.cursor()
-      cur.execute('select id, user_id, name, type from programs where id = ?', (program_id,))
+      cur.execute('select programs.id, programs.user_id, programs.name, programs.type, users.name from programs join users on programs.user_id = users.id where programs.id = ?', (program_id,))
       row = cur.fetchone()
       if row:
-         return (row[1], ProgramInfo(row[0], row[2].encode('ascii'), row[3]))
+         return (row[1], ProgramInfo(row[0], row[2].encode('ascii'), row[3], row[4].encode('ascii')))
       else:
          return (None, None)
 
    def get_program(self, db, program_id):
       # take a program_id and return a Program object
       cur = db.cursor()
-      cur.execute('select id, user_id, name, type, code from programs where id = ?', (program_id,))
+      cur.execute('select programs.id, programs.user_id, programs.name, programs.type, programs.code, users.name from programs join users on programs.user_id = users.id where programs.id = ?', (program_id,))
       row = cur.fetchone()
       if row:
-         return (row[1], Program(ProgramInfo(row[0], row[2].encode('ascii'), row[3]), row[4].encode('ascii')))
+         return (row[1], Program(ProgramInfo(row[0], row[2].encode('ascii'), row[3], row[5].encode('ascii')), row[4].encode('ascii')))
       else:
          return (None, None)
 
@@ -176,7 +176,7 @@ class Queue:
       pwhash = bcrypt.hashpw(req.password, bcrypt.gensalt())
       db = self.db()
       cur = db.cursor()
-      cur.execute('insert or ignore into users (username, password_hash, admin) values (?, ?, ?)', (req.name, pwhash, 0,))
+      cur.execute('insert or ignore into users (name, password_hash, admin) values (?, ?, ?)', (req.name, pwhash, 0,))
       if cur.rowcount > 0:
          userid = cur.lastrowid
          token = self.token(cur, userid)
@@ -212,17 +212,17 @@ class Queue:
    def handle_get_queue(self, req):
       db = self.db()
       cur = db.cursor()
-      cur.execute('select programs.id, programs.name, programs.type from programs join queue on programs.id = queue.program_id')
+      cur.execute('select programs.id, programs.name, programs.type, users.name from programs join queue on programs.id = queue.program_id join users on programs.user_id = users.id')
       resp = GetQueueResponse()
       for r in cur.fetchall():
-         resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2]))
+         resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2], r[3].encode('ascii')))
 
       return resp
 
    def handle_login(self, req):
       db = self.db()
       cur = db.cursor()
-      cur.execute('select id, password_hash from users where username = ?', (req.name,))
+      cur.execute('select id, password_hash from users where name = ?', (req.name,))
       row = cur.fetchone()
       if row == None:
          rospy.loginfo("No user named %s"%req.name)
