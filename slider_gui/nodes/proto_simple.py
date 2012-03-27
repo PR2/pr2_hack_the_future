@@ -82,7 +82,7 @@ ClassName=rviz::RobotModelDisplay
 Name=RobotModel
 """)
 config.flush()
-robot_view.loadDisplayConfig('/home/dthomas/.rviz/display_config')
+robot_view.loadDisplayConfig(config.name)
 config.close
 
 views = []
