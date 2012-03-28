@@ -13,7 +13,7 @@ import rospy;
 
 from python_qt_binding.QtBindingHelper import loadUi
 from QtCore import qFatal, QModelIndex, QObject, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QFileDialog, QMainWindow, QTableView
+from QtGui import QApplication, QFileDialog, QIcon, QMainWindow, QTableView
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
 import rviz
@@ -24,6 +24,20 @@ app = QApplication(sys.argv)
 main_window = QMainWindow()
 ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'sharon_simple.ui')
 loadUi(ui_file, main_window)
+
+# set icons for tabs
+icons = {
+    0: 'triangle.png',
+    1: 'square.png',
+    2: 'cross.png',
+    3: 'circle.png',
+}
+for index, filename in icons.iteritems():
+    filename = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'icons', filename))
+    icon = QIcon(filename)
+    if not icon.isNull():
+        main_window.PoseList_tabWidget.setTabText(index, '')
+        main_window.PoseList_tabWidget.setTabIcon(index, icon)
 
 # hide design-only widgets
 main_window.triangle_tableWidget.setVisible(False)
@@ -118,9 +132,11 @@ class Foo(QObject):
         if self._action_set is not None:
             self._action_set.stop()
         self._action_set = kontrol_subscriber.get_action_set()
-        self._action_set.execute()
         value = self._action_set.to_string()
         self.current_value_changed.emit(value)
+        for action in self._action_set._actions:
+            action._duration = 0.1
+        self._action_set.execute()
 foo = Foo()
 
 kontrol_subscriber.axes_changed.connect(foo.update_current_value)

@@ -93,9 +93,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QTableWidget" name="triangle_tableWidget">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
             <attribute name="horizontalHeaderDefaultSectionSize">
              <number>350</number>
             </attribute>
@@ -141,9 +138,6 @@
           </item>
           <item>
            <widget class="QTableView" name="triangle_tableView">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
@@ -161,9 +155,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
            <widget class="QTableView" name="square_tableView">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
@@ -181,9 +172,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <widget class="QTableView" name="x_tableView">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
@@ -201,9 +189,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <widget class="QTableView" name="circle_tableView">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
