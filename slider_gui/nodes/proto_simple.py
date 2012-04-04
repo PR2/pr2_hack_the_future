@@ -11,9 +11,11 @@ roslib.load_manifest('rviz')
 roslib.load_manifest('slider_gui')
 import rospy;
 
+#setattr(sys, 'SELECT_QT_BINDING', 'pyside')
 from python_qt_binding.QtBindingHelper import loadUi
 from QtCore import qFatal, QModelIndex, QObject, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QFileDialog, QIcon, QMainWindow, QTableView
+from QtGui import QApplication, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QSplitter, QTableView, QVBoxLayout, QWidget
+from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
 import rviz
@@ -27,10 +29,10 @@ loadUi(ui_file, main_window)
 
 # set icons for tabs
 icons = {
-    0: 'triangle.png',
-    1: 'square.png',
-    2: 'cross.png',
-    3: 'circle.png',
+    0: 'square.png',
+    1: 'triangle.png',
+    2: 'circle.png',
+    3: 'cross.png',
 }
 for index, filename in icons.iteritems():
     filename = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'icons', filename))
@@ -40,7 +42,7 @@ for index, filename in icons.iteritems():
         main_window.PoseList_tabWidget.setTabIcon(index, icon)
 
 # hide design-only widgets
-main_window.triangle_tableWidget.setVisible(False)
+main_window.square_tableWidget.setVisible(False)
 
 def sigint_handler(*args):
     print('\nsigint_handler()')
@@ -123,7 +125,8 @@ kontrol_subscriber = KontrolSubscriber()
 
 # pass signal across thread boundaries
 class Foo(QObject):
-    current_value_changed = Signal(str)
+    current_values_changed = Signal(str)
+    current_duration_changed = Signal(float)
     def __init__(self):
         super(Foo, self).__init__()
         self._action_set = None
@@ -132,15 +135,17 @@ class Foo(QObject):
         if self._action_set is not None:
             self._action_set.stop()
         self._action_set = kontrol_subscriber.get_action_set()
+        self.current_duration_changed.emit(self._action_set.get_duration())
         value = self._action_set.to_string()
-        self.current_value_changed.emit(value)
+        self.current_values_changed.emit(value)
         for action in self._action_set._actions:
             action._duration = 0.1
         self._action_set.execute()
 foo = Foo()
 
 kontrol_subscriber.axes_changed.connect(foo.update_current_value)
-foo.current_value_changed.connect(main_window.lineEdit.setText)
+foo.current_values_changed.connect(main_window.lineEdit.setText)
+foo.current_duration_changed.connect(main_window.duration_doubleSpinBox.setValue)
 
 def get_tab_widget(index):
     return main_window.PoseList_tabWidget.widget(index)
@@ -159,6 +164,12 @@ for i in range(main_window.PoseList_tabWidget.count()):
     model = PosesDataModel()
     table_view.setModel(model)
     table_view.resizeColumnsToContents()
+    delegate = DoubleSpinBoxDelegate()
+    delegate.setMinimum(main_window.duration_doubleSpinBox.minimum())
+    delegate.setMaximum(main_window.duration_doubleSpinBox.maximum())
+    delegate.setSuffix(main_window.duration_doubleSpinBox.suffix())
+    delegate.setSingleStep(main_window.duration_doubleSpinBox.singleStep())
+    table_view.setItemDelegateForColumn(0, delegate)
     models.append(model)
 
 def get_current_model():
@@ -166,18 +177,56 @@ def get_current_model():
     return models[index]
 
 
-def add_current():
+def append_current():
     model = get_current_model()
 
     action_set = kontrol_subscriber.get_action_set()
     model.add_action(action_set)
 
-    tab_widget = main_window.PoseList_tabWidget.widget(i)
-    table_view = tab_widget.findChildren(QTableView, QRegExp('.*_tableView'))[0]
+    table_view = get_table_view(get_current_tab_index())
     rows = len(model.action_sequence().actions())
+    table_view.resizeColumnsToContents()
     table_view.selectRow(rows - 1)
 
-main_window.add_current_pushButton.clicked.connect(add_current)
+main_window.append_pushButton.clicked.connect(append_current)
+
+
+def insert_current_before_selected():
+    row = get_selected_row()
+    if row is None:
+        append_current()
+        return
+
+    model = get_current_model()
+
+    action_set = kontrol_subscriber.get_action_set()
+    model.add_action(action_set, row)
+
+    table_view = get_table_view(get_current_tab_index())
+    table_view.resizeColumnsToContents()
+    table_view.selectRow(row + 1)
+
+main_window.insert_before_pushButton.clicked.connect(insert_current_before_selected)
+
+
+def delete_selected():
+    row = get_selected_row()
+    if row is None:
+        return
+
+    model = get_current_model()
+
+    action_set = kontrol_subscriber.get_action_set()
+    model.remove_action(row)
+
+    table_view = get_table_view(get_current_tab_index())
+    rows = len(model.action_sequence().actions())
+    if row >= rows:
+        row = row - 1
+    table_view.resizeColumnsToContents()
+    table_view.selectRow(row)
+
+main_window.delete_selected_pushButton.clicked.connect(delete_selected)
 
 
 def get_row_count():
@@ -186,12 +235,6 @@ def get_row_count():
 def get_selected_row():
     table_view = get_table_view(get_current_tab_index())
     selection_model = table_view.selectionModel()
-    #indexes = selection_model.selection().indexes()
-    #print len(indexes)
-    #for index in indexes:
-    #    print index.row(), index.column()
-    #print selection_model.selection().indexes()
-    #print selection_model.isRowSelected(0, QModelIndex())
     if selection_model.hasSelection():
         row = selection_model.selectedRows()[0].row()
         #print 'get_selected_row() %d' % row
@@ -236,37 +279,66 @@ def execute_current_sequence():
     action_sequence.execute_sequence_finished_signal.connect(finished_executing_current_sequence)
     action_sequence.execute_all()
 
+def stop_sequence():
+    print 'stop_sequence'
+    model = get_current_model()
+    action_sequence = model.action_sequence()
+    action_sequence.stop()
+
 def set_tab(index):
     main_window.PoseList_tabWidget.setCurrentIndex(index)
 
+# HACK
+class Bar(QObject):
+    select_row_signal = Signal(int)
+    def __init__(self):
+        super(Bar, self).__init__()
+    def emit(self, row):
+        self.select_row_signal.emit(row)
+select_row_signal = Bar()
+select_row_signal.select_row_signal.connect(set_selected_row)
+
 def check_buttons():
     triggered_buttons = kontrol_subscriber.get_triggered_buttons()
+
     if KontrolSubscriber.previous_button in triggered_buttons:
         if get_selected_row() is not None:
-            set_selected_row(get_selected_row() - 1)
+            select_row_signal.emit(get_selected_row() - 1)
         else:
-            set_selected_row(0)
+            select_row_signal.emit(0)
     elif KontrolSubscriber.play_button in triggered_buttons:
         test_selected()
     elif KontrolSubscriber.next_button in triggered_buttons:
         if get_selected_row() is not None:
-            set_selected_row(get_selected_row() + 1)
+            select_row_signal.emit(get_selected_row() + 1)
         else:
-            set_selected_row(get_row_count() - 1)
+            select_row_signal.emit(get_row_count() - 1)
+    
     elif KontrolSubscriber.repeat_button in triggered_buttons:
         execute_current_sequence()
+    elif KontrolSubscriber.stop_button in triggered_buttons:
+        stop_sequence()
     elif KontrolSubscriber.record_button in triggered_buttons:
-        add_current()
-    elif KontrolSubscriber.top1_button in triggered_buttons:
-        set_tab(1)
-    elif KontrolSubscriber.bottom1_button in triggered_buttons:
-        set_tab(2)
-    elif KontrolSubscriber.top2_button in triggered_buttons:
-        set_tab(0)
-    elif KontrolSubscriber.bottom2_button in triggered_buttons:
-        set_tab(3)
+        append_current()
 
-kontrol_subscriber.buttons_changed.connect(check_buttons)
+    elif KontrolSubscriber.top1_button in triggered_buttons:
+        set_tab(0)
+    elif KontrolSubscriber.bottom1_button in triggered_buttons:
+        set_tab(3)
+    elif KontrolSubscriber.top2_button in triggered_buttons:
+        set_tab(1)
+    elif KontrolSubscriber.bottom2_button in triggered_buttons:
+        set_tab(2)
+
+class FooBar(QObject):
+    relay_signal = Signal()
+    def __init__(self):
+        super(FooBar, self).__init__()
+    def emit(self):
+        self.relay_signal.emit()
+check_buttons_signal = FooBar()
+check_buttons_signal.relay_signal.connect(check_buttons)
+kontrol_subscriber.buttons_changed.connect(check_buttons_signal.emit)
 
 
 def load_from_file():

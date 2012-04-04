@@ -13,6 +13,16 @@ class ActionSet(Action):
     def remove_all_actions(self):
         self._actions = []
 
+    def get_duration(self):
+        duration = 0.0
+        for action in self._actions:
+            duration = max(duration, action.get_duration())
+        return duration
+
+    def set_duration(self, duration):
+        for action in self._actions:
+            action.set_duration(duration)
+
     def to_string(self):
         data = []
         for action in self._actions:

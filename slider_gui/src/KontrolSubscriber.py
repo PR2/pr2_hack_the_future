@@ -54,12 +54,12 @@ class KontrolSubscriber(object):
                 set.add_action(head)
 
                 torso = Pr2MoveTorsoAction()
-                torso_data = [self._axes[1]]
+                torso_data = [self._axes[8]]
                 self._set_transformed_data(torso, torso_data)
                 set.add_action(torso)
 
                 lgrip = Pr2MoveLeftGripperAction()
-                lgrip_data = [self._axes[8]]
+                lgrip_data = [self._axes[7]]
                 self._set_transformed_data(lgrip, lgrip_data)
                 set.add_action(lgrip)
 
@@ -69,8 +69,8 @@ class KontrolSubscriber(object):
                 set.add_action(rgrip)
 
                 rarm_data = []
-                rarm_data.extend(self._axes[2:8])
-                rarm_data.append(self._axes[17])
+                rarm_data.extend(self._axes[1:7])
+                rarm_data.append(self._axes[16])
                 rarm_data[1] = -rarm_data[1]
 
                 rarm = Pr2MoveRightArmAction()
@@ -78,8 +78,8 @@ class KontrolSubscriber(object):
                 set.add_action(rarm)
 
                 larm_data = []
-                larm_data.extend(self._axes[2:8])
-                larm_data.append(self._axes[17])
+                larm_data.extend(self._axes[1:7])
+                larm_data.append(self._axes[16])
                 larm_data[0] = -larm_data[0]
                 larm_data[1] = -larm_data[1]
                 larm_data[2] = -larm_data[2]
@@ -89,6 +89,9 @@ class KontrolSubscriber(object):
                 larm = Pr2MoveLeftArmAction()
                 self._set_transformed_data(larm, larm_data)
                 set.add_action(larm)
+
+        duration = self._transform_value(self._axes[17], 0.5, 10.0)
+        set.set_duration(duration)
 
         return set
 
@@ -124,13 +127,16 @@ class KontrolSubscriber(object):
         for index, joint in enumerate(action._joints):
             min_value = joint['min']
             max_value = joint['max']
-            value = data[index]
-            assert(value >= -1 and value <= 1)
-            value = (value + 1.0) / 2.0
-            value = min_value + value * (max_value - min_value)
-            assert(value >= min_value)
-            assert(value <= max_value)
+            value = self._transform_value(data[index], min_value, max_value)
             transformed.append(value)
         action.set_values(transformed)
         #print 'joints', action._joints
         #print 'data', data
+
+    def _transform_value(self, value, min_value, max_value):
+        assert(value >= -1 and value <= 1)
+        value = (value + 1.0) / 2.0
+        value = min_value + value * (max_value - min_value)
+        assert(value >= min_value)
+        assert(value <= max_value)
+        return value

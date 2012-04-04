@@ -17,20 +17,273 @@
    <property name="windowTitle">
     <string>Form</string>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="leftMargin">
-       <number>10</number>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="topMargin">
-       <number>10</number>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
-      <property name="rightMargin">
-       <number>10</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <widget class="QWidget" name="widget_left">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="topMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>5</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <family>Arial Black</family>
+              <pointsize>22</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Pose List</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="PoseList_tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="square_tab">
+           <attribute name="title">
+            <string>Square</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QTableWidget" name="square_tableWidget">
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>80</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <row>
+               <property name="text">
+                <string>Pose 1</string>
+               </property>
+              </row>
+              <row>
+               <property name="text">
+                <string>Pose 2</string>
+               </property>
+              </row>
+              <row>
+               <property name="text">
+                <string>Pose 3</string>
+               </property>
+              </row>
+              <column>
+               <property name="text">
+                <string>Duration</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Pose Sequence</string>
+               </property>
+              </column>
+              <item row="0" column="0">
+               <property name="text">
+                <string>2.0</string>
+               </property>
+              </item>
+              <item row="0" column="1">
+               <property name="text">
+                <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
+               </property>
+              </item>
+              <item row="1" column="0">
+               <property name="text">
+                <string>3.0</string>
+               </property>
+              </item>
+              <item row="1" column="1">
+               <property name="text">
+                <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
+               </property>
+              </item>
+              <item row="2" column="0">
+               <property name="text">
+                <string>2.5</string>
+               </property>
+              </item>
+              <item row="2" column="1">
+               <property name="text">
+                <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableView" name="square_tableView">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="triangle_tab">
+           <attribute name="title">
+            <string>Triangle</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QTableView" name="triangle_tableView">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="circle_tab">
+           <attribute name="title">
+            <string>Circle</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QTableView" name="circle_tableView">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="x_tab">
+           <attribute name="title">
+            <string>X</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QTableView" name="x_tableView">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_36">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="append_pushButton">
+            <property name="text">
+             <string>Append</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="insert_before_pushButton">
+            <property name="text">
+             <string>Insert Before</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="delete_selected_pushButton">
+            <property name="text">
+             <string>Delete Selected</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="test_selected_pushButton">
+            <property name="text">
+             <string>Test Selected</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="widget_right">
+       <layout class="QVBoxLayout" name="robot_view_verticalLayout" stretch="0,1,0">
         <property name="topMargin">
          <number>5</number>
         </property>
@@ -41,324 +294,136 @@
          <number>5</number>
         </property>
         <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="topMargin">
+           <number>5</number>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
+          <property name="rightMargin">
+           <number>5</number>
           </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="font">
-           <font>
-            <family>Arial Black</family>
-            <pointsize>22</pointsize>
-           </font>
+          <property name="bottomMargin">
+           <number>5</number>
           </property>
-          <property name="text">
-           <string>Pose List</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTabWidget" name="PoseList_tabWidget">
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <widget class="QWidget" name="triangle_tab">
-         <attribute name="title">
-          <string>Triangle</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QTableWidget" name="triangle_tableWidget">
-            <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>350</number>
-            </attribute>
-            <attribute name="verticalHeaderCascadingSectionResizes">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="PR2_Simulator_label">
+            <property name="font">
+             <font>
+              <family>Andale Mono</family>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PR2 Simulator</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="front_view_radioButton">
+            <property name="text">
+             <string>Front View</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="side_view_radioButton">
+            <property name="text">
+             <string>Side View</string>
+            </property>
+            <property name="checked">
              <bool>false</bool>
-            </attribute>
-            <row>
-             <property name="text">
-              <string>Pose 1</string>
-             </property>
-            </row>
-            <row>
-             <property name="text">
-              <string>Pose 2</string>
-             </property>
-            </row>
-            <row>
-             <property name="text">
-              <string>Pose 3</string>
-             </property>
-            </row>
-            <column>
-             <property name="text">
-              <string>Pose Sequence</string>
-             </property>
-            </column>
-            <item row="0" column="0">
-             <property name="text">
-              <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
-             </property>
-            </item>
-            <item row="1" column="0">
-             <property name="text">
-              <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
-             </property>
-            </item>
-            <item row="2" column="0">
-             <property name="text">
-              <string>&lt;Insert Automatic Puppet Talk Code Here&gt;</string>
-             </property>
-            </item>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="triangle_tableView">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
+           <widget class="QRadioButton" name="angled_view_radioButton">
+            <property name="text">
+             <string>Angled View</string>
             </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
-        </widget>
-        <widget class="QWidget" name="square_tab">
-         <attribute name="title">
-          <string>Square</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+        </item>
+        <item>
+         <widget class="QWidget" name="robot_view_widget" native="true"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QTableView" name="square_tableView">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Duration</string>
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="x_tab">
-         <attribute name="title">
-          <string>X</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QTableView" name="x_tableView">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
+           <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
             </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
+            <property name="suffix">
+             <string> s</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>0.500000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.500000000000000</double>
+            </property>
+            <property name="value">
+             <double>3.000000000000000</double>
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="circle_tab">
-         <attribute name="title">
-          <string>Circle</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QTableView" name="circle_tableView">
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Current Slider Position:</string>
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit"/>
+          </item>
          </layout>
-        </widget>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_36">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="add_current_pushButton">
-          <property name="text">
-           <string>Add Current</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Delete Selected</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Edit Selected</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="test_selected_pushButton">
-          <property name="text">
-           <string>Test Selected</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="robot_view_verticalLayout" stretch="0,1,0">
-      <property name="topMargin">
-       <number>5</number>
-      </property>
-      <property name="rightMargin">
-       <number>5</number>
-      </property>
-      <property name="bottomMargin">
-       <number>5</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="rightMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="PR2_Simulator_label">
-          <property name="font">
-           <font>
-            <family>Andale Mono</family>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>PR2 Simulator</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="front_view_radioButton">
-          <property name="text">
-           <string>Front View</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="side_view_radioButton">
-          <property name="text">
-           <string>Side View</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="angled_view_radioButton">
-          <property name="text">
-           <string>Angled View</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QWidget" name="robot_view_widget" native="true"/>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Current Slider Position:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit"/>
-        </item>
-       </layout>
-      </item>
-     </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>

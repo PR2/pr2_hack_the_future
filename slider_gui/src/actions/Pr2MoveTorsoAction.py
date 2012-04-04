@@ -7,4 +7,4 @@ class Pr2MoveTorsoAction(Pr2JointTrajectoryAction):
         self._add_joint('torso_lift_joint', 0, 0.3)
 
     def to_string(self):
-        return 'torso(%.3f)' % self._values[0]
+        return 'torso(%.0f)' % (100 * self._values[0])

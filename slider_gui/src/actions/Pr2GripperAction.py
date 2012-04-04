@@ -13,7 +13,6 @@ class Pr2GripperAction(Action):
         self._min_value = 0.0
         self._max_value = 0.08
         self._joints = [{'label': 'gripper', 'min': self._min_value, 'max': self._max_value}]
-        self._duration = 3.0
         self._values = [(self._max_value- self._min_value) / 2.0]
         self._timer = None
 
@@ -23,7 +22,7 @@ class Pr2GripperAction(Action):
         self._values = [max(self._min_value, min(values[0], self._max_value))]
 
     def to_string(self):
-        return '%.3f' % self._values[0]
+        return '%.1f' % (100 * self._values[0]) 
 
     def serialize(self, stream):
         stream.serialize_data(self._values)
@@ -38,7 +37,7 @@ class Pr2GripperAction(Action):
         command.position = self._values[0]
         print('Pr2GripperAction.execute() %s: %s' % (self.__class__.__name__, str(self._values[0])))
         self._pub.publish(command)
-        self._timer = rospy.Timer(rospy.Duration.from_sec(self._duration), self._timer_finished, oneshot=True)
+        self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._timer_finished, oneshot=True)
 
     def _timer_finished(self, event):
         print('Pr2GripperAction.execute() finished %s\n' % (self.__class__.__name__))

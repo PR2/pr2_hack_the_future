@@ -16,8 +16,18 @@ class ActionSequence(object):
     def actions(self):
         return self._actions
 
-    def add_action(self, action):
-        self._actions.append(action)
+    def add_action(self, action, index = None):
+        if index is None:
+            self._actions.append(action)
+        else:
+            assert(index >=0 and index < len(self._actions))
+            self._actions.insert(index, action)
+
+    def remove_action(self, index):
+        assert(index >=0 and index < len(self._actions))
+        del self._actions[index]
+        if self._current_action >= index:
+            self._current_action = self._current_action - 1
 
     def remove_all_actions(self):
         self._actions = []
@@ -48,6 +58,12 @@ class ActionSequence(object):
         if first_index is None:
             first_index = 0
         self._execute(first_index, self._execute_sequence_finished)
+
+    def stop(self):
+        if self._current_action is not None:
+            action = self._actions[self._current_action]
+            action.stop()
+            self._current_action = None
 
     def _execute_single_finished(self):
         index = self._current_action
