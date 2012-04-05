@@ -1,9 +1,11 @@
 from actions.ActionSequence import ActionSequence
 
 import python_qt_binding.QtBindingHelper #@UnusedImport
-from QtCore import QAbstractItemModel, QModelIndex, Qt
+from QtCore import QAbstractTableModel, QByteArray, QMimeData, QModelIndex, Qt
 
-class PosesDataModel(QAbstractItemModel):
+class PosesDataModel(QAbstractTableModel):
+
+    _mime_type = 'application/x-slider-action'
 
     def __init__(self):
         super(PosesDataModel, self).__init__()
@@ -11,8 +13,9 @@ class PosesDataModel(QAbstractItemModel):
 
     def add_action(self, action, index = None):
         model_index = QModelIndex()
-        if index is None:
+        if index is None or index == len(self._action_sequence.actions()):
             rows = len(self._action_sequence.actions())
+            index = None
         else:
             assert(index >=0 and index < len(self._action_sequence.actions()))
             rows = index
@@ -21,6 +24,15 @@ class PosesDataModel(QAbstractItemModel):
         self.beginInsertRows(model_index, rows, rows)
         self._action_sequence.add_action(action, index)
         self.endInsertRows()
+
+    def move_action(self, source_index, destination_index):
+        assert(source_index >=0 and source_index < len(self._action_sequence.actions()))
+        assert(destination_index >=0 and destination_index <= len(self._action_sequence.actions()))
+        action = self._action_sequence.actions()[source_index]
+        self.remove_action(source_index)
+        if destination_index > source_index:
+            destination_index -= 1
+        self.add_action(action, destination_index)
 
     def remove_action(self, index):
         assert(index >=0 and index < len(self._action_sequence.actions()))
@@ -39,19 +51,6 @@ class PosesDataModel(QAbstractItemModel):
 
     def action_sequence(self):
         return self._action_sequence
-
-    def index(self, row, column, parent=None):
-        if parent is None:
-            parent = QModelIndex()
-        if not self.hasIndex(row, column, parent):
-            return QModelIndex();
-        if row >= 0 and row < len(self._action_sequence.actions()):
-            return self.createIndex(row, column, self._action_sequence.actions()[row])
-        else:
-            return QModelIndex()
-
-    def parent(self, index):
-        return QModelIndex()
 
     def rowCount(self, parent=None):
         return len(self._action_sequence.actions())
@@ -81,8 +80,11 @@ class PosesDataModel(QAbstractItemModel):
 
     def flags(self, index):
         f = super(PosesDataModel, self).flags(index)
-        if index.column() == 0:
-            f |= Qt.ItemIsEditable
+        if index.isValid():
+            if index.column() == 0:
+                f |= Qt.ItemIsEditable
+            f |= Qt.ItemIsDragEnabled
+        f |= Qt.ItemIsDropEnabled
         return f
 
     def headerData(self, section, orientation, role=None):
@@ -97,3 +99,44 @@ class PosesDataModel(QAbstractItemModel):
             elif orientation == Qt.Vertical:
                 return 'Pose %d' % (section + 1)
         return None
+
+    def supportedDropActions(self):
+        return Qt.CopyAction | Qt.MoveAction
+
+    def mimeTypes(self):
+        return [self._mime_type]
+
+    def mimeData(self, indexes):
+        #print 'mimeData()'
+        row = None
+        for index in indexes:
+            if index.isValid():
+                if row is None:
+                    row = index.row()
+                if row != index.row():
+                    row = None
+                    break
+
+        mimeData = QMimeData()
+        if row is not None:
+            mimeData.setData(self._mime_type, QByteArray.number(row))
+        return mimeData;
+
+    def dropMimeData(self, data, action, row, column, parent):
+        #print 'dropMimeData()'
+        if action == Qt.MoveAction:
+            before_row = None
+            if row != -1:
+                before_row = row
+            elif parent.isValid():
+                before_row = parent.row()
+            else:
+                before_row = self.rowCount()
+            if data.hasFormat(self._mime_type):
+                byte_array = data.data(self._mime_type)
+                source_row, is_int = byte_array.toInt()
+                if is_int and before_row != source_row + 1:
+                    #print 'dropMimeData()', source_row, '->', before_row
+                    self.move_action(source_row, before_row)
+                    return True
+        return super(PosesDataModel, self).dropMimeData(data, action, row, column, parent)

@@ -24,10 +24,17 @@ class Pr2GripperAction(Action):
     def to_string(self):
         return '%.1f' % (100 * self._values[0]) 
 
+    def deepcopy(self):
+        action = super(Pr2GripperAction, self).deepcopy()
+        action._values = self._values
+        return action
+
     def serialize(self, stream):
+        super(Pr2GripperAction, self).serialize(stream)
         stream.serialize_data(self._values)
 
     def deserialize(self, stream):
+        super(Pr2GripperAction, self).deserialize(stream)
         self._values = stream.deserialize_data()
 
     def execute(self):

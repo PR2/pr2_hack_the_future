@@ -31,10 +31,17 @@ class Pr2JointTrajectoryAction(Action):
             data.append('%.0f' % value)
         return ','.join(data)
 
+    def deepcopy(self):
+        action = super(Pr2JointTrajectoryAction, self).deepcopy()
+        action._values = self._values
+        return action
+
     def serialize(self, stream):
+        super(Pr2JointTrajectoryAction, self).serialize(stream)
         stream.serialize_data(self._values)
 
     def deserialize(self, stream):
+        super(Pr2JointTrajectoryAction, self).deserialize(stream)
         self._values = stream.deserialize_data()
 
     def _add_joint(self, label, min, max):
