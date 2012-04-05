@@ -60,5 +60,7 @@ class ActionSet(Action):
             self._execute_finished()
 
     def stop(self):
+        print('ActionSet.stop()\n')
         for action in self._actions:
             action.execute_finished_signal.disconnect(self._action_finished)
+        self._executing = 0

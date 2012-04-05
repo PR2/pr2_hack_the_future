@@ -127,10 +127,14 @@ kontrol_subscriber = KontrolSubscriber()
 class Foo(QObject):
     current_values_changed = Signal(str)
     current_duration_changed = Signal(float)
+    _update_current_value_signal = Signal()
     def __init__(self):
         super(Foo, self).__init__()
         self._action_set = None
+        self._update_current_value_signal.connect(self._update_current_value)
     def update_current_value(self):
+        self._update_current_value_signal.emit()
+    def _update_current_value(self):
         #print('update_current_value()')
         if self._action_set is not None:
             self._action_set.stop()
@@ -264,39 +268,59 @@ def set_selected_row(row):
     #print 'set_selected_row() row %d' % row
     table_view.selectRow(row)
 
+class RelaySignalInt(QObject):
+    relay_signal = Signal(int)
+    def __init__(self):
+        super(RelaySignalInt, self).__init__()
+    def emit(self, row):
+        self.relay_signal.emit(row)
+
+set_selected_row_signal = RelaySignalInt()
+set_selected_row_signal.relay_signal.connect(set_selected_row)
+
+running_sequence = False
+
 def finished_executing_current_sequence():
-    print 'finished_executing_current_sequence'
+    global running_sequence
+    print 'finished_executing_current_sequence()'
     model = get_current_model()
     action_sequence = model.action_sequence()
-    action_sequence.executing_action_signal.disconnect(set_selected_row)
+    action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
+    running_sequence = False
 
 def execute_current_sequence():
-    print 'execute_current_sequence'
+    global running_sequence
+    if running_sequence:
+        print 'execute_current_sequence() skipped'
+        return
+    print 'execute_current_sequence()'
+    running_sequence = True
     model = get_current_model()
     action_sequence = model.action_sequence()
-    action_sequence.executing_action_signal.connect(set_selected_row)
+    action_sequence.executing_action_signal.connect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.connect(finished_executing_current_sequence)
     action_sequence.execute_all()
 
 def stop_sequence():
-    print 'stop_sequence'
+    global running_sequence
+    if not running_sequence:
+        print 'stop_sequence() skipped - not running'
+        return
+    print 'stop_sequence()'
     model = get_current_model()
     action_sequence = model.action_sequence()
     action_sequence.stop()
+    action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
+    action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
+    running_sequence = False
 
 def set_tab(index):
     main_window.PoseList_tabWidget.setCurrentIndex(index)
 
-# HACK
-class Bar(QObject):
-    select_row_signal = Signal(int)
-    def __init__(self):
-        super(Bar, self).__init__()
-    def emit(self, row):
-        self.select_row_signal.emit(row)
-select_row_signal = Bar()
-select_row_signal.select_row_signal.connect(set_selected_row)
+
+select_row_signal = RelaySignalInt()
+select_row_signal.relay_signal.connect(set_selected_row)
 
 def check_buttons():
     triggered_buttons = kontrol_subscriber.get_triggered_buttons()
@@ -330,13 +354,14 @@ def check_buttons():
     elif KontrolSubscriber.bottom2_button in triggered_buttons:
         set_tab(2)
 
-class FooBar(QObject):
+class RelaySignal(QObject):
     relay_signal = Signal()
     def __init__(self):
-        super(FooBar, self).__init__()
+        super(RelaySignal, self).__init__()
     def emit(self):
         self.relay_signal.emit()
-check_buttons_signal = FooBar()
+
+check_buttons_signal = RelaySignal()
 check_buttons_signal.relay_signal.connect(check_buttons)
 kontrol_subscriber.buttons_changed.connect(check_buttons_signal.emit)
 

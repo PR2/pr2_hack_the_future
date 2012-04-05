@@ -52,6 +52,7 @@ class ActionSequence(object):
         self._execute(index, self._execute_single_finished)
 
     def execute_all(self, first_index = None):
+        #print('ActionSequence.execute_all()')
         if self._current_action is not None:
             print('ActionSequence.execute_all() skipped because previous execute has not yet finished')
             return
@@ -63,6 +64,8 @@ class ActionSequence(object):
         if self._current_action is not None:
             action = self._actions[self._current_action]
             action.stop()
+            action.execute_finished_signal.disconnect(self._execute_single_finished)
+            action.execute_finished_signal.disconnect(self._execute_sequence_finished)
             self._current_action = None
 
     def _execute_single_finished(self):
@@ -71,15 +74,18 @@ class ActionSequence(object):
         self.execute_single_finished_signal.emit(index)
 
     def _execute_sequence_finished(self):
+        #print('ActionSequence._execute_sequence_finished()')
         index = self._current_action
         self._execute_finished(self._execute_sequence_finished)
         index += 1
         if index < len(self._actions):
             self.execute_all(index)
         else:
+            #print('ActionSequence._execute_sequence_finished() execute_sequence_finished_signal')
             self.execute_sequence_finished_signal.emit()
 
     def _execute(self, index, callback):
+        #print('ActionSequence._execute(%d)' % index)
         assert(index >= 0 and index < len(self._actions))
         self._current_action = index
         action = self._actions[self._current_action]
