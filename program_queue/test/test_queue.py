@@ -45,6 +45,8 @@ if __name__ == '__main__':
    if token == 0:
       print "Failed to log in"
 
+   if user.is_admin:
+      print "Test user is admin and shouldn't be"
 
    # test that we can retrieve our program
    program = client('get_program', GetProgram)(program_id)
@@ -91,6 +93,9 @@ if __name__ == '__main__':
    admin = client('login', Login)('admin', 'admin')
    if admin.token == 0:
       print "Failed to log in as admin"
+
+   if not admin.is_admin:
+      print "Admin user should be an admin but isn't"
 
    # run_program
    client('run_program', RunProgram)(admin.token, program_id)

@@ -256,11 +256,11 @@ class Queue:
    def handle_login(self, req):
       db = self.db()
       cur = db.cursor()
-      cur.execute('select id, password_hash from users where name = ?', (req.name,))
+      cur.execute('select id, password_hash, admin from users where name = ?', (req.name,))
       row = cur.fetchone()
       if row == None:
          rospy.loginfo("No user named %s"%req.name)
-         return LoginResponse(0)
+         return LoginResponse(0, False)
       else:
          if bcrypt.hashpw(req.password, row[1]) == row[1]:
             token = self.token(cur, row[0])
@@ -268,12 +268,12 @@ class Queue:
             db.commit()
             db.close()
             rospy.loginfo("Logged in %s"%req.name)
-            return LoginResponse(token)
+            return LoginResponse(token, row[2] != 0)
          else:
             rospy.loginfo("Password failed for %s"%req.name)
-            return LoginResponse(0)
+            return LoginResponse(0, False)
 
-      return LoginResponse(0)
+      return LoginResponse(0, False)
 
    def handle_logout(self, req):
       # TODO
@@ -341,7 +341,7 @@ class Queue:
             rospy.loginfo("User %s does not own program %d"%(user.name, 
                req.program.info.id))
       else:
-         rospy.loginfo("Bad token %d or program id %d"%(token, req.program.info.id))
+         rospy.loginfo("Bad token %d or program id %d"%(req.token, req.program.info.id))
       db.close()
       return UpdateProgramResponse()
 
