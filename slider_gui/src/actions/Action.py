@@ -17,6 +17,17 @@ class Action(object):
     def to_string(self):
         pass
 
+    def deepcopy(self):
+        action = self.__class__()
+        action._duration = self._duration
+        return action
+
+    def serialize(self, stream):
+        stream.serialize_data(self._duration)
+
+    def deserialize(self, stream):
+        self._duration = stream.deserialize_data()
+
     #@abstractmethod
     def execute(self):
         pass

@@ -9,6 +9,9 @@ class WaitAction(Action):
         self._timer = None
         self.set_duration(duration)
 
+    def deepcopy(self):
+        return WaitAction(self.get_duration())
+
     def execute(self):
         super(WaitAction, self).execute()
         print('WaitAction.execute() %d' % self.get_duration())

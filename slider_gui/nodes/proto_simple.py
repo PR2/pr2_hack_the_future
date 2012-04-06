@@ -161,6 +161,11 @@ def get_table_view(index):
 def get_current_tab_index():
     return main_window.PoseList_tabWidget.currentIndex()
 
+def test_clicked(index):
+    model = get_current_model()
+    print 'execute %d' % index.row()
+    model.action_sequence().actions()[index.row()].execute()
+
 # create models for each table view in the tabs
 models = []
 for i in range(main_window.PoseList_tabWidget.count()):
@@ -174,6 +179,7 @@ for i in range(main_window.PoseList_tabWidget.count()):
     delegate.setSuffix(main_window.duration_doubleSpinBox.suffix())
     delegate.setSingleStep(main_window.duration_doubleSpinBox.singleStep())
     table_view.setItemDelegateForColumn(0, delegate)
+    table_view.doubleClicked.connect(test_clicked)
     models.append(model)
 
 def get_current_model():
@@ -219,8 +225,6 @@ def delete_selected():
         return
 
     model = get_current_model()
-
-    action_set = kontrol_subscriber.get_action_set()
     model.remove_action(row)
 
     table_view = get_table_view(get_current_tab_index())
@@ -231,6 +235,19 @@ def delete_selected():
     table_view.selectRow(row)
 
 main_window.delete_selected_pushButton.clicked.connect(delete_selected)
+
+
+def clone_selected():
+    row = get_selected_row()
+    if row is None:
+        return
+
+    model = get_current_model()
+    action = model.action_sequence().actions()[row]
+    clone = action.deepcopy()
+    model.add_action(clone, row + 1)
+
+main_window.clone_selected_pushButton.clicked.connect(clone_selected)
 
 
 def get_row_count():
@@ -413,6 +430,7 @@ main_window.actionSend_Program.triggered.connect(execute_current_sequence)
 
 main_window.actionExit.triggered.connect(main_window.close)
 
-main_window.show()
+#main_window.show()
+main_window.showMaximized()
 
 sys.exit(app.exec_())

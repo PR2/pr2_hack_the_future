@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1011</width>
+    <width>1021</width>
     <height>488</height>
    </rect>
   </property>
@@ -101,6 +101,9 @@
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
              <widget class="QTableWidget" name="square_tableWidget">
+              <property name="dragDropMode">
+               <enum>QAbstractItemView::InternalMove</enum>
+              </property>
               <attribute name="horizontalHeaderDefaultSectionSize">
                <number>80</number>
               </attribute>
@@ -169,6 +172,18 @@
             </item>
             <item>
              <widget class="QTableView" name="square_tableView">
+              <property name="acceptDrops">
+               <bool>true</bool>
+              </property>
+              <property name="dragEnabled">
+               <bool>true</bool>
+              </property>
+              <property name="dragDropMode">
+               <enum>QAbstractItemView::InternalMove</enum>
+              </property>
+              <property name="defaultDropAction">
+               <enum>Qt::MoveAction</enum>
+              </property>
               <property name="selectionMode">
                <enum>QAbstractItemView::SingleSelection</enum>
               </property>
@@ -186,6 +201,15 @@
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QTableView" name="triangle_tableView">
+              <property name="dragEnabled">
+               <bool>true</bool>
+              </property>
+              <property name="dragDropMode">
+               <enum>QAbstractItemView::InternalMove</enum>
+              </property>
+              <property name="defaultDropAction">
+               <enum>Qt::MoveAction</enum>
+              </property>
               <property name="selectionMode">
                <enum>QAbstractItemView::SingleSelection</enum>
               </property>
@@ -203,6 +227,15 @@
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QTableView" name="circle_tableView">
+              <property name="dragEnabled">
+               <bool>true</bool>
+              </property>
+              <property name="dragDropMode">
+               <enum>QAbstractItemView::InternalMove</enum>
+              </property>
+              <property name="defaultDropAction">
+               <enum>Qt::MoveAction</enum>
+              </property>
               <property name="selectionMode">
                <enum>QAbstractItemView::SingleSelection</enum>
               </property>
@@ -220,6 +253,15 @@
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <widget class="QTableView" name="x_tableView">
+              <property name="dragEnabled">
+               <bool>true</bool>
+              </property>
+              <property name="dragDropMode">
+               <enum>QAbstractItemView::InternalMove</enum>
+              </property>
+              <property name="defaultDropAction">
+               <enum>Qt::MoveAction</enum>
+              </property>
               <property name="selectionMode">
                <enum>QAbstractItemView::SingleSelection</enum>
               </property>
@@ -239,6 +281,9 @@
           </property>
           <item>
            <widget class="QPushButton" name="append_pushButton">
+            <property name="toolTip">
+             <string>Append current pose to the end of the list</string>
+            </property>
             <property name="text">
              <string>Append</string>
             </property>
@@ -246,20 +291,39 @@
           </item>
           <item>
            <widget class="QPushButton" name="insert_before_pushButton">
+            <property name="toolTip">
+             <string>Insert current pose before selected pose</string>
+            </property>
             <property name="text">
-             <string>Insert Before</string>
+             <string>Insert</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="delete_selected_pushButton">
+            <property name="toolTip">
+             <string>Deleted selected pose from list</string>
+            </property>
             <property name="text">
-             <string>Delete Selected</string>
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clone_selected_pushButton">
+            <property name="toolTip">
+             <string>Clone selected pose and insert it after the selected pose</string>
+            </property>
+            <property name="text">
+             <string>Clone</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="test_selected_pushButton">
+            <property name="toolTip">
+             <string>Execute the selected pose</string>
+            </property>
             <property name="text">
              <string>Test Selected</string>
             </property>
@@ -432,7 +496,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1011</width>
+     <width>1021</width>
      <height>25</height>
     </rect>
    </property>

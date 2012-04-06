@@ -29,6 +29,12 @@ class ActionSet(Action):
             data.append(action.to_string())
         return ';'.join(data)
 
+    def deepcopy(self):
+        set = super(ActionSet, self).deepcopy()
+        for action in self._actions:
+            set.add_action(action.deepcopy())
+        return set
+
     def serialize(self, stream):
         stream.serialize_data(len(self._actions))
         for action in self._actions:
