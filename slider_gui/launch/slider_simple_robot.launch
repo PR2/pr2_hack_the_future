@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="korg_nanokontrol" type="kontrol.py" name="kontrol" args="3"/>
+  <node pkg="slider_gui" type="proto_simple.py" name="test_actions"/>
+</launch>
