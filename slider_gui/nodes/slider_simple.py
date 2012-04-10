@@ -20,6 +20,7 @@ from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
 from ProgramQueue import ProgramQueue
+from Ps3Subscriber import Ps3Subscriber
 import rviz
 from SimpleFormat import SimpleFormat
 
@@ -303,6 +304,10 @@ set_selected_row_signal.relay_signal.connect(set_selected_row)
 
 running_sequence = False
 
+def set_tab(index):
+    if get_current_tab_index() != index:
+        main_window.PoseList_tabWidget.setCurrentIndex(index)
+
 def finished_executing_current_sequence():
     global running_sequence
     print 'finished_executing_current_sequence()'
@@ -312,18 +317,22 @@ def finished_executing_current_sequence():
     action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
     running_sequence = False
 
-def execute_current_sequence():
+def execute_sequence(index):
     global running_sequence
     if running_sequence:
-        print 'execute_current_sequence() skipped'
+        print 'execute_sequence() skipped'
         return
-    print 'execute_current_sequence()'
+    print 'execute_sequence()'
     running_sequence = True
-    model = get_current_model()
+    set_tab(index)
+    model = models[index]
     action_sequence = model.action_sequence()
     action_sequence.executing_action_signal.connect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.connect(finished_executing_current_sequence)
     action_sequence.execute_all()
+
+def execute_current_sequence():
+    execute_sequence(get_current_tab_index())
 
 def stop_sequence():
     global running_sequence
@@ -337,9 +346,6 @@ def stop_sequence():
     action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
     running_sequence = False
-
-def set_tab(index):
-    main_window.PoseList_tabWidget.setCurrentIndex(index)
 
 
 select_row_signal = RelaySignalInt()
@@ -360,7 +366,7 @@ def check_buttons():
             select_row_signal.emit(get_selected_row() + 1)
         else:
             select_row_signal.emit(get_row_count() - 1)
-    
+
     elif KontrolSubscriber.repeat_button in triggered_buttons:
         execute_current_sequence()
     elif KontrolSubscriber.stop_button in triggered_buttons:
@@ -377,6 +383,15 @@ def check_buttons():
     elif KontrolSubscriber.bottom2_button in triggered_buttons:
         set_tab(2)
 
+    elif KontrolSubscriber.top8_button in triggered_buttons:
+        execute_sequence(0)
+    elif KontrolSubscriber.bottom8_button in triggered_buttons:
+        execute_sequence(3)
+    elif KontrolSubscriber.top9_button in triggered_buttons:
+        execute_sequence(1)
+    elif KontrolSubscriber.bottom9_button in triggered_buttons:
+        execute_sequence(2)
+
 class RelaySignal(QObject):
     relay_signal = Signal()
     def __init__(self):
@@ -387,6 +402,31 @@ class RelaySignal(QObject):
 check_buttons_signal = RelaySignal()
 check_buttons_signal.relay_signal.connect(check_buttons)
 kontrol_subscriber.buttons_changed.connect(check_buttons_signal.emit)
+
+
+def check_ps3_buttons():
+    triggered_buttons = ps3_subscriber.get_triggered_buttons()
+
+    if Ps3Subscriber.select_button in triggered_buttons:
+        #sys.exit(0)
+        pass
+    elif Ps3Subscriber.start_button in triggered_buttons:
+        #default_pose()
+        pass
+
+    elif Ps3Subscriber.square_button in triggered_buttons:
+        execute_sequence(0)
+    elif Ps3Subscriber.triangle_button in triggered_buttons:
+        execute_sequence(1)
+    elif Ps3Subscriber.circle_button in triggered_buttons:
+        execute_sequence(2)
+    elif Ps3Subscriber.cross_button in triggered_buttons:
+        execute_sequence(3)
+
+ps3_subscriber = Ps3Subscriber()
+check_ps3_buttons_signal = RelaySignal()
+check_ps3_buttons_signal.relay_signal.connect(check_ps3_buttons)
+ps3_subscriber.buttons_changed.connect(check_ps3_buttons_signal.emit)
 
 
 def load_from_file():

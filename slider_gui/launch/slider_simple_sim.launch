@@ -3,7 +3,9 @@
   <node pkg="korg_nanokontrol" type="kontrol.py" name="kontrol" args="3">
     <remap from="joy" to="korg_joy"/>
   </node>
-  <node pkg="slider_gui" type="slider_simple.py" name="slider_simple">
-    <remap from="joy" to="korg_joy"/>
+  <!--<node pkg="ps3joy" type="ps3joy.py" launch-prefix="sudo" name="ps3joy"/>-->
+  <node pkg="joy" type="joy_node" name="joy_node">
+    <remap from="joy" to="ps3_joy"/>
   </node>
+  <node pkg="slider_gui" type="slider_simple.py" name="slider_simple"/>
 </launch>

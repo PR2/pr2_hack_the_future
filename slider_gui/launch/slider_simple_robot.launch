@@ -3,6 +3,6 @@
     <remap from="joy" to="korg_joy"/>
   </node>
   <node pkg="slider_gui" type="slider_simple.py" name="slider_simple">
-    <remap from="joy" to="korg_joy"/>
+    <remap from="ps3_joy" to="joy"/>
   </node>
 </launch>

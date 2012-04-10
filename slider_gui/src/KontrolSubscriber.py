@@ -23,13 +23,18 @@ class KontrolSubscriber(object):
     top2_button = 'top2'
     bottom2_button = 'bottom2'
 
+    top8_button = 'top8'
+    bottom8_button = 'bottom8'
+    top9_button = 'top9'
+    bottom9_button = 'bottom9'
+
     def __init__(self):
         self.axes_changed = Signal()
         self.buttons_changed = Signal()
         self._axes = None
         self._buttons = None
         self._pressed_buttons = set()
-        rospy.Subscriber('joy', Joy, self._joy_callback)
+        rospy.Subscriber('korg_joy', Joy, self._joy_callback)
 
     def _joy_callback(self, joy_msg):
         if self._axes != joy_msg.axes:
@@ -107,6 +112,10 @@ class KontrolSubscriber(object):
             1: self.bottom1_button,
             2: self.top2_button,
             3: self.bottom2_button,
+            14: self.top8_button,
+            15: self.bottom8_button,
+            16: self.top9_button,
+            17: self.bottom9_button,
         }
         triggered = set()
         for index, value in enumerate(self._buttons):
