@@ -25,12 +25,15 @@
 
 
 import roslib; roslib.load_manifest('program_queue')
+import rospkg
 import rospy
 
 from program_queue.srv import *
 from program_queue.msg import *
 from std_srvs.srv import Empty
 from std_msgs.msg import Header
+
+import slider_gui.srv
 
 import sqlite3
 import bcrypt
@@ -43,7 +46,7 @@ class Queue:
 
       # get the database path from the parameter server; or default to the
       #  user's ~/.ros/ directory
-      self.dbpath = rospy.get_param('~dbpath', roslib.rosenv.get_ros_home() + '/program_queue.db')
+      self.dbpath = rospy.get_param('~dbpath', rospkg.get_ros_home() + '/program_queue.db')
 
       db = sqlite3.connect(self.dbpath)
 
@@ -85,6 +88,7 @@ class Queue:
       rospy.Service('start_queue',     Empty,          self.handle_start_queue)
       rospy.Service('stop_queue',     Empty,           self.handle_stop_queue)
 
+      rospy.wait_for_service('run_slider_program')
 
       rospy.loginfo("Queue ready")
 
@@ -325,6 +329,7 @@ class Queue:
                output = "Puppet program execution is not supported"
                rospy.logerr(output)
             elif row[0] == ProgramInfo.SLIDER:
+               rospy.ServiceProxy('run_slider_program', slider_gui.srv.RunProgram)(row[1])
                output = "Slider program execution is not supported"
                rospy.logerr(output)
             else:
