@@ -2,7 +2,7 @@
   <node pkg="korg_nanokontrol" type="kontrol.py" name="kontrol" args="3">
     <remap from="joy" to="korg_joy"/>
   </node>
-  <node pkg="slider_gui" type="proto_simple.py" name="proto_simple">
+  <node pkg="slider_gui" type="slider_simple.py" name="slider_simple">
     <remap from="joy" to="korg_joy"/>
   </node>
 </launch>

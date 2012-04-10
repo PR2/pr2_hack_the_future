@@ -69,6 +69,9 @@
               <pointsize>22</pointsize>
              </font>
             </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Pose List</string>
             </property>
@@ -91,6 +94,9 @@
         </item>
         <item>
          <widget class="QTabWidget" name="PoseList_tabWidget">
+          <property name="locale">
+           <locale language="English" country="UnitedStates"/>
+          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -284,6 +290,9 @@
             <property name="toolTip">
              <string>Append current pose to the end of the list</string>
             </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Append</string>
             </property>
@@ -293,6 +302,9 @@
            <widget class="QPushButton" name="insert_before_pushButton">
             <property name="toolTip">
              <string>Insert current pose before selected pose</string>
+            </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
              <string>Insert</string>
@@ -304,6 +316,9 @@
             <property name="toolTip">
              <string>Deleted selected pose from list</string>
             </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Delete</string>
             </property>
@@ -314,6 +329,9 @@
             <property name="toolTip">
              <string>Clone selected pose and insert it after the selected pose</string>
             </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Clone</string>
             </property>
@@ -323,6 +341,9 @@
            <widget class="QPushButton" name="test_selected_pushButton">
             <property name="toolTip">
              <string>Execute the selected pose</string>
+            </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
              <string>Test Selected</string>
@@ -389,6 +410,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>PR2 Simulator</string>
             </property>
@@ -409,6 +433,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="front_view_radioButton">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Front View</string>
             </property>
@@ -416,6 +443,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="side_view_radioButton">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Side View</string>
             </property>
@@ -426,6 +456,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="angled_view_radioButton">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Angled View</string>
             </property>
@@ -437,12 +470,19 @@
          </layout>
         </item>
         <item>
-         <widget class="QWidget" name="robot_view_widget" native="true"/>
+         <widget class="QWidget" name="robot_view_widget" native="true">
+          <property name="locale">
+           <locale language="English" country="UnitedStates"/>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="label">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Duration</string>
             </property>
@@ -475,13 +515,20 @@
           </item>
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
             <property name="text">
              <string>Current Slider Position:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="lineEdit">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -500,12 +547,6 @@
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuViewer">
-    <property name="title">
-     <string>Viewer</string>
-    </property>
-    <addaction name="actionSliders"/>
-   </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
@@ -513,19 +554,14 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionClear_All"/>
-    <addaction name="actionSend_Program"/>
+    <addaction name="actionTest_Program"/>
+    <addaction name="actionQueue_Program"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuViewer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSliders">
-   <property name="text">
-    <string>Sliders</string>
-   </property>
-  </action>
   <action name="actionSave_Video">
    <property name="text">
     <string>Save Video</string>
@@ -544,9 +580,9 @@
     <string>Clear All</string>
    </property>
   </action>
-  <action name="actionSend_Program">
+  <action name="actionTest_Program">
    <property name="text">
-    <string>Send Program</string>
+    <string>Test Program</string>
    </property>
   </action>
   <action name="actionExit">
@@ -557,6 +593,17 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionQueue_Program">
+   <property name="text">
+    <string>Queue Program...</string>
+   </property>
+   <property name="iconText">
+    <string>Queue Program...</string>
+   </property>
+   <property name="toolTip">
+    <string>Queue Program...</string>
    </property>
   </action>
  </widget>

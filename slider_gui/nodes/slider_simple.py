@@ -2,6 +2,7 @@
 
 import os
 import signal
+from StringIO import StringIO
 import sys
 import tempfile
 
@@ -14,17 +15,18 @@ import rospy;
 #setattr(sys, 'SELECT_QT_BINDING', 'pyside')
 from python_qt_binding.QtBindingHelper import loadUi
 from QtCore import qFatal, QModelIndex, QObject, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QSplitter, QTableView, QVBoxLayout, QWidget
+from QtGui import QApplication, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
+from ProgramQueue import ProgramQueue
 import rviz
 from SimpleFormat import SimpleFormat
 
 app = QApplication(sys.argv)
 
 main_window = QMainWindow()
-ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'sharon_simple.ui')
+ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'slider_simple.ui')
 loadUi(ui_file, main_window)
 
 # set icons for tabs
@@ -120,7 +122,10 @@ add_view(main_window.side_view_radioButton, "-0.0747972 4.83578 2.81623 -0.01041
 add_view(main_window.angled_view_radioButton, "0.475202 5.59079 2.81623 -0.0104112 -0.00416593 0.984444")
 
 rospy.init_node('proto_simple', disable_signals=True)
-use_sim_time = rospy.get_param('use_sim_time')
+try:
+    use_sim_time = rospy.get_param('use_sim_time')
+except KeyError:
+    use_sim_time = False
 
 kontrol_subscriber = KontrolSubscriber()
 
@@ -407,6 +412,13 @@ def load_from_file():
 main_window.actionOpen.triggered.connect(load_from_file)
 
 
+def serialize(storage):
+    count = main_window.PoseList_tabWidget.count()
+    storage.serialize_data(count)
+    for index in range(count):
+        model = models[index]
+        model.action_sequence().serialize(storage)
+
 def save_to_file():
     file_name, _ = QFileDialog.getSaveFileName(main_window, main_window.tr('Save program to file'), 'example.pt', main_window.tr('Puppet Talk (*.pt)'))
     if file_name is None or file_name == '':
@@ -415,12 +427,7 @@ def save_to_file():
     print 'save_to_file', file_name
     handle = open(file_name, 'wb')
     storage = SimpleFormat(handle)
-
-    count = main_window.PoseList_tabWidget.count()
-    storage.serialize_data(count)
-    for index in range(count):
-        model = models[index]
-        model.action_sequence().serialize(storage)
+    serialize(storage)
     handle.close()
 
 main_window.actionSave_As.triggered.connect(save_to_file)
@@ -434,7 +441,38 @@ def clear_all():
 
 main_window.actionClear_All.triggered.connect(clear_all)
 
-main_window.actionSend_Program.triggered.connect(execute_current_sequence)
+main_window.actionTest_Program.triggered.connect(execute_current_sequence)
+
+
+def queue_program():
+    dialog = QDialog()
+    ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'queue_dialog.ui')
+    loadUi(ui_file, dialog)
+    rc = dialog.exec_()
+    if rc == QDialog.Rejected:
+        return
+
+    queue = ProgramQueue(dialog.username_lineEdit.text(), dialog.password_lineEdit.text())
+    rc = queue.login()
+    if not rc:
+        QMessageBox.critical(main_window, main_window.tr('Login failed'), main_window.tr('Could not log in to the program queue.'))
+        return
+
+    output = StringIO()
+    storage = SimpleFormat(output)
+    serialize(storage)
+    program_data = output.getvalue()
+    output.close()
+
+    id = queue.upload_program(program_data, dialog.label_lineEdit.text())
+    if not id:
+        QMessageBox.critical(main_window, main_window.tr('Upload failed'), main_window.tr('Could not upload program to queue.'))
+        return
+    queue.logout()
+    QMessageBox.information(main_window, main_window.tr('Uploaded program'), main_window.tr('Uploaded program (%d) successfully.') % id)
+
+main_window.actionQueue_Program.triggered.connect(queue_program)
+
 
 main_window.actionExit.triggered.connect(main_window.close)
 
