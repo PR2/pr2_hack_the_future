@@ -393,10 +393,15 @@ def load_from_file():
     handle = open(file_name, 'rb')
     storage = SimpleFormat(handle)
 
-    for index in range(main_window.PoseList_tabWidget.count()):
+    count = storage.deserialize_data()
+    tabs = main_window.PoseList_tabWidget.count()
+    for index in range(tabs):
         model = models[index]
-        model.action_sequence().deserialize(storage)
-        model.reset()
+        if index < count:
+            model.action_sequence().deserialize(storage)
+            model.reset()
+        else:
+            model.remove_all_actions()
     handle.close()
 
 main_window.actionOpen.triggered.connect(load_from_file)
@@ -411,7 +416,9 @@ def save_to_file():
     handle = open(file_name, 'wb')
     storage = SimpleFormat(handle)
 
-    for index in range(main_window.PoseList_tabWidget.count()):
+    count = main_window.PoseList_tabWidget.count()
+    storage.serialize_data(count)
+    for index in range(count):
         model = models[index]
         model.action_sequence().serialize(storage)
     handle.close()
