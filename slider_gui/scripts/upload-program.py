@@ -43,13 +43,13 @@ def upload_program(program_data, label, username, password):
     program = program_queue.msg.Program(program_info, program_data)
     client('update_program', program_queue.srv.UpdateProgram)(token, program)
 
+    # run program
+    print 'running program...'
+    client('run_program', program_queue.srv.RunProgram)(token, program_id)
+
     # log out
     print 'logging out...'
     client('logout', program_queue.srv.Logout)(token)
-
-    # upload program data
-    print 'TEST running program...'
-    client('run_slider_program', RunProgram)(program_data)
 
     return 0
 
