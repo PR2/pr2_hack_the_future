@@ -35,6 +35,7 @@ from std_msgs.msg import Header
 import sqlite3
 import bcrypt
 import random
+import subprocess
 
 class Queue:
    def __init__(self):
@@ -312,9 +313,29 @@ class Queue:
       db = self.db()
       user = self.get_user(db, req.token)
       if user and user.admin:
-         db.execute('insert into output (program_id, time, output) values (?, ?, ?)',
-               (req.id, rospy.Time.now().to_sec(), 'Foo',))
-         db.commit()
+         cur = db.cursor()
+         cur.execute('select type, code from programs where id = ?', (req.id,))
+         row = cur.fetchone()
+         if row:
+            if row[0] == ProgramInfo.PYTHON:
+               py = subprocess.Popen(['python'], stdin=subprocess.PIPE, 
+                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+               output = py.communicate(row[1])[0]
+            elif row[0] == ProgramInfo.PUPPET:
+               output = "Puppet program execution is not supported"
+               rospy.logerr(output)
+            elif row[0] == ProgramInfo.SLIDER:
+               output = "Slider program execution is not supported"
+               rospy.logerr(output)
+            else:
+               output = "Error: Unknown program type " + row[0]
+               rospy.logerr(output)
+
+            db.execute('insert into output (program_id, time, output) values'+
+                  '(?, ?, ?)', (req.id, rospy.Time.now().to_sec(), output,))
+            db.commit()
+         else:
+            rospy.logerror("Bad program: " + req.id)
       else:
          rospy.loginfo("%s is not allowed to run programs"%user.name)
 
@@ -335,6 +356,7 @@ class Queue:
       user = self.get_user(db, req.token)
       (owner, program) = self.get_program_info(db, req.program.info.id)
       if user and program:
+         # Food for thought: allow admins to edit any program?
          if owner == user.id:
             db.execute('update programs set name=?, type=?, code=? where id=?',
                   (req.program.info.name, req.program.info.type, 
