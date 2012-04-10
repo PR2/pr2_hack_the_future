@@ -330,8 +330,7 @@ class Queue:
                rospy.logerr(output)
             elif row[0] == ProgramInfo.SLIDER:
                rospy.ServiceProxy('run_slider_program', slider_gui.srv.RunProgram)(row[1])
-               output = "Slider program execution is not supported"
-               rospy.logerr(output)
+               output = "Slider program run"
             else:
                output = "Error: Unknown program type " + row[0]
                rospy.logerr(output)
