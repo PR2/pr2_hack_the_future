@@ -120,6 +120,7 @@ add_view(main_window.side_view_radioButton, "-0.0747972 4.83578 2.81623 -0.01041
 add_view(main_window.angled_view_radioButton, "0.475202 5.59079 2.81623 -0.0104112 -0.00416593 0.984444")
 
 rospy.init_node('proto_simple', disable_signals=True)
+use_sim_time = rospy.get_param('use_sim_time')
 
 kontrol_subscriber = KontrolSubscriber()
 
@@ -143,7 +144,7 @@ class Foo(QObject):
         value = self._action_set.to_string()
         self.current_values_changed.emit(value)
         for action in self._action_set._actions:
-            action._duration = 0.1
+            action._duration = 0.1 if use_sim_time else 0.5
         self._action_set.execute()
 foo = Foo()
 
