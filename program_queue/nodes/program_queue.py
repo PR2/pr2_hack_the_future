@@ -276,7 +276,10 @@ class Queue:
       return LoginResponse(0, False)
 
    def handle_logout(self, req):
-      # TODO
+      db = self.db()
+      db.execute('delete from tokens where id = ?', (req.token,))
+      db.commit()
+      db.close()
       return LogoutResponse()
 
    def handle_queue_program(self, req):
