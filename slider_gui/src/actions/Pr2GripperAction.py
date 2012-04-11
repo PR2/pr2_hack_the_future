@@ -40,7 +40,7 @@ class Pr2GripperAction(Action):
     def execute(self):
         super(Pr2GripperAction, self).execute()
         command = Pr2GripperCommand(0.04, 0)
-        command.max_effort = 10.0
+        command.max_effort = 20.0
         command.position = self._values[0]
         print('Pr2GripperAction.execute() %s: %s' % (self.__class__.__name__, str(self._values[0])))
         self._pub.publish(command)
