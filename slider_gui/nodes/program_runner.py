@@ -11,7 +11,7 @@ from actions.ActionSequence import ActionSequence
 from actions.DefaultAction import DefaultAction
 from Ps3Subscriber import Ps3Subscriber
 from SimpleFormat import SimpleFormat
-from slider_gui.srv import *
+from program_queue.srv import *
 
 class Runner:
     def __init__(self):
@@ -24,7 +24,7 @@ class Runner:
 
         self._ps3_subscriber = Ps3Subscriber()
 
-        rospy.Service('run_slider_program', RunProgram, self._handle_run_program)
+        rospy.Service('run_slider_program', CallProgram, self._handle_run_program)
         rospy.loginfo('Runner ready')
 
     def _handle_run_program(self, req):
@@ -68,7 +68,7 @@ class Runner:
         self._sequences = []
 
         print 'Running program finished'
-        return RunProgramResponse()
+        return CallProgramResponse(0, "Slider Program Successful")
 
     def _check_ps3_buttons(self):
         triggered_buttons = self._ps3_subscriber.get_triggered_buttons()

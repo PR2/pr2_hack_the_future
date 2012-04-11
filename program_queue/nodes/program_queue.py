@@ -33,8 +33,6 @@ from program_queue.msg import *
 from std_srvs.srv import Empty
 from std_msgs.msg import Header
 
-import slider_gui.srv
-
 import sqlite3
 import bcrypt
 import random
@@ -193,7 +191,17 @@ class Queue:
          return CreateUserResponse(0)
 
    def handle_dequeue_program(self, req):
-      # TODO
+      # TODO: test
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user:
+         (owner, program) = self.get_program_info(db, req.id)
+         if user.id != owner and not user.is_admin:
+            rospy.loginfo("User %s is not allowed to dequeue %d"%(user.name, req.id))
+         else:
+            db.execute('delete from queue where program_id = ?',(req.id,))
+            db.commit()
+      db.close()
       return DequeueProgramResponse()
 
    def handle_get_my_programs(self, req):
@@ -329,7 +337,8 @@ class Queue:
                output = "Puppet program execution is not supported"
                rospy.logerr(output)
             elif row[0] == ProgramInfo.SLIDER:
-               rospy.ServiceProxy('run_slider_program', slider_gui.srv.RunProgram)(row[1])
+               rospy.loginfo("Run slider program %d"%(req.id))
+               rospy.ServiceProxy('run_slider_program', CallProgram)(row[1])
                output = "Slider program run"
             else:
                output = "Error: Unknown program type " + row[0]
@@ -337,6 +346,7 @@ class Queue:
 
             db.execute('insert into output (program_id, time, output) values'+
                   '(?, ?, ?)', (req.id, rospy.Time.now().to_sec(), output,))
+            db.execute('delete from queue where program_id = ?', (req.id,))
             db.commit()
          else:
             rospy.logerror("Bad program: " + req.id)
