@@ -1,0 +1,7 @@
+<launch>
+   <node pkg="program_queue" type="program_queue.py" name="program_queue" />
+   <node pkg="rosproxy" type="proxy.py" name="proxy" >
+      <rosparam param="services">[ clear_queue, create_program, create_user, dequeue_program, get_my_programs, get_output, get_program, get_programs, get_queue, login, logout, queue_program, run_program, update_program, start_queue, stop_queue ]</rosparam>
+   </node>
+      <node pkg="slider_gui" type="program_runner.py" name="program_runner" />
+</launch>
