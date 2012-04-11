@@ -56,6 +56,9 @@ class ActionSequence(object):
         if self._current_action is not None:
             print('ActionSequence.execute_all() skipped because previous execute has not yet finished')
             return
+        if not self._actions:
+            self.execute_sequence_finished_signal.emit()
+            return 
         if first_index is None:
             first_index = 0
         self._execute(first_index, self._execute_sequence_finished)

@@ -34,15 +34,34 @@ if __name__ == '__main__':
     program_data = open(filename, 'rb').read()
 
     queue = ProgramQueue(options.username, options.password)
-    rc = queue.login()
+
+    try:
+        rc = queue.login()
+    except:
+        rc = False
     if not rc:
         sys.exit(1)
-    id = queue.upload_program(program_data, options.label)
+
+    try:
+        id = queue.upload_program(program_data, options.label)
+    except:
+        id = False
     if not id:
         sys.exit(2)
+
     if options.run:
-        rc = queue.run_program(id)
+        try:
+            rc = queue.run_program(id)
+        except:
+            rc = False
         if not rc:
             sys.exit(3)
-    queue.logout()
+
+    try:
+        rc = queue.logout()
+    except:
+        rc = False
+    if not rc:
+        sys.exit(4)
+
     sys.exit(0)
