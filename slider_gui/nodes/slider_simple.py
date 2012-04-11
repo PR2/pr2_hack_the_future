@@ -16,6 +16,7 @@ import rospy;
 from python_qt_binding.QtBindingHelper import loadUi
 from QtCore import qFatal, QModelIndex, QObject, QRegExp, QSignalMapper, QTimer, Signal
 from QtGui import QApplication, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget
+from actions.DefaultAction import DefaultAction
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
@@ -302,7 +303,7 @@ class RelaySignalInt(QObject):
 set_selected_row_signal = RelaySignalInt()
 set_selected_row_signal.relay_signal.connect(set_selected_row)
 
-running_sequence = False
+running_sequence = None
 
 def set_tab(index):
     if get_current_tab_index() != index:
@@ -315,15 +316,30 @@ def finished_executing_current_sequence():
     action_sequence = model.action_sequence()
     action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
-    running_sequence = False
+    running_sequence = None
+
+def stop_sequence():
+    global running_sequence
+    if running_sequence is None:
+        print 'stop_sequence() skipped - not running'
+        return
+    print 'stop_sequence()'
+    model = get_current_model()
+    action_sequence = model.action_sequence()
+    action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
+    action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
+    action_sequence.stop()
+    running_sequence = None
 
 def execute_sequence(index):
     global running_sequence
-    if running_sequence:
-        print 'execute_sequence() skipped'
+    if running_sequence == -1:
+        print 'execute_sequence() skip execute due to running sequence'
         return
+    if running_sequence is not None:
+        stop_sequence()
     print 'execute_sequence()'
-    running_sequence = True
+    running_sequence = index
     set_tab(index)
     model = models[index]
     action_sequence = model.action_sequence()
@@ -333,19 +349,6 @@ def execute_sequence(index):
 
 def execute_current_sequence():
     execute_sequence(get_current_tab_index())
-
-def stop_sequence():
-    global running_sequence
-    if not running_sequence:
-        print 'stop_sequence() skipped - not running'
-        return
-    print 'stop_sequence()'
-    model = get_current_model()
-    action_sequence = model.action_sequence()
-    action_sequence.stop()
-    action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
-    action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
-    running_sequence = False
 
 
 select_row_signal = RelaySignalInt()
@@ -481,6 +484,27 @@ def clear_all():
 
 main_window.actionClear_All.triggered.connect(clear_all)
 
+
+default_pose = DefaultAction()
+default_pose.set_duration(8.0)
+
+def finished_executing_default_pose():
+    global running_sequence
+    print 'finished_executing_default_pose()'
+    running_sequence = None
+
+def execute_default_pose():
+    global running_sequence
+    if running_sequence is not None:
+        stop_sequence()
+    print 'execute_default_pose()'
+    running_sequence = -1
+    default_pose.execute()
+
+default_pose.execute_finished_signal.connect(finished_executing_default_pose)
+main_window.actionDefault_Pose.triggered.connect(execute_default_pose)
+
+
 main_window.actionTest_Program.triggered.connect(execute_current_sequence)
 
 
@@ -518,5 +542,7 @@ main_window.actionExit.triggered.connect(main_window.close)
 
 #main_window.show()
 main_window.showMaximized()
+
+execute_default_pose()
 
 sys.exit(app.exec_())

@@ -554,6 +554,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionClear_All"/>
+    <addaction name="actionDefault_Pose"/>
     <addaction name="actionTest_Program"/>
     <addaction name="actionQueue_Program"/>
     <addaction name="separator"/>
@@ -604,6 +605,11 @@
    </property>
    <property name="toolTip">
     <string>Queue Program...</string>
+   </property>
+  </action>
+  <action name="actionDefault_Pose">
+   <property name="text">
+    <string>Default Pose</string>
    </property>
   </action>
  </widget>

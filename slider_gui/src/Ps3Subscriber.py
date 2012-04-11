@@ -4,6 +4,11 @@ from Signal import Signal
 
 class Ps3Subscriber(object):
 
+    top_button = 'top'
+    right_button = 'right'
+    bottom_button = 'bottom'
+    left_button = 'left'
+
     select_button = 'select'
     start_button = 'start'
 
@@ -25,6 +30,10 @@ class Ps3Subscriber(object):
 
     def get_triggered_buttons(self):
         buttons = {
+            4: self.top_button,
+            5: self.right_button,
+            6: self.bottom_button,
+            7: self.left_button,
             0: self.select_button,
             3: self.start_button,
             15: self.square_button,

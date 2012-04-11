@@ -19,6 +19,9 @@ class Pr2JointTrajectoryAction(Action):
         self._transform_to_radian = transform_to_radian
         self._timer = None
 
+    def values(self):
+        return self._values
+
     def set_values(self, values):
         assert(len(self._values) == len(values))
         for i, desc in enumerate(self._joints):
@@ -47,7 +50,7 @@ class Pr2JointTrajectoryAction(Action):
     def _add_joint(self, label, min, max):
         self._joints.append({'label': label, 'min': min, 'max': max})
         # default value between min and max
-        self._values.append((max - min) / 2.0)
+        self._values.append((max + min) / 2.0)
 
     def execute(self):
         super(Pr2JointTrajectoryAction, self).execute()
