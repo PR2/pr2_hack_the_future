@@ -62,8 +62,11 @@ index = main_window.robot_view_verticalLayout.indexOf(main_window.robot_view_wid
 stretch = main_window.robot_view_verticalLayout.stretch(index)
 main_window.robot_view_verticalLayout.removeWidget(main_window.robot_view_widget)
 robot_view = rviz.VisualizationPanel()
+# hide rviz display list
+robot_view.children()[1].hide()
 main_window.robot_view_verticalLayout.insertWidget(index, robot_view, stretch)
 robot_view.setSizes([0])
+
 config = tempfile.NamedTemporaryFile('w')
 config.write("""Background\ ColorB=0
 Background\ ColorG=0
