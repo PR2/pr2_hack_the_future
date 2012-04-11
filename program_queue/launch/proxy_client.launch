@@ -1,0 +1,19 @@
+<launch>
+   <arg name="remote"/>
+   <node pkg="rosproxy" type="register.py" name="clear_queue" args="service clear_queue $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="create_program" args="service create_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="create_user" args="service create_user $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="dequeue_program" args="service dequeue_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="get_my_programs" args="service get_my_programs $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="get_output" args="service get_output $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="get_program" args="service get_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="get_programs" args="service get_programs $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="get_queue" args="service get_queue $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="login" args="service login $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="logout" args="service logout $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="queue_program" args="service queue_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="run_program" args="service run_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="update_program" args="service update_program $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="start_queue" args="service start_queue $(arg remote)"/>
+   <node pkg="rosproxy" type="register.py" name="stop_queue" args="service stop_queue $(arg remote)"/>
+</launch>
