@@ -54,6 +54,10 @@ class ProgramQueue():
         program = program_queue.msg.Program(program_info, program_data)
         self._client('update_program', program_queue.srv.UpdateProgram)(self._token, program)
 
+        # add to queue
+        print 'adding to queue...'
+        self._client('queue_program', program_queue.srv.QueueProgram)(self._token, program_id)
+
         return program_id
 
     def run_program(self, program_id):
