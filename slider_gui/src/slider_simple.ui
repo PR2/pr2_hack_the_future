@@ -553,6 +553,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_As"/>
+    <addaction name="actionSave_Screenshot"/>
     <addaction name="actionClear_All"/>
     <addaction name="actionDefault_Pose"/>
     <addaction name="actionTest_Program"/>
@@ -610,6 +611,11 @@
   <action name="actionDefault_Pose">
    <property name="text">
     <string>Default Pose</string>
+   </property>
+  </action>
+  <action name="actionSave_Screenshot">
+   <property name="text">
+    <string>Save Screenshot</string>
    </property>
   </action>
  </widget>

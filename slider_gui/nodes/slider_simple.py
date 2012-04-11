@@ -14,8 +14,8 @@ import rospy;
 
 #setattr(sys, 'SELECT_QT_BINDING', 'pyside')
 from python_qt_binding.QtBindingHelper import loadUi
-from QtCore import qFatal, QModelIndex, QObject, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget
+from QtCore import qFatal, QModelIndex, QObject, QRect, QRegExp, QSignalMapper, QTimer, Signal
+from QtGui import QApplication, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QPixmap, QSplitter, QTableView, QVBoxLayout, QWidget
 from actions.DefaultAction import DefaultAction
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
@@ -476,6 +476,26 @@ def save_to_file():
 main_window.actionSave_As.triggered.connect(save_to_file)
 
 
+def save_screenshot():
+    path = os.path.expanduser('~')
+    filename_template = 'robot-%d.png'
+    serial = 1
+    while True:
+        filename = os.path.join(path, filename_template % serial)
+        if not os.path.exists(filename):
+            break
+        serial += 1
+    widget = robot_view.children()[0]
+    pixmap = QPixmap.grabWindow(widget.winId())
+    rc = pixmap.save(filename)
+    if rc:
+        QMessageBox.information(main_window, main_window.tr('Saved screenshot'), main_window.tr('Screenshot saved in file: %s') % filename)
+    else:
+        QMessageBox.critical(main_window, main_window.tr('Saving screenshot failed'), main_window.tr('Could not save screenshot.'))
+
+main_window.actionSave_Screenshot.triggered.connect(save_screenshot)
+
+
 def clear_all():
     print 'clear_all'
     for index in range(main_window.PoseList_tabWidget.count()):
@@ -517,7 +537,10 @@ def queue_program():
         return
 
     queue = ProgramQueue(dialog.username_lineEdit.text(), dialog.password_lineEdit.text())
-    rc = queue.login()
+    try:
+        rc = queue.login()
+    except:
+        rc = False
     if not rc:
         QMessageBox.critical(main_window, main_window.tr('Login failed'), main_window.tr('Could not log in to the program queue.'))
         return
@@ -528,11 +551,17 @@ def queue_program():
     program_data = output.getvalue()
     output.close()
 
-    id = queue.upload_program(program_data, dialog.label_lineEdit.text())
+    try:
+        id = queue.upload_program(program_data, dialog.label_lineEdit.text())
+    except:
+        id = False
     if not id:
         QMessageBox.critical(main_window, main_window.tr('Upload failed'), main_window.tr('Could not upload program to queue.'))
         return
-    queue.logout()
+    try:
+        queue.logout()
+    except:
+        pass
     QMessageBox.information(main_window, main_window.tr('Uploaded program'), main_window.tr('Uploaded program (%d) successfully.') % id)
 
 main_window.actionQueue_Program.triggered.connect(queue_program)
