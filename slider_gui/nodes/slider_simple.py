@@ -198,10 +198,15 @@ def get_current_model():
     return models[index]
 
 
+def get_action_set():
+    action_set = kontrol_subscriber.get_action_set()
+    action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    return action_set
+
 def append_current():
     model = get_current_model()
 
-    action_set = kontrol_subscriber.get_action_set()
+    action_set = get_action_set()
     model.add_action(action_set)
 
     table_view = get_table_view(get_current_tab_index())
@@ -220,7 +225,7 @@ def insert_current_before_selected():
 
     model = get_current_model()
 
-    action_set = kontrol_subscriber.get_action_set()
+    action_set = get_action_set()
     model.add_action(action_set, row)
 
     table_view = get_table_view(get_current_tab_index())
@@ -435,7 +440,10 @@ check_ps3_buttons_signal.relay_signal.connect(check_ps3_buttons)
 ps3_subscriber.buttons_changed.connect(check_ps3_buttons_signal.emit)
 
 
+current_name = None
+
 def load_from_file():
+    global current_name
     file_name, _ = QFileDialog.getOpenFileName(main_window, main_window.tr('Load program from file'), None, main_window.tr('Puppet Talk (*.pt)'))
     if file_name is None or file_name == '':
         return
@@ -455,6 +463,8 @@ def load_from_file():
             model.remove_all_actions()
     handle.close()
 
+    current_name = os.path.splitext(os.path.basename(file_name))[0]
+
 main_window.actionOpen.triggered.connect(load_from_file)
 
 
@@ -466,6 +476,7 @@ def serialize(storage):
         model.action_sequence().serialize(storage)
 
 def save_to_file():
+    global current_name
     file_name, _ = QFileDialog.getSaveFileName(main_window, main_window.tr('Save program to file'), 'example.pt', main_window.tr('Puppet Talk (*.pt)'))
     if file_name is None or file_name == '':
         return
@@ -475,6 +486,8 @@ def save_to_file():
     storage = SimpleFormat(handle)
     serialize(storage)
     handle.close()
+
+    current_name = os.path.splitext(os.path.basename(file_name))[0]
 
 main_window.actionSave_As.triggered.connect(save_to_file)
 
@@ -500,10 +513,12 @@ main_window.actionSave_Screenshot.triggered.connect(save_screenshot)
 
 
 def clear_all():
+    global current_name
     print 'clear_all'
     for index in range(main_window.PoseList_tabWidget.count()):
         model = models[index]
         model.remove_all_actions()
+    current_name = None
 
 main_window.actionClear_All.triggered.connect(clear_all)
 
@@ -535,6 +550,11 @@ def queue_program():
     dialog = QDialog()
     ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'queue_dialog.ui')
     loadUi(ui_file, dialog)
+
+    dialog.username_lineEdit.setText('admin')
+    if current_name is not None:
+        dialog.label_lineEdit.setText(current_name)
+
     rc = dialog.exec_()
     if rc == QDialog.Rejected:
         return

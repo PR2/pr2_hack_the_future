@@ -71,5 +71,5 @@ class ProgramQueue():
         return True
 
     def _client(self, name, type):
-       rospy.wait_for_service(name)
+       rospy.wait_for_service(name, 3)
        return rospy.ServiceProxy(name, type)

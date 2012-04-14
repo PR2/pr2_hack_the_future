@@ -95,7 +95,7 @@ class KontrolSubscriber(object):
                 self._set_transformed_data(larm, larm_data)
                 set.add_action(larm)
 
-        duration = self._transform_value(self._axes[17], 0.5, 10.0)
+        duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)
 
         return set
