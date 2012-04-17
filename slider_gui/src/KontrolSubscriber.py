@@ -23,6 +23,11 @@ class KontrolSubscriber(object):
     top2_button = 'top2'
     bottom2_button = 'bottom2'
 
+    top6_button = 'top6'
+    bottom6_button = 'bottom6'
+    top7_button = 'top7'
+    bottom7_button = 'bottom7'
+
     top8_button = 'top8'
     bottom8_button = 'bottom8'
     top9_button = 'top9'
@@ -123,6 +128,10 @@ class KontrolSubscriber(object):
             1: self.bottom1_button,
             2: self.top2_button,
             3: self.bottom2_button,
+            10: self.top6_button,
+            11: self.bottom6_button,
+            12: self.top7_button,
+            13: self.bottom7_button,
             14: self.top8_button,
             15: self.bottom8_button,
             16: self.top9_button,

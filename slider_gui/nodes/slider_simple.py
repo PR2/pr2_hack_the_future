@@ -394,13 +394,13 @@ def check_buttons():
     elif KontrolSubscriber.bottom2_button in triggered_buttons:
         set_tab(2)
 
-    elif KontrolSubscriber.top8_button in triggered_buttons:
+    elif KontrolSubscriber.top6_button in triggered_buttons:
         execute_sequence(0)
-    elif KontrolSubscriber.bottom8_button in triggered_buttons:
+    elif KontrolSubscriber.bottom6_button in triggered_buttons:
         execute_sequence(3)
-    elif KontrolSubscriber.top9_button in triggered_buttons:
+    elif KontrolSubscriber.top7_button in triggered_buttons:
         execute_sequence(1)
-    elif KontrolSubscriber.bottom9_button in triggered_buttons:
+    elif KontrolSubscriber.bottom7_button in triggered_buttons:
         execute_sequence(2)
 
 class RelaySignal(QObject):
