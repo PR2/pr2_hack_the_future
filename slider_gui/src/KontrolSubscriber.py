@@ -34,6 +34,8 @@ class KontrolSubscriber(object):
         self._axes = None
         self._buttons = None
         self._pressed_buttons = set()
+        self._last_larm = None
+        self._last_rarm = None
         rospy.Subscriber('korg_joy', Joy, self._joy_callback)
 
     def _joy_callback(self, joy_msg):
@@ -52,7 +54,7 @@ class KontrolSubscriber(object):
             return set
         if len(self._buttons) >= 25:
             mode = self._buttons[24]
-            if mode == 0:
+            if mode != 3:
                 head = Pr2MoveHeadAction()
                 head_data = [-self._axes[9], -self._axes[0]]
                 self._set_transformed_data(head, head_data)
@@ -78,10 +80,15 @@ class KontrolSubscriber(object):
                 rarm_data.append(self._axes[16])
                 rarm_data[1] = -rarm_data[1]
 
+            if mode == 0 or mode == 2:
                 rarm = Pr2MoveRightArmAction()
                 self._set_transformed_data(rarm, rarm_data)
                 set.add_action(rarm)
+                self._last_rarm = rarm
+            elif mode == 1 and self._last_rarm is not None:
+                set.add_action(self._last_rarm)
 
+            if mode != 3:
                 larm_data = []
                 larm_data.extend(self._axes[1:7])
                 larm_data.append(self._axes[16])
@@ -91,9 +98,13 @@ class KontrolSubscriber(object):
                 larm_data[4] = -larm_data[4]
                 larm_data[6] = -larm_data[6]
 
+            if mode == 0 or mode == 1:
                 larm = Pr2MoveLeftArmAction()
                 self._set_transformed_data(larm, larm_data)
                 set.add_action(larm)
+                self._last_larm = larm
+            elif mode == 2 and self._last_larm is not None:
+                set.add_action(self._last_larm)
 
         duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)
