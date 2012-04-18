@@ -91,7 +91,7 @@ class KontrolSubscriber(object):
                 set.add_action(rarm)
                 self._last_rarm = rarm
             elif mode == 1 and self._last_rarm is not None:
-                set.add_action(self._last_rarm)
+                set.add_action(self._last_rarm.deepcopy())
 
             if mode != 3:
                 larm_data = []
@@ -109,7 +109,7 @@ class KontrolSubscriber(object):
                 set.add_action(larm)
                 self._last_larm = larm
             elif mode == 2 and self._last_larm is not None:
-                set.add_action(self._last_larm)
+                set.add_action(self._last_larm.deepcopy())
 
         duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)
