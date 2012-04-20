@@ -1,0 +1,7 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b rviz_backdrop provides a backdrop mesh display for rviz.
+
+*/

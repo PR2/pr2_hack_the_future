@@ -1,0 +1,17 @@
+<package>
+  <description brief="rviz_backdrop">
+
+     rviz_backdrop
+
+  </description>
+  <author>Dave Hershberger</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rviz_backdrop</url>
+
+  <depend package="rviz"/>
+
+  <export>
+    <rviz plugin="${prefix}/plugin_description.xml"/>
+  </export>
+</package>

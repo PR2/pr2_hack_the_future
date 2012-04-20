@@ -1,0 +1,9 @@
+<library path="lib/librviz_backdrop">
+  <class name="rviz_backdrop/Backdrop"
+         type="rviz_backdrop::BackdropDisplay"
+         base_class_type="rviz::Display">
+    <description>
+      Shows images from a topic on a simple backdrop mesh in the 3D scene.
+    </description>
+  </class>
+</library>
