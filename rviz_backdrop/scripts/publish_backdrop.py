@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest( 'rviz_plugin_tutorials' )
+import roslib; roslib.load_manifest( 'rviz_backdrop' )
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 import rospy

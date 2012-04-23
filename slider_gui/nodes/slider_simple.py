@@ -68,7 +68,10 @@ main_window.robot_view_verticalLayout.insertWidget(index, robot_view, stretch)
 robot_view.setSizes([0])
 
 config = tempfile.NamedTemporaryFile('w')
-config.write("""Background\ ColorB=0
+config.write("""Backdrop.Enabled=1
+Backdrop.Scale=4
+Backdrop.Topic=/backdrop
+Background\ ColorB=0
 Background\ ColorG=0
 Background\ ColorR=0
 Camera\ Config=0.905202 5.83579 18.0278 0 -1.90735e-06 1.90735e-06
@@ -101,6 +104,9 @@ Target\ Frame=<Fixed Frame>
 ClassName=rviz::GridDisplay
 Name=Grid
 [Display1]
+ClassName=rviz_backdrop::BackdropDisplay
+Name=Backdrop
+[Display2]
 ClassName=rviz::RobotModelDisplay
 Name=RobotModel
 """)
