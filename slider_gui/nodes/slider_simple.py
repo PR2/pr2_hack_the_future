@@ -9,6 +9,7 @@ import tempfile
 import roslib;
 roslib.load_manifest('python_qt_binding')
 roslib.load_manifest('rviz')
+roslib.load_manifest('rviz_backdrop')
 roslib.load_manifest('slider_gui')
 import rospy;
 
@@ -23,6 +24,8 @@ from PosesDataModel import PosesDataModel
 from ProgramQueue import ProgramQueue
 from Ps3Subscriber import Ps3Subscriber
 import rviz
+from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import Image
 from SimpleFormat import SimpleFormat
 
 app = QApplication(sys.argv)
@@ -90,7 +93,7 @@ Grid.OffsetX=0
 Grid.OffsetY=0
 Grid.OffsetZ=0
 Grid.Plane=0
-Grid.Plane\ Cell\ Count=10
+Grid.Plane\ Cell\ Count=8
 Grid.Reference\ Frame=<Fixed Frame>
 RobotModel.Alpha=1
 RobotModel.Collision\ Enabled=0
@@ -114,6 +117,8 @@ config.flush()
 robot_view.loadDisplayConfig(config.name)
 config.close
 
+
+# set up viewports for camera
 views = []
 view_mapper = QSignalMapper(main_window)
 def set_view(index):
@@ -128,15 +133,53 @@ def add_view(button, view_str):
     if button.isChecked():
         set_view(len(views) - 1)
     button.toggled.connect(view_mapper.map)
-add_view(main_window.front_view_radioButton, "0.0402028 6.2758 2.24508 0.00208002 -0.0024735 0.753009")
-add_view(main_window.side_view_radioButton, "-0.0747972 4.83578 2.81623 -0.0104112 -0.00416593 0.984444")
-add_view(main_window.angled_view_radioButton, "0.475202 5.59079 2.81623 -0.0104112 -0.00416593 0.984444")
+add_view(main_window.front_view_radioButton, '0.0402028 6.2758 2.24508 0.00208002 -0.0024735 0.753009')
+add_view(main_window.side_view_radioButton, '-0.0747972 4.83578 2.81623 -0.0104112 -0.00416593 0.984444')
+add_view(main_window.angled_view_radioButton, '0.175202 5.59079 2.81623 -0.0104112 -0.00416593 0.984444')
 
 rospy.init_node('proto_simple', disable_signals=True)
 try:
     use_sim_time = rospy.get_param('use_sim_time')
 except KeyError:
     use_sim_time = False
+
+
+# publish image for backdrop
+
+# Note: this is not doing a complete proper ROS image transport
+# publisher.  That doesn't support Python.  Instead, I'm publishing
+# directly on the /backdrop/compressed topic a
+# sensor_msgs/CompressedImage message, with the raw jpeg data just
+# loaded into it.  This way my python file doesn't have to decode or
+# convert the image data at all.  It does mean when you ask RViz for
+# the available image topics, this won't show up, you'll have to type
+# "/backdrop" directly into the topic field.  (RViz adds
+# "/compressed".)
+
+backdrop_publisher = rospy.Publisher('/backdrop/compressed', CompressedImage, latch=True)
+scenes = []
+scene_mapper = QSignalMapper(main_window)
+def set_scene(index):
+    image = CompressedImage()
+    image.header.frame_id = '/odom_combined'
+    image.format = 'jpeg'
+    image.data = open(scenes[index]).read()
+    image.header.stamp = rospy.Time.now()
+    backdrop_publisher.publish(image)
+scene_mapper.mapped.connect(set_scene)
+def scene_selected(checked):
+    if checked:
+        scene_mapper.map()
+def add_scene(button, scene_image):
+    scene_mapper.setMapping(button, len(scenes))
+    scenes.append(scene_image)
+    if button.isChecked():
+        set_scene(len(scenes) - 1)
+    button.toggled.connect(scene_mapper.map)
+path = os.path.join(os.path.dirname(__file__), '..', 'images')
+add_scene(main_window.theater_scene_radioButton, os.path.join(path, 'theater_red_curtains.jpg'))
+add_scene(main_window.workshop_scene_radioButton, os.path.join(path, 'workshop.jpg'))
+
 
 kontrol_subscriber = KontrolSubscriber()
 
