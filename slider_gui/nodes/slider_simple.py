@@ -288,6 +288,7 @@ main_window.insert_before_pushButton.clicked.connect(insert_current_before_selec
 def insert_find_face():
     model = get_current_model()
     action = Pr2LookAtFace()
+    action.set_duration(main_window.duration_doubleSpinBox.value())
     model.add_action(action)
 
 main_window.find_face_pushButton.clicked.connect(insert_find_face)
