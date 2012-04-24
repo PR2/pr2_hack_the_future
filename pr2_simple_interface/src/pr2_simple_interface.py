@@ -212,17 +212,20 @@ class Head:
     def look_at_face(self):
         print "Looking at a face"
         fgoal = FaceDetectorGoal()
-        face_client.send_goal(fgoal)
-        face_client.wait_for_result()
-        f = face_client.get_result()
-        g = PointHeadGoal()
+        nfaces = 0
+        while nfaces < 1:
+            face_client.send_goal(fgoal)
+            face_client.wait_for_result()
+            f = face_client.get_result()
+            nfaces = len(f.face_positions)
+            
         g.target.header.frame_id = f.face_positions[0].header.frame_id
         g.target.point.x = f.face_positions[0].pos.x
         g.target.point.y = f.face_positions[0].pos.y
         g.target.point.z = f.face_positions[0].pos.z
         g.min_duration = rospy.Duration(1.0)
         head_client.send_goal(g)
-
+        
     def wait_for(self):
         print "Wait for head positioning"
         head_client.wait_for_result()
@@ -258,7 +261,7 @@ def hug():
       hug_client()
       print "Hug successful!"
    except rospy.ServiceException, e:
-      print "Hug serivce call failed"
+      print "Hug service call failed"
 
 
 def start():

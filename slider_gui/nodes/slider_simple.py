@@ -21,6 +21,7 @@ from actions.DefaultAction import DefaultAction
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
+from actions.Pr2LookAtFace import Pr2LookAtFace
 from ProgramQueue import ProgramQueue
 from Ps3Subscriber import Ps3Subscriber
 import rviz
@@ -282,6 +283,14 @@ def insert_current_before_selected():
     table_view.selectRow(row + 1)
 
 main_window.insert_before_pushButton.clicked.connect(insert_current_before_selected)
+
+
+def insert_find_face():
+    model = get_current_model()
+    action = Pr2LookAtFace()
+    model.add_action(action)
+
+main_window.find_face_pushButton.clicked.connect(insert_find_face)
 
 
 def delete_selected():
