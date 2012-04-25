@@ -30,12 +30,12 @@ class Pr2LookAtFace(Action):
         #str = super(Pr2LookAtFace, self).to_string()
         return 'look_at_face()'# % str
 
-#    def deepcopy(self):
-#        return Pr2LookAtFace(self.get_duration())
-
     def execute(self):
         super(Pr2LookAtFace, self).execute()
         print('Pr2LookAtFace.execute() %d' % self.get_duration())
+        self._timer = rospy.Timer(rospy.Duration.from_sec(0.001), self._execute, oneshot=True)
+
+    def _execute(self, event):
         self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._preempt, oneshot=True)
         fgoal = FaceDetectorGoal()
         self._client.send_goal(fgoal)
