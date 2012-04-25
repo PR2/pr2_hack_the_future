@@ -16,8 +16,9 @@ import rospy;
 #setattr(sys, 'SELECT_QT_BINDING', 'pyside')
 from python_qt_binding.QtBindingHelper import loadUi
 from QtCore import qFatal, QModelIndex, QObject, QRect, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QPixmap, QSplitter, QTableView, QVBoxLayout, QWidget
+from QtGui import QApplication, QColor, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QPalette, QPixmap, QSplitter, QTableView, QVBoxLayout, QWidget
 from actions.DefaultAction import DefaultAction
+from CollisionChecker import CollisionChecker
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
@@ -183,6 +184,9 @@ add_scene(main_window.workshop_scene_radioButton, os.path.join(path, 'workshop.j
 
 
 kontrol_subscriber = KontrolSubscriber()
+collision_checker = CollisionChecker()
+in_collision = False
+default_color = main_window.lineEdit.palette().text().color()
 
 # pass signal across thread boundaries
 class Foo(QObject):
@@ -196,11 +200,24 @@ class Foo(QObject):
     def update_current_value(self):
         self._update_current_value_signal.emit()
     def _update_current_value(self):
+        global in_collision
         #print('update_current_value()')
         if self._action_set is not None:
             self._action_set.stop()
         self._action_set = kontrol_subscriber.get_action_set()
         self.current_duration_changed.emit(self._action_set.get_duration())
+
+        joint_values = kontrol_subscriber.get_joint_values()
+        in_collision = collision_checker.is_in_collision(joint_values)
+        main_window.append_pushButton.setEnabled(not in_collision)
+        main_window.insert_before_pushButton.setEnabled(not in_collision)
+        palette = main_window.lineEdit.palette()
+        if in_collision:
+            palette.setColor(QPalette.Text, QColor(255, 0, 0))
+        else:
+            palette.setColor(QPalette.Text, default_color)
+        main_window.lineEdit.setPalette(palette)
+
         value = self._action_set.to_string()
         self.current_values_changed.emit(value)
         for action in self._action_set._actions:
@@ -254,6 +271,9 @@ def get_action_set():
     return action_set
 
 def append_current():
+    if in_collision:
+        return
+
     model = get_current_model()
 
     action_set = get_action_set()
@@ -268,6 +288,9 @@ main_window.append_pushButton.clicked.connect(append_current)
 
 
 def insert_current_before_selected():
+    if in_collision:
+        return
+
     row = get_selected_row()
     if row is None:
         append_current()

@@ -1,4 +1,8 @@
+import math
+
 from actions.ActionSet import ActionSet
+from actions.Pr2GripperAction import Pr2GripperAction
+from actions.Pr2JointTrajectoryAction import Pr2JointTrajectoryAction
 from actions.Pr2MoveHeadAction import Pr2MoveHeadAction
 from actions.Pr2MoveLeftArmAction import Pr2MoveLeftArmAction
 from actions.Pr2MoveLeftGripperAction import Pr2MoveLeftGripperAction
@@ -115,6 +119,19 @@ class KontrolSubscriber(object):
         set.set_duration(duration)
 
         return set
+
+    def get_joint_values(self):
+        values = {}
+        set = self.get_action_set()
+        for action in set._actions:
+            is_degree = isinstance(action, Pr2GripperAction) or isinstance(action, Pr2JointTrajectoryAction)
+            for index, data in enumerate(action._joints):
+                name = data['label']
+                value = action._values[index]
+                if is_degree:
+                    value = value / 180 * math.pi
+                values[name] = value
+        return values
 
     def get_triggered_buttons(self):
         buttons = {

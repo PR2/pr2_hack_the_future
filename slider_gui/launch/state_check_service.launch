@@ -1,0 +1,8 @@
+<launch>
+  <rosparam command="load" ns="robot_description_planning" file="$(find pr2_arm_navigation_config)/config/pr2_planning_description.yaml" />
+  <node pkg="planning_environment" type="environment_server" output="screen" name="environment_server">     
+    <param name="use_monitor" type="bool" value="true"/>
+    <param name="use_collision_map" type="bool" value="false"/>
+  </node>
+  <node pkg="planning_environment" type="planning_scene_validity_server" output="screen" name="planning_scene_validity_server"/>     
+</launch>
