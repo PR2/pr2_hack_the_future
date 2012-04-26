@@ -180,7 +180,9 @@ for index, filename in enumerate(scenes):
     text = os.path.basename(root)
     main_window.scene_comboBox.insertItem(index, text)
 main_window.scene_comboBox.currentIndexChanged.connect(set_scene)
-set_scene(random.randint(0, len(scenes) - 1))
+index = main_window.scene_comboBox.findText('None')
+if index != -1:
+    main_window.scene_comboBox.setCurrentIndex(index)
 
 
 kontrol_subscriber = KontrolSubscriber()
@@ -218,6 +220,7 @@ class Foo(QObject):
             else:
                 palette.setColor(QPalette.Text, default_color)
             main_window.lineEdit.setPalette(palette)
+            currently_in_collision = in_collision
 
         value = self._action_set.to_string()
         self.current_values_changed.emit(value)
