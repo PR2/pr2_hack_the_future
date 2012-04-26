@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1145</width>
-    <height>488</height>
+    <width>1200</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,15 +118,6 @@
               </attribute>
               <attribute name="verticalHeaderCascadingSectionResizes">
                <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderCascadingSectionResizes">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>80</number>
               </attribute>
               <column>
                <property name="text">
@@ -403,97 +394,70 @@
            </spacer>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <property name="spacing">
-             <number>0</number>
+           <widget class="QGroupBox" name="views_groupBox">
+            <property name="title">
+             <string>Camera View</string>
             </property>
-            <item>
-             <widget class="QGroupBox" name="views_groupBox">
-              <property name="title">
-               <string>Views</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <property name="bottomMargin">
-                <number>0</number>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="front_view_radioButton">
+               <property name="locale">
+                <locale language="English" country="UnitedStates"/>
                </property>
-               <item>
-                <widget class="QRadioButton" name="front_view_radioButton">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>Front View</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="side_view_radioButton">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>Side View</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="angled_view_radioButton">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>Angled View</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="scenes_groupBox">
-              <property name="title">
-               <string>Scenes</string>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <property name="bottomMargin">
-                <number>0</number>
+               <property name="text">
+                <string>Front</string>
                </property>
-               <item>
-                <widget class="QRadioButton" name="theater_scene_radioButton">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>Theater Scene</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="workshop_scene_radioButton">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>Workshop Scene</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="side_view_radioButton">
+               <property name="locale">
+                <locale language="English" country="UnitedStates"/>
+               </property>
+               <property name="text">
+                <string>Side</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="angled_view_radioButton">
+               <property name="locale">
+                <locale language="English" country="UnitedStates"/>
+               </property>
+               <property name="text">
+                <string>Angled</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Background</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QComboBox" name="scene_comboBox"/>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </item>
@@ -571,8 +535,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1145</width>
-     <height>23</height>
+     <width>1200</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

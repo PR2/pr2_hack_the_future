@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import random
 import signal
 from StringIO import StringIO
 import sys
@@ -160,7 +161,6 @@ except KeyError:
 
 backdrop_publisher = rospy.Publisher('/backdrop/compressed', CompressedImage, latch=True)
 scenes = []
-scene_mapper = QSignalMapper(main_window)
 def set_scene(index):
     image = CompressedImage()
     image.header.frame_id = '/odom_combined'
@@ -168,24 +168,24 @@ def set_scene(index):
     image.data = open(scenes[index]).read()
     image.header.stamp = rospy.Time.now()
     backdrop_publisher.publish(image)
-scene_mapper.mapped.connect(set_scene)
-def scene_selected(checked):
-    if checked:
-        scene_mapper.map()
-def add_scene(button, scene_image):
-    scene_mapper.setMapping(button, len(scenes))
-    scenes.append(scene_image)
-    if button.isChecked():
-        set_scene(len(scenes) - 1)
-    button.toggled.connect(scene_mapper.map)
 path = os.path.join(os.path.dirname(__file__), '..', 'images')
-add_scene(main_window.theater_scene_radioButton, os.path.join(path, 'theater_red_curtains.jpg'))
-add_scene(main_window.workshop_scene_radioButton, os.path.join(path, 'workshop.jpg'))
+for filename in os.listdir(path):
+    (root, ext) = os.path.splitext(filename)
+    if ext in ['.jpg']:
+        filename = os.path.join(path, filename)
+        scenes.append(filename)
+scenes.sort()
+for index, filename in enumerate(scenes):
+    (root, ext) = os.path.splitext(filename)
+    text = os.path.basename(root)
+    main_window.scene_comboBox.insertItem(index, text)
+main_window.scene_comboBox.currentIndexChanged.connect(set_scene)
+set_scene(random.randint(0, len(scenes) - 1))
 
 
 kontrol_subscriber = KontrolSubscriber()
 collision_checker = CollisionChecker()
-in_collision = False
+currently_in_collision = False
 default_color = main_window.lineEdit.palette().text().color()
 
 # pass signal across thread boundaries
@@ -200,7 +200,7 @@ class Foo(QObject):
     def update_current_value(self):
         self._update_current_value_signal.emit()
     def _update_current_value(self):
-        global in_collision
+        global currently_in_collision
         #print('update_current_value()')
         if self._action_set is not None:
             self._action_set.stop()
@@ -211,12 +211,13 @@ class Foo(QObject):
         in_collision = collision_checker.is_in_collision(joint_values)
         main_window.append_pushButton.setEnabled(not in_collision)
         main_window.insert_before_pushButton.setEnabled(not in_collision)
-        palette = main_window.lineEdit.palette()
-        if in_collision:
-            palette.setColor(QPalette.Text, QColor(255, 0, 0))
-        else:
-            palette.setColor(QPalette.Text, default_color)
-        main_window.lineEdit.setPalette(palette)
+        if in_collision != currently_in_collision:
+            palette = main_window.lineEdit.palette()
+            if in_collision:
+                palette.setColor(QPalette.Text, QColor(255, 0, 0))
+            else:
+                palette.setColor(QPalette.Text, default_color)
+            main_window.lineEdit.setPalette(palette)
 
         value = self._action_set.to_string()
         self.current_values_changed.emit(value)
@@ -271,7 +272,7 @@ def get_action_set():
     return action_set
 
 def append_current():
-    if in_collision:
+    if currently_in_collision:
         return
 
     model = get_current_model()
@@ -288,7 +289,7 @@ main_window.append_pushButton.clicked.connect(append_current)
 
 
 def insert_current_before_selected():
-    if in_collision:
+    if currently_in_collision:
         return
 
     row = get_selected_row()
@@ -444,6 +445,18 @@ def execute_current_sequence():
 select_row_signal = RelaySignalInt()
 select_row_signal.relay_signal.connect(set_selected_row)
 
+collision_notification = QDialog(main_window)
+ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'collision_dialog.ui')
+loadUi(ui_file, collision_notification)
+collision_notification_timer = QTimer(main_window)
+collision_notification_timer.setInterval(3000)
+collision_notification_timer.setSingleShot(True)
+def hide_collision_notification(result=None):
+    collision_notification_timer.stop()
+    collision_notification.hide()
+collision_notification_timer.timeout.connect(hide_collision_notification)
+collision_notification.finished.connect(hide_collision_notification)
+
 def check_buttons():
     triggered_buttons = kontrol_subscriber.get_triggered_buttons()
 
@@ -465,6 +478,10 @@ def check_buttons():
     elif KontrolSubscriber.stop_button in triggered_buttons:
         stop_sequence()
     elif KontrolSubscriber.record_button in triggered_buttons:
+        if currently_in_collision:
+            # open dialog which closes after some seconds or when confirmed manually
+            collision_notification.show()
+            collision_notification_timer.start()
         append_current()
 
     elif KontrolSubscriber.top1_button in triggered_buttons:
