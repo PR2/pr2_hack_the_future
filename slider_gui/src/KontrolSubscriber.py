@@ -124,7 +124,7 @@ class KontrolSubscriber(object):
         values = {}
         set = self.get_action_set()
         for action in set._actions:
-            is_degree = isinstance(action, Pr2GripperAction) or isinstance(action, Pr2JointTrajectoryAction)
+            is_degree = isinstance(action, Pr2JointTrajectoryAction) and not isinstance(action, Pr2MoveTorsoAction)
             for index, data in enumerate(action._joints):
                 name = data['label']
                 value = action._values[index]
