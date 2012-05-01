@@ -8,6 +8,5 @@
   <node pkg="joy" type="joy_node" name="joy_node">
     <remap from="joy" to="ps3_joy"/>
   </node>
-  <include file="$(find face_detector)/launch/face_detector_action.wide.launch"/>
   <node pkg="slider_gui" type="slider_simple.py" name="slider_simple"/>
 </launch>
