@@ -9,6 +9,8 @@ from sensor_msgs.msg import JointState
 class CollisionChecker:
 
     def __init__(self):
+        self._latest_joint_state = None
+
         # initialization of the environment server
         SET_PLANNING_SCENE_DIFF_NAME = '/environment_server/set_planning_scene_diff'
         rospy.wait_for_service(SET_PLANNING_SCENE_DIFF_NAME)
@@ -20,6 +22,11 @@ class CollisionChecker:
         rospy.wait_for_service('/planning_scene_validity_server/get_state_validity')
         self._state_validity_server = rospy.ServiceProxy('/planning_scene_validity_server/get_state_validity', GetStateValidity)
 
+        rospy.Subscriber('/joint_states', JointState, self._receive_joint_states)
+
+    def _receive_joint_states(self, joint_state_msg):
+        self._latest_joint_state = joint_state_msg
+
     def is_current_state_in_collision(self):
         state_req = self._create_state_validity_request()
 
@@ -29,7 +36,6 @@ class CollisionChecker:
 
     def is_in_collision(self, joint_values):
         state_req = self._create_state_validity_request()
-
         # set the joint name and joint value arrays in the state check request message
         for name, position in joint_values.items():
             if name in state_req.robot_state.joint_state.name:
@@ -66,16 +72,4 @@ class CollisionChecker:
         return state_req
 
     def _current_joint_state(self):
-        '''
-        Utility to find current state of all joints.
-        Returns /joint_states message instance
-        '''
-        try:
-            joint_state = rospy.wait_for_message('/joint_states', JointState, 3)
-        except rospy.ROSException:
-            # timeout
-            return None
-        except rospy.ROSInterruptException:
-            # shutdown interrupt waiting
-            return None
-        return joint_state
+        return self._latest_joint_state
