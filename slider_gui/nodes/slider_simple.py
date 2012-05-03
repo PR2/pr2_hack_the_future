@@ -33,6 +33,8 @@ from SimpleFormat import SimpleFormat
 
 app = QApplication(sys.argv)
 
+check_collisions = '--no-collision' not in sys.argv
+
 main_window = QMainWindow()
 ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'slider_simple.ui')
 loadUi(ui_file, main_window)
@@ -202,6 +204,7 @@ class Foo(QObject):
     def update_current_value(self):
         self._update_current_value_signal.emit()
     def _update_current_value(self):
+        global check_collisions
         global currently_in_collision
         #print('update_current_value()')
         if self._action_set is not None:
@@ -210,7 +213,10 @@ class Foo(QObject):
         self.current_duration_changed.emit(self._action_set.get_duration())
 
         joint_values = kontrol_subscriber.get_joint_values()
-        in_collision = collision_checker.is_in_collision(joint_values)
+        if check_collisions:
+            in_collision = collision_checker.is_in_collision(joint_values)
+        else:
+            in_collision = False
         main_window.append_pushButton.setEnabled(not in_collision)
         main_window.insert_before_pushButton.setEnabled(not in_collision)
         if in_collision != currently_in_collision:
