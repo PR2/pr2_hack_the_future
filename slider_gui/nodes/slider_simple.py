@@ -291,6 +291,7 @@ def append_current():
 
     action_set = get_action_set()
     model.add_action(action_set)
+    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     rows = len(model.action_sequence().actions())
@@ -313,6 +314,7 @@ def insert_current_before_selected():
 
     action_set = get_action_set()
     model.add_action(action_set, row)
+    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     table_view.resizeColumnsToContents()
@@ -326,6 +328,7 @@ def insert_find_face():
     action = Pr2LookAtFace()
     action.set_duration(main_window.duration_doubleSpinBox.value())
     model.add_action(action)
+    autosave_program()
 
 main_window.find_face_pushButton.clicked.connect(insert_find_face)
 
@@ -337,6 +340,7 @@ def delete_selected():
 
     model = get_current_model()
     model.remove_action(row)
+    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     rows = len(model.action_sequence().actions())
@@ -357,6 +361,7 @@ def clone_selected():
     action = model.action_sequence().actions()[row]
     clone = action.deepcopy()
     model.add_action(clone, row + 1)
+    autosave_program()
 
 main_window.clone_selected_pushButton.clicked.connect(clone_selected)
 
@@ -587,12 +592,15 @@ def serialize(storage):
         model.action_sequence().serialize(storage)
 
 def save_to_file():
-    global current_name
     file_name, _ = QFileDialog.getSaveFileName(main_window, main_window.tr('Save program to file'), 'example.pt', main_window.tr('Puppet Talk (*.pt)'))
     if file_name is None or file_name == '':
         return
 
-    print 'save_to_file', file_name
+    save_to_filename(file_name)
+
+def save_to_filename(file_name):
+    global current_name
+    print 'save_to_filename', file_name
     handle = open(file_name, 'wb')
     storage = SimpleFormat(handle)
     serialize(storage)
@@ -601,6 +609,11 @@ def save_to_file():
     current_name = os.path.splitext(os.path.basename(file_name))[0]
 
 main_window.actionSave_As.triggered.connect(save_to_file)
+
+
+def autosave_program():
+    print 'autosave_program()'
+    save_to_filename(os.path.expanduser('~/_autosave.pt'))
 
 
 def save_screenshot():
