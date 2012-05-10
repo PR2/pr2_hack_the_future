@@ -56,8 +56,11 @@ for index, filename in icons.iteritems():
 # hide design-only widgets
 main_window.square_tableWidget.setVisible(False)
 
+sigint_called = False
 def sigint_handler(*args):
+    global sigint_called
     print('\nsigint_handler()')
+    sigint_called = True
     main_window.close()
 signal.signal(signal.SIGINT, sigint_handler)
 # the timer enables triggering the sigint_handler
@@ -699,6 +702,19 @@ main_window.actionQueue_Program.triggered.connect(queue_program)
 
 
 main_window.actionExit.triggered.connect(main_window.close)
+
+# confirm closing of application
+def closeEvent(event):
+    if not sigint_called:
+        button = QMessageBox.question(main_window, main_window.tr('Close application'), main_window.tr('Do you really want to close the application?'), QMessageBox.Cancel | QMessageBox.Close)
+    else:
+        button = QMessageBox.Close
+    if button == QMessageBox.Close:
+        event.accept()
+    else:
+        event.ignore()
+main_window.closeEvent = closeEvent
+
 
 #main_window.show()
 main_window.showMaximized()
