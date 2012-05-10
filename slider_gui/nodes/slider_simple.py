@@ -140,7 +140,7 @@ def add_view(button, view_str):
     views.append(view_str)
     if button.isChecked():
         set_view(len(views) - 1)
-    button.toggled.connect(view_mapper.map)
+    button.clicked.connect(view_mapper.map)
 add_view(main_window.front_view_radioButton, '0.0402028 6.2758 2.24508 0.00208002 -0.0024735 0.753009')
 add_view(main_window.side_view_radioButton, '-0.0747972 4.83578 2.81623 -0.0104112 -0.00416593 0.984444')
 add_view(main_window.angled_view_radioButton, '0.175202 5.59079 2.81623 -0.0104112 -0.00416593 0.984444')
