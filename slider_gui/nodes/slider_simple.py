@@ -190,6 +190,20 @@ if index != -1:
     main_window.scene_comboBox.setCurrentIndex(index)
 
 
+def autosave_program():
+    print 'autosave_program()'
+    save_to_filename(os.path.expanduser('~/_autosave.pt'))
+
+def update_sequence_duration():
+    print 'update_sequence_duration()'
+    model = get_current_model()
+    main_window.sequence_duration_label.setText('%.1f' % model.action_sequence().get_duration())
+
+def current_tab_changed(index):
+    update_sequence_duration()
+main_window.PoseList_tabWidget.currentChanged.connect(current_tab_changed)
+
+
 kontrol_subscriber = KontrolSubscriber()
 collision_checker = CollisionChecker()
 currently_in_collision = False
@@ -262,6 +276,8 @@ models = []
 for i in range(main_window.PoseList_tabWidget.count()):
     table_view = get_table_view(i)
     model = PosesDataModel()
+    model.actions_changed.connect(autosave_program)
+    model.duration_modified.connect(update_sequence_duration)
     table_view.setModel(model)
     table_view.resizeColumnsToContents()
     delegate = DoubleSpinBoxDelegate()
@@ -291,7 +307,6 @@ def append_current():
 
     action_set = get_action_set()
     model.add_action(action_set)
-    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     rows = len(model.action_sequence().actions())
@@ -314,7 +329,6 @@ def insert_current_before_selected():
 
     action_set = get_action_set()
     model.add_action(action_set, row)
-    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     table_view.resizeColumnsToContents()
@@ -328,7 +342,6 @@ def insert_find_face():
     action = Pr2LookAtFace()
     action.set_duration(main_window.duration_doubleSpinBox.value())
     model.add_action(action)
-    autosave_program()
 
 main_window.find_face_pushButton.clicked.connect(insert_find_face)
 
@@ -340,7 +353,6 @@ def delete_selected():
 
     model = get_current_model()
     model.remove_action(row)
-    autosave_program()
 
     table_view = get_table_view(get_current_tab_index())
     rows = len(model.action_sequence().actions())
@@ -361,7 +373,6 @@ def clone_selected():
     action = model.action_sequence().actions()[row]
     clone = action.deepcopy()
     model.add_action(clone, row + 1)
-    autosave_program()
 
 main_window.clone_selected_pushButton.clicked.connect(clone_selected)
 
@@ -581,6 +592,8 @@ def load_from_file():
 
     current_name = os.path.splitext(os.path.basename(file_name))[0]
 
+    update_sequence_duration()
+
 main_window.actionOpen.triggered.connect(load_from_file)
 
 
@@ -609,11 +622,6 @@ def save_to_filename(file_name):
     current_name = os.path.splitext(os.path.basename(file_name))[0]
 
 main_window.actionSave_As.triggered.connect(save_to_file)
-
-
-def autosave_program():
-    print 'autosave_program()'
-    save_to_filename(os.path.expanduser('~/_autosave.pt'))
 
 
 def save_screenshot():

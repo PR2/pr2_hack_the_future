@@ -16,6 +16,12 @@ class ActionSequence(object):
     def actions(self):
         return self._actions
 
+    def get_duration(self):
+        duration = 0.0
+        for action in self._actions:
+            duration += action.get_duration()
+        return duration
+
     def add_action(self, action, index = None):
         if index is None:
             self._actions.append(action)

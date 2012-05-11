@@ -1,9 +1,12 @@
 from actions.ActionSequence import ActionSequence
 
 import python_qt_binding.QtBindingHelper #@UnusedImport
-from QtCore import QAbstractTableModel, QByteArray, QMimeData, QModelIndex, Qt
+from QtCore import QAbstractTableModel, QByteArray, QMimeData, QModelIndex, Qt, Signal
 
 class PosesDataModel(QAbstractTableModel):
+
+    actions_changed = Signal()
+    duration_modified = Signal()
 
     _mime_type = 'application/x-slider-action'
 
@@ -12,6 +15,11 @@ class PosesDataModel(QAbstractTableModel):
         self._action_sequence = ActionSequence()
 
     def add_action(self, action, index = None):
+        self._add_action(action, index)
+        self.actions_changed.emit()
+        self.duration_modified.emit()
+
+    def _add_action(self, action, index = None):
         model_index = QModelIndex()
         if index is None or index == len(self._action_sequence.actions()):
             rows = len(self._action_sequence.actions())
@@ -29,12 +37,18 @@ class PosesDataModel(QAbstractTableModel):
         assert(source_index >=0 and source_index < len(self._action_sequence.actions()))
         assert(destination_index >=0 and destination_index <= len(self._action_sequence.actions()))
         action = self._action_sequence.actions()[source_index]
-        self.remove_action(source_index)
+        self._remove_action(source_index)
         if destination_index > source_index:
             destination_index -= 1
-        self.add_action(action, destination_index)
+        self._add_action(action, destination_index)
+        self.actions_changed.emit()
 
     def remove_action(self, index):
+        self._remove_action(index)
+        self.actions_changed.emit()
+        self.duration_modified.emit()
+
+    def _remove_action(self, index):
         assert(index >=0 and index < len(self._action_sequence.actions()))
         # delete at model-index of parent-item
         model_index = QModelIndex()
@@ -48,6 +62,8 @@ class PosesDataModel(QAbstractTableModel):
         self.beginRemoveRows(index, 0, rows - 1)
         self._action_sequence.remove_all_actions()
         self.endRemoveRows()
+        self.actions_changed.emit()
+        self.duration_modified.emit()
 
     def action_sequence(self):
         return self._action_sequence
@@ -75,6 +91,7 @@ class PosesDataModel(QAbstractTableModel):
         if role == Qt.EditRole and index.column() == 0:
             value = float(value)
             self._action_sequence.actions()[index.row()].set_duration(value)
+            self.duration_modified.emit()
             return True
         return super(PosesDataModel, self).setData(index, value, role)
 
