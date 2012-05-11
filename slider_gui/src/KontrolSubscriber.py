@@ -143,7 +143,7 @@ class KontrolSubscriber(object):
                 name = data['label']
                 value = action._values[index]
                 if is_degree:
-                    value = value / 180 * math.pi
+                    value = value * math.pi / 180.0
                 values[name] = value
         return values
 
