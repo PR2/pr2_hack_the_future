@@ -66,11 +66,11 @@ class Pr2JointTrajectoryAction(Action):
                 point.positions[i] *= math.pi / 180.0
         point.time_from_start = rospy.Duration.from_sec(self.get_duration())
         goal.trajectory.points = [ point ]
-        print('Pr2JointTrajectoryAction.execute() %s: %s' % (self.__class__.__name__, ','.join([str(value) for value in self._values])))
+        #print('Pr2JointTrajectoryAction.execute() %s: %s' % (self.__class__.__name__, ','.join([str(value) for value in self._values])))
         self._client.send_goal(goal)
         self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._timer_finished, oneshot=True)
 
     def _timer_finished(self, event):
-        print('Pr2JointTrajectoryAction.execute() finished %s\n' % (self.__class__.__name__))
+        #print('Pr2JointTrajectoryAction.execute() finished %s\n' % (self.__class__.__name__))
         self._timer = None
         self._execute_finished()

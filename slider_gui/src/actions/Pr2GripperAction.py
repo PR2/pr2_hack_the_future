@@ -42,11 +42,11 @@ class Pr2GripperAction(Action):
         command = Pr2GripperCommand(0.04, 0)
         command.max_effort = 20.0
         command.position = self._values[0]
-        print('Pr2GripperAction.execute() %s: %s' % (self.__class__.__name__, str(self._values[0])))
+        #print('Pr2GripperAction.execute() %s: %s' % (self.__class__.__name__, str(self._values[0])))
         self._pub.publish(command)
         self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._timer_finished, oneshot=True)
 
     def _timer_finished(self, event):
-        print('Pr2GripperAction.execute() finished %s\n' % (self.__class__.__name__))
+        #print('Pr2GripperAction.execute() finished %s\n' % (self.__class__.__name__))
         self._timer = None
         self._execute_finished()
