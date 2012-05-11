@@ -73,7 +73,7 @@
              <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
-             <string>Pose List</string>
+             <string>Pose and Action List</string>
             </property>
            </widget>
           </item>
@@ -118,6 +118,15 @@
               </attribute>
               <attribute name="verticalHeaderCascadingSectionResizes">
                <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>80</number>
               </attribute>
               <column>
                <property name="text">
@@ -314,13 +323,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="find_face_pushButton">
-            <property name="text">
-             <string>Look at Face</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="delete_selected_pushButton">
             <property name="toolTip">
              <string>Deleted selected pose from list</string>
@@ -371,6 +373,16 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="find_face_pushButton">
+            <property name="toolTip">
+             <string>Look at the closest face</string>
+            </property>
+            <property name="text">
+             <string>Look at Face</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -583,7 +595,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
