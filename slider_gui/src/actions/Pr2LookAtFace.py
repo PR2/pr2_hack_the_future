@@ -35,31 +35,37 @@ class Pr2LookAtFace(Action):
     def _execute(self, event):
         self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._preempt, oneshot=True)
         connected = self._client.wait_for_server(rospy.Duration(1.0))
-        if not connected:
-            print('Pr2LookAtFace.execute() does nothing since face detector action was not found')
-            return
-        fgoal = FaceDetectorGoal()
-        self._client.send_goal(fgoal)
-        self._client.wait_for_result()
-        f = self._client.get_result()
-        if len(f.face_positions) > 0:
-            closest = -1
-            closest_dist = 1000
-            for i in range(len(f.face_positions)):
-                dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y + f.face_positions[i].pos.z*f.face_positions[i].pos.z
-                if dist < closest_dist: 
-                    closest = i
-                    closest_dist = dist
-            if closest > -1:
-                g = PointHeadGoal()
-                g.target.header.frame_id = f.face_positions[closest].header.frame_id
-                g.target.point.x = f.face_positions[closest].pos.x
-                g.target.point.y = f.face_positions[closest].pos.y
-                g.target.point.z = f.face_positions[closest].pos.z
-                g.min_duration = rospy.Duration(1.0)
-                connected = self._head_client.wait_for_server(rospy.Duration(1.0))
-                if connected:
-                    self._head_client.send_goal(g)
+        if connected:
+            fgoal = FaceDetectorGoal()
+            self._client.send_goal(fgoal)
+            self._client.wait_for_result()
+            f = self._client.get_result()
+            if len(f.face_positions) > 0:
+                closest = -1
+                closest_dist = 1000
+                for i in range(len(f.face_positions)):
+                    dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y + f.face_positions[i].pos.z*f.face_positions[i].pos.z
+                    if dist < closest_dist: 
+                        closest = i
+                        closest_dist = dist
+                if closest > -1:
+                    g = PointHeadGoal()
+                    g.target.header.frame_id = f.face_positions[closest].header.frame_id
+                    g.target.point.x = f.face_positions[closest].pos.x
+                    g.target.point.y = f.face_positions[closest].pos.y
+                    g.target.point.z = f.face_positions[closest].pos.z
+                    g.min_duration = rospy.Duration(1.0)
+        else:
+            g = PointHeadGoal()
+            g.target.header.frame_id = "torso_lift_link";
+            g.target.point.x = 1.0
+            g.target.point.y = -1.0
+            g.target.point.z = 0.3
+            g.min_duration = rospy.Duration(1.0)
+                
+        connected = self._head_client.wait_for_server(rospy.Duration(1.0))
+        if connected:
+            self._head_client.send_goal(g)
         self._finished_finding_face()
 
     def _preempt(self, event):
