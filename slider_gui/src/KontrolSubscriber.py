@@ -55,65 +55,79 @@ class KontrolSubscriber(object):
             self._buttons = joy_msg.buttons
             self.buttons_changed.emit()
 
+    def is_valid_action_set(self):
+        if self._buttons is None:
+            return False
+        if len(self._buttons) < 25:
+            return False
+        mode = self._buttons[24]
+        if mode == 3:
+            return False
+        return True
+
     def get_action_set(self):
         set = ActionSet()
         if self._axes is None or self._buttons is None:
+            # dummy action to test without hardware slider
             head = Pr2MoveHeadAction()
             set.add_action(head)
             return set
-        if len(self._buttons) >= 25:
-            mode = self._buttons[24]
-            if mode != 3:
-                head = Pr2MoveHeadAction()
-                head_data = [-self._axes[9], -self._axes[0]]
-                self._set_transformed_data(head, head_data)
-                set.add_action(head)
 
-                torso = Pr2MoveTorsoAction()
-                torso_data = [self._axes[8]]
-                self._set_transformed_data(torso, torso_data)
-                set.add_action(torso)
+        if not self.is_valid_action_set():
+            return None
 
-                lgrip = Pr2MoveLeftGripperAction()
-                lgrip_data = [self._axes[7]]
-                self._set_transformed_data(lgrip, lgrip_data)
-                set.add_action(lgrip)
+        mode = self._buttons[24]
 
-                rgrip = Pr2MoveRightGripperAction()
-                rgrip_data = lgrip_data
-                self._set_transformed_data(rgrip, rgrip_data)
-                set.add_action(rgrip)
+        head = Pr2MoveHeadAction()
+        head_data = [-self._axes[9], -self._axes[0]]
+        self._set_transformed_data(head, head_data)
+        set.add_action(head)
 
-                rarm_data = []
-                rarm_data.extend(self._axes[1:7])
-                rarm_data.append(self._axes[16])
-                rarm_data[1] = -rarm_data[1]
+        torso = Pr2MoveTorsoAction()
+        torso_data = [self._axes[8]]
+        self._set_transformed_data(torso, torso_data)
+        set.add_action(torso)
 
-            if mode == 0 or mode == 2:
-                rarm = Pr2MoveRightArmAction()
-                self._set_transformed_data(rarm, rarm_data)
-                set.add_action(rarm)
-                self._last_rarm = rarm
-            elif mode == 1 and self._last_rarm is not None:
-                set.add_action(self._last_rarm.deepcopy())
+        lgrip = Pr2MoveLeftGripperAction()
+        lgrip_data = [self._axes[7]]
+        self._set_transformed_data(lgrip, lgrip_data)
+        set.add_action(lgrip)
 
-            if mode != 3:
-                larm_data = []
-                larm_data.extend(self._axes[1:7])
-                larm_data.append(self._axes[16])
-                larm_data[0] = -larm_data[0]
-                larm_data[1] = -larm_data[1]
-                larm_data[2] = -larm_data[2]
-                larm_data[4] = -larm_data[4]
-                larm_data[6] = -larm_data[6]
+        rgrip = Pr2MoveRightGripperAction()
+        rgrip_data = lgrip_data
+        self._set_transformed_data(rgrip, rgrip_data)
+        set.add_action(rgrip)
 
-            if mode == 0 or mode == 1:
-                larm = Pr2MoveLeftArmAction()
-                self._set_transformed_data(larm, larm_data)
-                set.add_action(larm)
-                self._last_larm = larm
-            elif mode == 2 and self._last_larm is not None:
-                set.add_action(self._last_larm.deepcopy())
+        rarm_data = []
+        rarm_data.extend(self._axes[1:7])
+        rarm_data.append(self._axes[16])
+        rarm_data[1] = -rarm_data[1]
+
+        if mode == 0 or mode == 2:
+            rarm = Pr2MoveRightArmAction()
+            self._set_transformed_data(rarm, rarm_data)
+            set.add_action(rarm)
+            self._last_rarm = rarm
+        elif mode == 1 and self._last_rarm is not None:
+            set.add_action(self._last_rarm.deepcopy())
+
+        if mode != 3:
+            larm_data = []
+            larm_data.extend(self._axes[1:7])
+            larm_data.append(self._axes[16])
+            larm_data[0] = -larm_data[0]
+            larm_data[1] = -larm_data[1]
+            larm_data[2] = -larm_data[2]
+            larm_data[4] = -larm_data[4]
+            larm_data[6] = -larm_data[6]
+
+        if mode == 0 or mode == 1:
+            larm = Pr2MoveLeftArmAction()
+            self._set_transformed_data(larm, larm_data)
+            set.add_action(larm)
+            self._last_larm = larm
+        elif mode == 2 and self._last_larm is not None:
+            set.add_action(self._last_larm.deepcopy())
 
         duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)

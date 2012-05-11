@@ -218,12 +218,35 @@ class Foo(QObject):
         super(Foo, self).__init__()
         self._action_set = None
         self._update_current_value_signal.connect(self._update_current_value)
+
+        self._scene_notification = QDialog(main_window)
+        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'wrong_scene_dialog.ui')
+        loadUi(ui_file, self._scene_notification)
+        self._scene_notification_timer = QTimer(main_window)
+        self._scene_notification_timer.setInterval(5000)
+        self._scene_notification_timer.setSingleShot(True)
+        self._scene_notification_timer.timeout.connect(self._hide_scene_notification)
+        self._scene_notification.finished.connect(self._hide_scene_notification)
+
+    def _hide_scene_notification(self, result=None):
+        self._scene_notification_timer.stop()
+        self._scene_notification.hide()
+
     def update_current_value(self):
         self._update_current_value_signal.emit()
+
     def _update_current_value(self):
         global check_collisions
         global currently_in_collision
         #print('update_current_value()')
+        if not kontrol_subscriber.is_valid_action_set():
+            # open dialog which closes after some seconds or when confirmed manually
+            self._scene_notification.show()
+            self._scene_notification_timer.start()
+            return
+        if self._scene_notification_timer.isActive():
+            self._hide_scene_notification()
+
         if self._action_set is not None:
             self._action_set.stop()
         self._action_set = kontrol_subscriber.get_action_set()
@@ -296,7 +319,8 @@ def get_current_model():
 
 def get_action_set():
     action_set = kontrol_subscriber.get_action_set()
-    action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    if action_set is not None:
+        action_set.set_duration(main_window.duration_doubleSpinBox.value())
     return action_set
 
 def append_current():
@@ -306,6 +330,8 @@ def append_current():
     model = get_current_model()
 
     action_set = get_action_set()
+    if action_set is None:
+        return
     model.add_action(action_set)
 
     table_view = get_table_view(get_current_tab_index())
@@ -328,6 +354,8 @@ def insert_current_before_selected():
     model = get_current_model()
 
     action_set = get_action_set()
+    if action_set is None:
+        return
     model.add_action(action_set, row)
 
     table_view = get_table_view(get_current_tab_index())
