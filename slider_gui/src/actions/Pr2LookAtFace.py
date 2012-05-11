@@ -57,10 +57,10 @@ class Pr2LookAtFace(Action):
                     g.min_duration = rospy.Duration(1.0)
         else:
             g = PointHeadGoal()
-            g.target.header.frame_id = "torso_lift_link";
-            g.target.point.x = 1.0
-            g.target.point.y = -1.0
-            g.target.point.z = 0.3
+            g.target.header.frame_id = "base_footprint";
+            g.target.point.x = 2.0
+            g.target.point.y = -2.0
+            g.target.point.z = 1.2
             g.min_duration = rospy.Duration(1.0)
                 
         connected = self._head_client.wait_for_server(rospy.Duration(1.0))
