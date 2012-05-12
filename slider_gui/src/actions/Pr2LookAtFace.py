@@ -22,6 +22,7 @@ class Pr2LookAtFace(Action):
         self._client = SimpleActionClient('face_detector_action',FaceDetectorAction)
         self._head_client = SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
         self._timer = None
+        self._executing = False
 
     def to_string(self):
         return 'look_at_face()'
@@ -33,9 +34,11 @@ class Pr2LookAtFace(Action):
         self._timer = rospy.Timer(rospy.Duration.from_sec(0.001), self._execute, oneshot=True)
 
     def _execute(self, event):
+        self._executing = True
         self._timer = rospy.Timer(rospy.Duration.from_sec(self.get_duration()), self._preempt, oneshot=True)
+        hgoal = None
         connected = self._client.wait_for_server(rospy.Duration(1.0))
-        if connected:
+        if connected and self._executing:
             fgoal = FaceDetectorGoal()
             self._client.send_goal(fgoal)
             self._client.wait_for_result()
@@ -49,29 +52,37 @@ class Pr2LookAtFace(Action):
                         closest = i
                         closest_dist = dist
                 if closest > -1:
-                    g = PointHeadGoal()
-                    g.target.header.frame_id = f.face_positions[closest].header.frame_id
-                    g.target.point.x = f.face_positions[closest].pos.x
-                    g.target.point.y = f.face_positions[closest].pos.y
-                    g.target.point.z = f.face_positions[closest].pos.z
-                    g.min_duration = rospy.Duration(1.0)
+                    hgoal = PointHeadGoal()
+                    hgoal.target.header.frame_id = f.face_positions[closest].header.frame_id
+                    hgoal.target.point.x = f.face_positions[closest].pos.x
+                    hgoal.target.point.y = f.face_positions[closest].pos.y
+                    hgoal.target.point.z = f.face_positions[closest].pos.z
+                    hgoal.min_duration = rospy.Duration(1.0)
         else:
-            g = PointHeadGoal()
-            g.target.header.frame_id = "base_footprint";
-            g.target.point.x = 2.0
-            g.target.point.y = -2.0
-            g.target.point.z = 1.2
-            g.min_duration = rospy.Duration(1.0)
-                
-        connected = self._head_client.wait_for_server(rospy.Duration(1.0))
-        if connected:
-            self._head_client.send_goal(g)
-        self._finished_finding_face()
+            hgoal = PointHeadGoal()
+            hgoal.target.header.frame_id = "base_footprint";
+            hgoal.target.point.x = 2.0
+            hgoal.target.point.y = -2.0
+            hgoal.target.point.z = 1.2
+            hgoal.min_duration = rospy.Duration(1.0)
+
+        if hgoal is not None and self._executing:
+            connected = self._head_client.wait_for_server(rospy.Duration(1.0))
+            if connected and self._executing:
+                self._head_client.send_goal(hgoal)
+                self._head_client.wait_for_result()
+                if self._executing:
+                    time.sleep(1.0)
+            self._finished_finding_face()
 
     def _preempt(self, event):
+        self._executing = False
         self._client.cancel_goal()
+        self._head_client.cancel_goal()
         self._execute_finished()
 
     def _finished_finding_face(self):
-        self._timer.shutdown()
-        self._execute_finished()
+        if self._executing:
+            self._executing = False
+            self._timer.shutdown()
+            self._execute_finished()
