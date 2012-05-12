@@ -23,6 +23,12 @@ class Pr2LookAtFace(Action):
         self._head_client = SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
         self._timer = None
         self._executing = False
+        self._pending_face_goal = False
+        self._pending_head_goal = False
+
+    def set_duration(self, duration):
+        duration = max(duration, 2.5)
+        super(Pr2LookAtFace, self).set_duration(duration)
 
     def to_string(self):
         return 'look_at_face()'
@@ -40,8 +46,10 @@ class Pr2LookAtFace(Action):
         connected = self._client.wait_for_server(rospy.Duration(1.0))
         if connected and self._executing:
             fgoal = FaceDetectorGoal()
+            self._pending_face_goal = True
             self._client.send_goal(fgoal)
             self._client.wait_for_result()
+            self._pending_face_goal = False
             f = self._client.get_result()
             if len(f.face_positions) > 0:
                 closest = -1
@@ -69,16 +77,20 @@ class Pr2LookAtFace(Action):
         if hgoal is not None and self._executing:
             connected = self._head_client.wait_for_server(rospy.Duration(1.0))
             if connected and self._executing:
+                self._pending_head_goal = True
                 self._head_client.send_goal(hgoal)
                 self._head_client.wait_for_result()
+                self._pending_head_goal = False
                 if self._executing:
                     time.sleep(1.0)
             self._finished_finding_face()
 
     def _preempt(self, event):
         self._executing = False
-        self._client.cancel_goal()
-        self._head_client.cancel_goal()
+        if self._pending_face_goal:
+            self._client.cancel_goal()
+        if self._pending_head_goal:
+            self._head_client.cancel_goal()
         self._execute_finished()
 
     def _finished_finding_face(self):
