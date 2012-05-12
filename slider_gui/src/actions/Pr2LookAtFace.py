@@ -27,7 +27,7 @@ class Pr2LookAtFace(Action):
         self._pending_head_goal = False
 
     def set_duration(self, duration):
-        duration = max(duration, 2.5)
+        duration = max(duration, 1.5)
         super(Pr2LookAtFace, self).set_duration(duration)
 
     def to_string(self):
