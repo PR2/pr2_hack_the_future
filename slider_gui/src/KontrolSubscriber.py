@@ -88,29 +88,6 @@ class KontrolSubscriber(object):
         self._set_transformed_data(torso, torso_data)
         set.add_action(torso)
 
-        lgrip = Pr2MoveLeftGripperAction()
-        lgrip_data = [self._axes[7]]
-        self._set_transformed_data(lgrip, lgrip_data)
-        set.add_action(lgrip)
-
-        rgrip = Pr2MoveRightGripperAction()
-        rgrip_data = lgrip_data
-        self._set_transformed_data(rgrip, rgrip_data)
-        set.add_action(rgrip)
-
-        rarm_data = []
-        rarm_data.extend(self._axes[1:7])
-        rarm_data.append(self._axes[16])
-        rarm_data[1] = -rarm_data[1]
-
-        if mode == 0 or mode == 2:
-            rarm = Pr2MoveRightArmAction()
-            self._set_transformed_data(rarm, rarm_data)
-            set.add_action(rarm)
-            self._last_rarm = rarm
-        elif mode == 1 and self._last_rarm is not None:
-            set.add_action(self._last_rarm.deepcopy())
-
         if mode != 3:
             larm_data = []
             larm_data.extend(self._axes[1:7])
@@ -121,6 +98,11 @@ class KontrolSubscriber(object):
             larm_data[4] = -larm_data[4]
             larm_data[6] = -larm_data[6]
 
+            rarm_data = []
+            rarm_data.extend(self._axes[1:7])
+            rarm_data.append(self._axes[16])
+            rarm_data[1] = -rarm_data[1]
+
         if mode == 0 or mode == 1:
             larm = Pr2MoveLeftArmAction()
             self._set_transformed_data(larm, larm_data)
@@ -128,6 +110,24 @@ class KontrolSubscriber(object):
             self._last_larm = larm
         elif mode == 2 and self._last_larm is not None:
             set.add_action(self._last_larm.deepcopy())
+
+        lgrip = Pr2MoveLeftGripperAction()
+        lgrip_data = [self._axes[7]]
+        self._set_transformed_data(lgrip, lgrip_data)
+        set.add_action(lgrip)
+
+        if mode == 0 or mode == 2:
+            rarm = Pr2MoveRightArmAction()
+            self._set_transformed_data(rarm, rarm_data)
+            set.add_action(rarm)
+            self._last_rarm = rarm
+        elif mode == 1 and self._last_rarm is not None:
+            set.add_action(self._last_rarm.deepcopy())
+
+        rgrip = Pr2MoveRightGripperAction()
+        rgrip_data = lgrip_data
+        self._set_transformed_data(rgrip, rgrip_data)
+        set.add_action(rgrip)
 
         duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)
