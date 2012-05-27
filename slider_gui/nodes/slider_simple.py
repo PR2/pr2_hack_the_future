@@ -635,9 +635,10 @@ def serialize(storage):
 def save_to_file():
     file_name, _ = QFileDialog.getSaveFileName(main_window, main_window.tr('Save program to file'), 'example.pt', main_window.tr('Puppet Talk (*.pt)'))
     if file_name is None or file_name == '':
-        return
+        return False
 
     save_to_filename(file_name)
+    return True
 
 def save_to_filename(file_name):
     global current_name
@@ -713,21 +714,32 @@ main_window.actionDefault_Pose.triggered.connect(execute_default_pose)
 main_window.actionTest_Program.triggered.connect(execute_current_sequence)
 
 
-def queue_program():
+queue_default_username = 'admin'
+queue_default_password = 'admin'
+
+def queue_dialog():
     dialog = QDialog()
     ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'queue_dialog.ui')
     loadUi(ui_file, dialog)
 
     if current_name is not None:
         dialog.label_lineEdit.setText(current_name)
-    dialog.username_lineEdit.setText('admin')
-    dialog.password_lineEdit.setText('admin')
+    dialog.username_lineEdit.setText(queue_default_username)
+    dialog.password_lineEdit.setText(queue_default_password)
 
     rc = dialog.exec_()
     if rc == QDialog.Rejected:
         return
 
-    queue = ProgramQueue(dialog.username_lineEdit.text(), dialog.password_lineEdit.text())
+    queue_program(dialog.username_lineEdit.text(), dialog.password_lineEdit.text(), dialog.label_lineEdit.text())
+
+def save_and_queue_program():
+    rc = save_to_file()
+    if rc:
+        queue_program(queue_default_username, queue_default_password, current_name)
+
+def queue_program(username, password, label):
+    queue = ProgramQueue(username, password)
     try:
         rc = queue.login()
     except:
@@ -743,7 +755,7 @@ def queue_program():
     output.close()
 
     try:
-        id = queue.upload_program(program_data, dialog.label_lineEdit.text())
+        id = queue.upload_program(program_data, label)
     except:
         id = False
     if not id:
@@ -755,8 +767,8 @@ def queue_program():
         pass
     QMessageBox.information(main_window, main_window.tr('Uploaded program'), main_window.tr('Uploaded program (%d) successfully.') % id)
 
-main_window.actionQueue_Program.triggered.connect(queue_program)
-main_window.queue_program_pushButton.clicked.connect(queue_program)
+main_window.actionQueue_Program.triggered.connect(queue_dialog)
+main_window.save_and_queue_program_pushButton.clicked.connect(save_and_queue_program)
 
 
 main_window.actionExit.triggered.connect(main_window.close)

@@ -91,12 +91,12 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="queue_program_pushButton">
+           <widget class="QPushButton" name="save_and_queue_program_pushButton">
             <property name="locale">
              <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
-             <string>Queue program</string>
+             <string>Save and Queue Program</string>
             </property>
            </widget>
           </item>
