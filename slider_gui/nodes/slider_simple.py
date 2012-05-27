@@ -170,7 +170,12 @@ def set_scene(index):
     image = CompressedImage()
     image.header.frame_id = '/odom_combined'
     image.format = 'jpeg'
-    image.data = open(scenes[index]).read()
+    try:
+        scene = scenes[index]
+    except TypeError:
+        index = main_window.scene_comboBox.findText(index)
+        scene = scenes[index]
+    image.data = open(scene).read()
     image.header.stamp = rospy.Time.now()
     backdrop_publisher.publish(image)
 path = os.path.join(os.path.dirname(__file__), '..', 'images')
