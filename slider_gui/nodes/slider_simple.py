@@ -718,9 +718,10 @@ def queue_program():
     ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'queue_dialog.ui')
     loadUi(ui_file, dialog)
 
-    dialog.username_lineEdit.setText('admin')
     if current_name is not None:
         dialog.label_lineEdit.setText(current_name)
+    dialog.username_lineEdit.setText('admin')
+    dialog.password_lineEdit.setText('admin')
 
     rc = dialog.exec_()
     if rc == QDialog.Rejected:
