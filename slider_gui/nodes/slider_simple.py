@@ -674,11 +674,18 @@ main_window.actionSave_Screenshot.triggered.connect(save_screenshot)
 
 def clear_all():
     global current_name
-    print 'clear_all'
-    for index in range(main_window.PoseList_tabWidget.count()):
-        model = models[index]
-        model.remove_all_actions()
-    current_name = None
+    confirmed = True
+    if current_name is None:
+        button = QMessageBox.question(main_window, main_window.tr('Clear all poses'), main_window.tr('Do you really want to delete all poses?'), QMessageBox.No | QMessageBox.Yes)
+        confirmed = button == QMessageBox.Yes
+    if confirmed:
+        print 'clear_all()'
+        for index in range(main_window.PoseList_tabWidget.count()):
+            model = models[index]
+            model.remove_all_actions()
+        current_name = None
+        set_tab(0)
+        main_window.angled_view_radioButton.click()
 
 main_window.actionClear_All.triggered.connect(clear_all)
 

@@ -119,15 +119,6 @@
               <attribute name="verticalHeaderCascadingSectionResizes">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderCascadingSectionResizes">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>80</number>
-              </attribute>
               <column>
                <property name="text">
                 <string>Duration</string>
@@ -595,7 +586,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -605,7 +596,9 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionSave_Screenshot"/>
+    <addaction name="separator"/>
     <addaction name="actionClear_All"/>
+    <addaction name="separator"/>
     <addaction name="actionDefault_Pose"/>
     <addaction name="actionTest_Program"/>
     <addaction name="actionQueue_Program"/>
