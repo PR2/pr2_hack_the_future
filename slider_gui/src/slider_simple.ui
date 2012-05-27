@@ -90,6 +90,16 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QPushButton" name="queue_program_pushButton">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+            <property name="text">
+             <string>Queue program</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>

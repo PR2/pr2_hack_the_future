@@ -756,6 +756,7 @@ def queue_program():
     QMessageBox.information(main_window, main_window.tr('Uploaded program'), main_window.tr('Uploaded program (%d) successfully.') % id)
 
 main_window.actionQueue_Program.triggered.connect(queue_program)
+main_window.queue_program_pushButton.clicked.connect(queue_program)
 
 
 main_window.actionExit.triggered.connect(main_window.close)
