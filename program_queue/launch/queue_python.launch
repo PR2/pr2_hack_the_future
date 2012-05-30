@@ -1,0 +1,9 @@
+<launch>
+   <node pkg="program_queue" type="program_queue.py" name="program_queue" output="screen" />
+   <node pkg="rosproxy" type="proxy.py" name="proxy" >
+      <rosparam param="services">[ clear_queue, create_program, create_user, dequeue_program, get_my_programs, get_output, get_program, get_programs, get_queue, login, logout, queue_program, run_program, update_program, start_queue, stop_queue ]</rosparam>
+      <param name="tcpros_port" value="11300"/>
+      <param name="xmlrpc_port" value="11301"/>
+   </node>
+   <include file="$(find pr2_props)/launch/pr2_props.launch" />
+</launch>
