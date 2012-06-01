@@ -169,7 +169,10 @@ backdrop_publisher = rospy.Publisher('/backdrop/compressed', CompressedImage, la
 scenes = []
 def set_scene(index):
     image = CompressedImage()
-    image.header.frame_id = '/odom_combined'
+    # image.header.frame_id = '/odom_combined'
+    # If you ever want to drive the base, you will want to use the line above, or /map or something.
+    # Using /base_link means the robot will always stay exactly in the middle of the backdrop.
+    image.header.frame_id = '/base_link'
     image.format = 'jpeg'
     try:
         scene = scenes[index]
