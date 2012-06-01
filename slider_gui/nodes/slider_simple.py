@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import new
 import os
 import random
 import signal
@@ -16,8 +17,8 @@ import rospy;
 
 #setattr(sys, 'SELECT_QT_BINDING', 'pyside')
 from python_qt_binding.QtBindingHelper import loadUi
-from QtCore import qFatal, QModelIndex, QObject, QRect, QRegExp, QSignalMapper, QTimer, Signal
-from QtGui import QApplication, QColor, QDialog, QFileDialog, QIcon, QItemSelectionModel, QMainWindow, QMessageBox, QPalette, QPixmap, QSplitter, QTableView, QVBoxLayout, QWidget
+from QtCore import QEvent, qFatal, QModelIndex, QObject, QRect, QRegExp, QSignalMapper, Qt, QTimer, Signal
+from QtGui import QApplication, QColor, QDialog, QFileDialog, QIcon, QItemSelectionModel, QKeyEvent, QMainWindow, QMessageBox, QPalette, QPixmap, QSplitter, QTableView, QVBoxLayout, QWidget
 from actions.DefaultAction import DefaultAction
 from CollisionChecker import CollisionChecker
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
@@ -298,6 +299,26 @@ def test_clicked(index):
     model = get_current_model()
     print 'execute %d' % index.row()
     model.action_sequence().actions()[index.row()].execute()
+
+# override tab order by ignoring non-editable cells
+def custom_focusNextPrevChild(self, next, old_focusNextPrevChild=QTableView.focusNextPrevChild):
+    rc = old_focusNextPrevChild(self, next)
+    if self.tabKeyNavigation() and self.currentIndex().isValid() and not(self.currentIndex().flags() & Qt.ItemIsEditable):
+        # repeat same key press when cell is not editable
+        event = QKeyEvent(QEvent.KeyPress, Qt.Key_Tab, Qt.ShiftModifier if next else Qt.NoModifier)
+        self.keyPressEvent(event)
+        if event.isAccepted():
+            return True
+    return rc
+
+def custom_focusOutEvent(self, event, old_focusOutEvent=QTableView.focusOutEvent):
+    print 'focusOutEvent'
+    return old_focusOutEvent(self, event)
+
+for i in range(main_window.PoseList_tabWidget.count()):
+    table_view = get_table_view(i)
+    table_view.focusNextPrevChild = new.instancemethod(custom_focusNextPrevChild, table_view, None)
+    table_view.focusOutEvent = new.instancemethod(custom_focusOutEvent, table_view, None)
 
 # create models for each table view in the tabs
 models = []
