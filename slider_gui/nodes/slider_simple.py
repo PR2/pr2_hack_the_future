@@ -35,6 +35,7 @@ from SimpleFormat import SimpleFormat
 app = QApplication(sys.argv)
 
 check_collisions = '--no-collision' not in sys.argv
+show_point_clouds = '--with-point-clouds' in sys.argv
 
 main_window = QMainWindow()
 ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'slider_simple.ui')
@@ -80,7 +81,8 @@ main_window.robot_view_verticalLayout.insertWidget(index, robot_view, stretch)
 robot_view.setSizes([0])
 
 config = tempfile.NamedTemporaryFile('w')
-config.write("""Backdrop.Enabled=1
+if not show_point_clouds:
+    config.write("""Backdrop.Enabled=1
 Backdrop.Scale=4
 Backdrop.Topic=/backdrop
 Background\ ColorB=0
@@ -122,6 +124,92 @@ Name=Backdrop
 ClassName=rviz::RobotModelDisplay
 Name=RobotModel
 """)
+else:
+    config.write("""Backdrop.Enabled=1
+Backdrop.Scale=4
+Backdrop.Topic=/backdrop
+Background\ ColorB=0
+Background\ ColorG=0
+Background\ ColorR=0
+Camera\ Config=0.905202 5.83579 18.0278 0 -1.90735e-06 1.90735e-06
+Camera\ Type=rviz::OrbitViewController
+Camera.Enabled=1
+Camera.Image\ Rendering=background & overlay
+Camera.Image\ Topic=/head_mount_kinect/rgb/image_raw
+Camera.Overlay\ Alpha=0.5
+Camera.Queue\ Size=2
+Camera.Transport\ Hint=raw
+Camera.Zoom\ Factor=1
+Fixed\ Frame=/base_link
+Grid.Alpha=0.5
+Grid.Cell\ Size=1
+Grid.ColorB=0.5
+Grid.ColorG=0.5
+Grid.ColorR=0.5
+Grid.Enabled=1
+Grid.Line\ Style=0
+Grid.Line\ Width=0.03
+Grid.Normal\ Cell\ Count=0
+Grid.OffsetX=0
+Grid.OffsetY=0
+Grid.OffsetZ=0
+Grid.Plane=0
+Grid.Plane\ Cell\ Count=8
+Grid.Reference\ Frame=<Fixed Frame>
+PointCloud2..AxisColorAutocompute\ Value\ Bounds=1
+PointCloud2..AxisColorAxis=2
+PointCloud2..AxisColorMax\ Value=0.919509
+PointCloud2..AxisColorMin\ Value=-0.0470135
+PointCloud2..AxisColorUse\ Fixed\ Frame=1
+PointCloud2..FlatColorColorB=1
+PointCloud2..FlatColorColorG=1
+PointCloud2..FlatColorColorR=1
+PointCloud2..IntensityAutocompute\ Intensity\ Bounds=1
+PointCloud2..IntensityChannel\ Name=intensity
+PointCloud2..IntensityMax\ ColorB=1
+PointCloud2..IntensityMax\ ColorG=1
+PointCloud2..IntensityMax\ ColorR=1
+PointCloud2..IntensityMax\ Intensity=4096
+PointCloud2..IntensityMin\ ColorB=0
+PointCloud2..IntensityMin\ ColorG=0
+PointCloud2..IntensityMin\ ColorR=0
+PointCloud2..IntensityMin\ Intensity=0
+PointCloud2..IntensityUse\ full\ RGB\ spectrum=0
+PointCloud2.Alpha=1
+PointCloud2.Billboard\ Size=0.003
+PointCloud2.Color\ Transformer=RGB8
+PointCloud2.Decay\ Time=0
+PointCloud2.Enabled=1
+PointCloud2.Position\ Transformer=XYZ
+PointCloud2.Queue\ Size=10
+PointCloud2.Selectable=1
+PointCloud2.Style=1
+PointCloud2.Topic=/head_mount_kinect/depth_registered/points
+RobotModel.Alpha=1
+RobotModel.Collision\ Enabled=0
+RobotModel.Enabled=1
+RobotModel.Robot\ Description=robot_description
+RobotModel.TF\ Prefix=
+RobotModel.Update\ Interval=0
+RobotModel.Visual\ Enabled=1
+Target\ Frame=<Fixed Frame>
+[Display0]
+ClassName=rviz::GridDisplay
+Name=Grid
+[Display1]
+ClassName=rviz_backdrop::BackdropDisplay
+Name=Backdrop
+[Display2]
+ClassName=rviz::RobotModelDisplay
+Name=RobotModel
+[Display3]
+ClassName=rviz::PointCloud2Display
+Name=PointCloud2
+[Display4]
+ClassName=rviz::CameraDisplay
+Name=Camera
+""")
+    
 config.flush()
 robot_view.loadDisplayConfig(config.name)
 config.close
