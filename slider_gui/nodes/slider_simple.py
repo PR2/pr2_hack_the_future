@@ -133,13 +133,6 @@ Background\ ColorG=0
 Background\ ColorR=0
 Camera\ Config=0.905202 5.83579 18.0278 0 -1.90735e-06 1.90735e-06
 Camera\ Type=rviz::OrbitViewController
-Camera.Enabled=1
-Camera.Image\ Rendering=background & overlay
-Camera.Image\ Topic=/head_mount_kinect/rgb/image_raw
-Camera.Overlay\ Alpha=0.5
-Camera.Queue\ Size=2
-Camera.Transport\ Hint=raw
-Camera.Zoom\ Factor=1
 Fixed\ Frame=/base_link
 Grid.Alpha=0.5
 Grid.Cell\ Size=1
@@ -205,9 +198,6 @@ Name=RobotModel
 [Display3]
 ClassName=rviz::PointCloud2Display
 Name=PointCloud2
-[Display4]
-ClassName=rviz::CameraDisplay
-Name=Camera
 """)
     
 config.flush()
