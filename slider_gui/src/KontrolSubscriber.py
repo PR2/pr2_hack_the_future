@@ -1,6 +1,7 @@
 import math
 
 from actions.ActionSet import ActionSet
+from actions.DefaultAction import DefaultAction
 from actions.Pr2GripperAction import Pr2GripperAction
 from actions.Pr2JointTrajectoryAction import Pr2JointTrajectoryAction
 from actions.Pr2MoveHeadAction import Pr2MoveHeadAction
@@ -68,10 +69,8 @@ class KontrolSubscriber(object):
     def get_action_set(self):
         set = ActionSet()
         if self._axes is None or self._buttons is None:
-            # dummy action to test without hardware slider
-            head = Pr2MoveHeadAction()
-            set.add_action(head)
-            return set
+            # default action to test without hardware slider
+            return DefaultAction()
 
         if not self.is_valid_action_set():
             return None
