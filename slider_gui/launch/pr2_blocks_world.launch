@@ -46,6 +46,7 @@
   <node name="time_step" pkg="dynamic_reconfigure" type="dynparam" args="set gazebo time_step 0.001"/>
  -->
   <node name="kinect_imager_rate" pkg="dynamic_reconfigure" type="dynparam" args="set head_mount_kinect_rgb imager_rate 20"/>
+  <node name="image_hack_listener" pkg="slider_gui." type="image_hack.py" />
 
   <!--
   <node name="move_pr2" pkg="pr2_gazebo" type="move_pr2"/>
