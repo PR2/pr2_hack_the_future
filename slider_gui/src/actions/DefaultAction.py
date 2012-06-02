@@ -12,6 +12,9 @@ class DefaultAction(ActionSet):
         super(DefaultAction, self).__init__()
 
         head = Pr2MoveHeadAction()
+        values = head.values()
+        values[1] = 0
+        head.set_values(values)
         self.add_action(head)
 
         torso = Pr2MoveTorsoAction()
@@ -25,16 +28,16 @@ class DefaultAction(ActionSet):
 
         rarm = Pr2MoveRightArmAction()
         rvalues = rarm.values()
-        rvalues[0] = -40
-        rvalues[1] = 60
-        rvalues[3] = -40
+        rvalues[0] = -85
+        rvalues[2] = -190
+        rvalues[3] = -90
         rarm.set_values(rvalues)
         self.add_action(rarm)
 
         larm = Pr2MoveLeftArmAction()
         lvalues = larm.values()
         lvalues[0] = -rvalues[0]
-        lvalues[1] = rvalues[1]
+        lvalues[2] = -rvalues[2]
         lvalues[3] = rvalues[3]
         larm.set_values(lvalues)
         self.add_action(larm)
