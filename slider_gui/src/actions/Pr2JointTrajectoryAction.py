@@ -28,6 +28,18 @@ class Pr2JointTrajectoryAction(Action):
             # clamp values to valid range
             self._values[i] = max(desc['min'], min(values[i], desc['max']))
 
+    def get_value(self, label):
+        indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
+        if len(indexes) == 1:
+            return self._values[indexes[0]]
+        raise KeyError('joint with label "%s" not found' % label)
+
+    def update_value(self, label, value):
+        indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
+        if len(indexes) == 1:
+            self._values[indexes[0]] = value
+        raise KeyError('joint with label "%s" not found' % label)
+
     def to_string(self):
         data = []
         for value in self._values:
@@ -47,8 +59,8 @@ class Pr2JointTrajectoryAction(Action):
         super(Pr2JointTrajectoryAction, self).deserialize(stream)
         self._values = stream.deserialize_data()
 
-    def _add_joint(self, label, min, max):
-        self._joints.append({'label': label, 'min': min, 'max': max})
+    def _add_joint(self, label, min, max, single_step):
+        self._joints.append({'label': label, 'min': min, 'max': max, 'single_step': single_step})
         # default value between min and max
         self._values.append((max + min) / 2.0)
 

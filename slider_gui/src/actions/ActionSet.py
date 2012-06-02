@@ -23,6 +23,28 @@ class ActionSet(Action):
         for action in self._actions:
             action.set_duration(duration)
 
+    def get_value(self, label):
+        for action in self._actions:
+            try:
+                value = action.get_value(label)
+                return value
+            except AttributeError:
+                # action does not support get_value
+                pass
+            except KeyError:
+                # action does not have a joint with that label
+                pass
+        raise KeyError('joint with label "%s" not found' % label)
+
+    def update_value(self, label, value):
+        for action in self._actions:
+            try:
+                action.update_value(label, value)
+                return
+            except:
+                pass
+        raise KeyError('joint with label "%s" not found' % label)
+
     def to_string(self):
         data = []
         for action in self._actions:

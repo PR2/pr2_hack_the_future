@@ -7,12 +7,12 @@ import rospy
 
 class Pr2GripperAction(Action):
 
-    def __init__(self, topic):
+    def __init__(self, topic, label):
         super(Pr2GripperAction, self).__init__()
         self._pub = rospy.Publisher(topic, Pr2GripperCommand)
         self._min_value = 0.0
         self._max_value = 0.08
-        self._joints = [{'label': 'gripper', 'min': self._min_value, 'max': self._max_value}]
+        self._joints = [{'label': label, 'min': self._min_value, 'max': self._max_value, 'single_step': 0.005}]
         self._values = [(self._max_value- self._min_value) / 2.0]
         self._timer = None
 
@@ -20,6 +20,18 @@ class Pr2GripperAction(Action):
         # clamp value to valid range
         assert(len(values) == 1)
         self._values = [max(self._min_value, min(values[0], self._max_value))]
+
+    def get_value(self, label):
+        indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
+        if len(indexes) == 1:
+            return self._values[indexes[0]]
+        raise KeyError('joint with label "%s" not found' % label)
+
+    def update_value(self, label, value):
+        indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
+        if len(indexes) == 1:
+            self._values[indexes[0]] = value
+        raise KeyError('joint with label "%s" not found' % label)
 
     def to_string(self):
         return '%.1f' % (100 * self._values[0]) 
