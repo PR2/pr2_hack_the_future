@@ -419,8 +419,8 @@ for i in range(main_window.PoseList_tabWidget.count()):
     table_view.setItemDelegateForColumn(0, duration_delegate)
     delegates.append(duration_delegate)
     model.add_delegates(table_view)
-    table_view.doubleClicked.connect(test_clicked)
-    table_view.verticalHeader().sectionDoubleClicked.connect(test_clicked)
+    table_view.clicked.connect(test_clicked)
+    table_view.verticalHeader().sectionClicked.connect(test_clicked)
     models.append(model)
 
 def toggle_model_editable():
@@ -537,14 +537,12 @@ def get_selected_row():
         return row
     #print 'get_selected_row() None'
     return None
-def test_selected():
+def execute_selected():
     row = get_selected_row()
     if row is not None:
         model = get_current_model()
         print 'execute %d' % row
         model.action_sequence().actions()[row].execute()
-
-main_window.test_selected_pushButton.clicked.connect(test_selected)
 
 
 def set_selected_row(row):
@@ -598,7 +596,7 @@ def stop_sequence():
     action_sequence.stop()
     running_sequence = None
 
-def execute_sequence(index):
+def execute_sequence(index, first_action = None):
     global running_sequence
     if running_sequence == -1:
         print 'execute_sequence() skip execute due to running sequence'
@@ -612,10 +610,18 @@ def execute_sequence(index):
     action_sequence = model.action_sequence()
     action_sequence.executing_action_signal.connect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.connect(finished_executing_current_sequence)
-    action_sequence.execute_all()
+    action_sequence.execute_all(first_action)
 
 def execute_current_sequence():
     execute_sequence(get_current_tab_index())
+
+def execute_current_sequence_from_selection():
+    row = get_selected_row()
+    if row == get_row_count() - 1:
+        row = None
+    execute_sequence(get_current_tab_index(), row)
+
+main_window.run_sequence_from_selection_pushButton.clicked.connect(execute_current_sequence_from_selection)
 
 
 select_row_signal = RelaySignalInt()
@@ -642,7 +648,7 @@ def check_buttons():
         else:
             select_row_signal.emit(0)
     elif KontrolSubscriber.play_button in triggered_buttons:
-        test_selected()
+        execute_selected()
     elif KontrolSubscriber.next_button in triggered_buttons:
         if get_selected_row() is not None:
             select_row_signal.emit(get_selected_row() + 1)

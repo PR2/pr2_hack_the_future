@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Puppet</string>
+   <string>Genie</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="windowTitle">
@@ -387,15 +387,15 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="test_selected_pushButton">
+           <widget class="QPushButton" name="run_sequence_from_selection_pushButton">
             <property name="toolTip">
-             <string>Execute the selected pose</string>
+             <string>Play sequence starting from selected row</string>
             </property>
             <property name="locale">
              <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
-             <string>Test Selected</string>
+             <string>Play Poses</string>
             </property>
            </widget>
           </item>
@@ -675,7 +675,10 @@
   </action>
   <action name="actionTest_Program">
    <property name="text">
-    <string>Test Program</string>
+    <string>Run Program</string>
+   </property>
+   <property name="toolTip">
+    <string>Run Program</string>
    </property>
   </action>
   <action name="actionExit">
