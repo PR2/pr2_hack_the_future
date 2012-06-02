@@ -377,9 +377,13 @@ def get_current_tab_index():
     return main_window.PoseList_tabWidget.currentIndex()
 
 def test_clicked(index):
+    try:
+        row = index.row()
+    except:
+        row = int(index)
     model = get_current_model()
-    print 'execute %d' % index.row()
-    model.action_sequence().actions()[index.row()].execute()
+    print 'execute %d' % row
+    model.action_sequence().actions()[row].execute()
 
 # override tab order by ignoring non-editable cells
 def custom_focusNextPrevChild(self, next, old_focusNextPrevChild=QTableView.focusNextPrevChild):
@@ -392,32 +396,41 @@ def custom_focusNextPrevChild(self, next, old_focusNextPrevChild=QTableView.focu
             return True
     return rc
 
-def custom_focusOutEvent(self, event, old_focusOutEvent=QTableView.focusOutEvent):
-    print 'focusOutEvent'
-    return old_focusOutEvent(self, event)
-
 for i in range(main_window.PoseList_tabWidget.count()):
     table_view = get_table_view(i)
     table_view.focusNextPrevChild = new.instancemethod(custom_focusNextPrevChild, table_view, None)
-    table_view.focusOutEvent = new.instancemethod(custom_focusOutEvent, table_view, None)
 
 # create models for each table view in the tabs
 models = []
+# keep reference to delegates to prevent being garbaged
+delegates = []
 for i in range(main_window.PoseList_tabWidget.count()):
     table_view = get_table_view(i)
-    model = PosesDataModel()
+    model = PosesDataModel(main_window.edit_model_radioButton.isChecked())
     model.actions_changed.connect(autosave_program)
     model.duration_modified.connect(update_sequence_duration)
     table_view.setModel(model)
     table_view.resizeColumnsToContents()
-    delegate = DoubleSpinBoxDelegate()
-    delegate.setMinimum(main_window.duration_doubleSpinBox.minimum())
-    delegate.setMaximum(main_window.duration_doubleSpinBox.maximum())
-    delegate.setSuffix(main_window.duration_doubleSpinBox.suffix())
-    delegate.setSingleStep(main_window.duration_doubleSpinBox.singleStep())
-    table_view.setItemDelegateForColumn(0, delegate)
+    duration_delegate = DoubleSpinBoxDelegate()
+    duration_delegate.setMinimum(main_window.duration_doubleSpinBox.minimum())
+    duration_delegate.setMaximum(main_window.duration_doubleSpinBox.maximum())
+    duration_delegate.setSuffix(main_window.duration_doubleSpinBox.suffix())
+    duration_delegate.setSingleStep(main_window.duration_doubleSpinBox.singleStep())
+    table_view.setItemDelegateForColumn(0, duration_delegate)
+    delegates.append(duration_delegate)
+    model.add_delegates(table_view)
     table_view.doubleClicked.connect(test_clicked)
+    table_view.verticalHeader().sectionDoubleClicked.connect(test_clicked)
     models.append(model)
+
+def toggle_model_editable():
+    for i in range(main_window.PoseList_tabWidget.count()):
+        models[i].set_editable(main_window.edit_model_radioButton.isChecked())
+        table_view = get_table_view(i)
+        table_view.resizeColumnsToContents()
+
+main_window.read_only_model_radioButton.clicked.connect(toggle_model_editable)
+main_window.edit_model_radioButton.clicked.connect(toggle_model_editable)
 
 def get_current_model():
     index = get_current_tab_index()

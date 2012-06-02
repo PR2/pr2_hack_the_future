@@ -36,6 +36,17 @@ class ActionSet(Action):
                 pass
         raise KeyError('joint with label "%s" not found' % label)
 
+    def get_joint_info(self, label):
+        for action in self._actions:
+            try:
+                indexes = [i for i, data in enumerate(action._joints) if data['label'] == label]
+                if len(indexes) == 1:
+                    return action._joints[indexes[0]]
+            except AttributeError:
+                # action does not support get_value
+                pass
+        raise KeyError('joint with label "%s" not found' % label)
+
     def update_value(self, label, value):
         for action in self._actions:
             try:
