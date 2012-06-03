@@ -46,6 +46,8 @@ class KontrolSubscriber(object):
         self._pressed_buttons = set()
         self._last_larm = None
         self._last_rarm = None
+        self._last_lgrip = None
+        self._last_rgrip = None
         rospy.Subscriber('korg_joy', Joy, self._joy_callback)
 
     def _joy_callback(self, joy_msg):
@@ -102,31 +104,40 @@ class KontrolSubscriber(object):
             rarm_data.append(self._axes[16])
             rarm_data[1] = -rarm_data[1]
 
+            lgrip_data = [self._axes[7]]
+            rgrip_data = [lgrip_data[0]]
+
         if mode == 0 or mode == 1:
             larm = Pr2MoveLeftArmAction()
             self._set_transformed_data(larm, larm_data)
             set.add_action(larm)
             self._last_larm = larm
-        elif mode == 2 and self._last_larm is not None:
-            set.add_action(self._last_larm.deepcopy())
 
-        lgrip = Pr2MoveLeftGripperAction()
-        lgrip_data = [self._axes[7]]
-        self._set_transformed_data(lgrip, lgrip_data)
-        set.add_action(lgrip)
+            lgrip = Pr2MoveLeftGripperAction()
+            self._set_transformed_data(lgrip, lgrip_data)
+            set.add_action(lgrip)
+            self._last_lgrip = lgrip
+        elif mode == 2:
+            if self._last_larm is not None:
+                set.add_action(self._last_larm.deepcopy())
+            if self._last_lgrip is not None:
+                set.add_action(self._last_lgrip.deepcopy())
 
         if mode == 0 or mode == 2:
             rarm = Pr2MoveRightArmAction()
             self._set_transformed_data(rarm, rarm_data)
             set.add_action(rarm)
             self._last_rarm = rarm
-        elif mode == 1 and self._last_rarm is not None:
-            set.add_action(self._last_rarm.deepcopy())
 
-        rgrip = Pr2MoveRightGripperAction()
-        rgrip_data = lgrip_data
-        self._set_transformed_data(rgrip, rgrip_data)
-        set.add_action(rgrip)
+            rgrip = Pr2MoveRightGripperAction()
+            self._set_transformed_data(rgrip, rgrip_data)
+            set.add_action(rgrip)
+            self._last_rgrip = rgrip
+        elif mode == 1:
+            if self._last_rarm is not None:
+                set.add_action(self._last_rarm.deepcopy())
+            if self._last_rgrip is not None:
+                set.add_action(self._last_rgrip.deepcopy())
 
         duration = self._transform_value(self._axes[17], 0.5, 5.0)
         set.set_duration(duration)
