@@ -1,3 +1,5 @@
+import copy
+
 import roslib
 roslib.load_manifest('actionlib')
 roslib.load_manifest('pr2_controllers_msgs')
@@ -48,7 +50,7 @@ class Pr2JointTrajectoryAction(Action):
 
     def deepcopy(self):
         action = super(Pr2JointTrajectoryAction, self).deepcopy()
-        action._values = self._values
+        action._values = copy.deepcopy(self._values)
         return action
 
     def serialize(self, stream):
