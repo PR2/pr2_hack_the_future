@@ -8,4 +8,5 @@
    <node pkg="slider_gui" type="program_runner.py" name="program_runner" output="screen" >
       <remap from="ps3_joy" to="joy" />
    </node>
+   <include file="$(find face_detector)/launch/face_detector_action.wide.launch"/>
 </launch>
