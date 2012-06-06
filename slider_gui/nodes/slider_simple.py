@@ -24,6 +24,7 @@ from CollisionChecker import CollisionChecker
 from DoubleSpinBoxDelegate import DoubleSpinBoxDelegate
 from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
+from actions.ActionSet import ActionSet
 from actions.Pr2LookAtFace import Pr2LookAtFace
 from ProgramQueue import ProgramQueue
 from Ps3Subscriber import Ps3Subscriber
@@ -487,9 +488,11 @@ main_window.insert_before_pushButton.clicked.connect(insert_current_before_selec
 
 def insert_find_face():
     model = get_current_model()
+    action_set = ActionSet()
     action = Pr2LookAtFace()
-    action.set_duration(main_window.duration_doubleSpinBox.value())
-    model.add_action(action)
+    action_set.add_action(action)
+    action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    model.add_action(action_set)
 
 main_window.find_face_pushButton.clicked.connect(insert_find_face)
 
