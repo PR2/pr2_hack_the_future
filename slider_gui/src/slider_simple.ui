@@ -168,7 +168,7 @@
               </attribute>
               <column>
                <property name="text">
-                <string>Duration</string>
+                <string>Time</string>
                </property>
               </column>
               <column>
@@ -427,7 +427,7 @@
        </layout>
       </widget>
       <widget class="QWidget" name="widget_right">
-       <layout class="QVBoxLayout" name="robot_view_verticalLayout" stretch="0,1,0">
+       <layout class="QVBoxLayout" name="robot_view_verticalLayout" stretch="0,1,0,0">
         <property name="topMargin">
          <number>5</number>
         </property>
@@ -576,6 +576,36 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="input_method_horizontalLayout">
+          <item>
+           <widget class="QLabel" name="input_method_label">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+            <property name="text">
+             <string>Input Method</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="input_method_comboBox"/>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="label">
@@ -583,7 +613,7 @@
              <locale language="English" country="UnitedStates"/>
             </property>
             <property name="text">
-             <string>Duration</string>
+             <string>Time</string>
             </property>
            </widget>
           </item>

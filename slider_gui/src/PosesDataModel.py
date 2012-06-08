@@ -193,7 +193,7 @@ class PosesDataModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
                 if section == 0:
-                    return 'Duration'
+                    return 'Time'
                 elif not self._editable and section == 1:
                     return 'Joints'
                 elif self._editable and section in self._joint_columns.keys():

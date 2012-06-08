@@ -306,6 +306,27 @@ def current_tab_changed(index):
 main_window.PoseList_tabWidget.currentChanged.connect(current_tab_changed)
 
 
+INPUT_METHOD_SLIDERS = 0
+INPUT_METHOD_INTERACTIVE_MARKERS = 1
+INPUT_METHOD_ROBOT = 2
+main_window.input_method_comboBox.insertItem(INPUT_METHOD_SLIDERS, 'Sliders')
+#main_window.input_method_comboBox.insertItem(INPUT_METHOD_INTERACTIVE_MARKERS, 'Interactive Markers')
+if not use_sim_time:
+    main_window.input_method_comboBox.insertItem(INPUT_METHOD_ROBOT, 'Robot')
+def is_in_slider_mode():
+    return main_window.input_method_comboBox.currentIndex() == INPUT_METHOD_SLIDERS
+def change_input_method():
+    index = main_window.input_method_comboBox.currentIndex()
+    print 'change_input_method()', index
+
+main_window.input_method_comboBox.setCurrentIndex(INPUT_METHOD_SLIDERS)
+main_window.input_method_comboBox.currentIndexChanged.connect(change_input_method)
+if main_window.input_method_comboBox.count() <= 1:
+    main_window.input_method_label.setVisible(False)
+    main_window.input_method_comboBox.setVisible(False)
+    main_window.input_method_horizontalLayout.parent().removeItem(main_window.input_method_horizontalLayout)
+
+
 kontrol_subscriber = KontrolSubscriber()
 collision_checker = CollisionChecker()
 currently_in_collision = False
@@ -330,9 +351,22 @@ class Foo(QObject):
         self._scene_notification_timer.timeout.connect(self._hide_scene_notification)
         self._scene_notification.finished.connect(self._hide_scene_notification)
 
+        self._input_notification = QDialog(main_window)
+        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src', 'wrong_input_method_dialog.ui')
+        loadUi(ui_file, self._input_notification)
+        self._input_notification_timer = QTimer(main_window)
+        self._input_notification_timer.setInterval(5000)
+        self._input_notification_timer.setSingleShot(True)
+        self._input_notification_timer.timeout.connect(self._hide_input_method_notification)
+        self._input_notification.finished.connect(self._hide_input_method_notification)
+
     def _hide_scene_notification(self, result=None):
         self._scene_notification_timer.stop()
         self._scene_notification.hide()
+
+    def _hide_input_method_notification(self, result=None):
+        self._input_notification_timer.stop()
+        self._input_notification.hide()
 
     def update_current_value(self):
         self._update_current_value_signal.emit()
@@ -340,6 +374,20 @@ class Foo(QObject):
     def _update_current_value(self):
         global check_collisions
         global currently_in_collision
+
+        if self._action_set is not None:
+            self._action_set.stop()
+        self._action_set = kontrol_subscriber.get_action_set()
+        self.current_duration_changed.emit(self._action_set.get_duration())
+
+        if not is_in_slider_mode():
+            # open dialog which closes after some s_hide_scene_notification_hide_scene_notificationeconds or when confirmed manually
+            self._input_notification.show()
+            self._input_notification_timer.start()
+            return
+        if self._input_notification_timer.isActive():
+            self._hide_input_method_notification()
+
         #print('update_current_value()')
         if not kontrol_subscriber.is_valid_action_set():
             # open dialog which closes after some seconds or when confirmed manually
@@ -348,11 +396,6 @@ class Foo(QObject):
             return
         if self._scene_notification_timer.isActive():
             self._hide_scene_notification()
-
-        if self._action_set is not None:
-            self._action_set.stop()
-        self._action_set = kontrol_subscriber.get_action_set()
-        self.current_duration_changed.emit(self._action_set.get_duration())
 
         joint_values = kontrol_subscriber.get_joint_values()
         if check_collisions:
