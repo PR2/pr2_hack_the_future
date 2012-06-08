@@ -553,6 +553,16 @@
              <item>
               <widget class="QComboBox" name="scene_comboBox"/>
              </item>
+             <item>
+              <widget class="QPushButton" name="reset_sim_pushButton">
+               <property name="locale">
+                <locale language="English" country="UnitedStates"/>
+               </property>
+               <property name="text">
+                <string>Reset Boxes</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

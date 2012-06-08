@@ -8,7 +8,7 @@ from StringIO import StringIO
 import sys
 import tempfile
 
-import roslib;
+import roslib
 roslib.load_manifest('python_qt_binding')
 roslib.load_manifest('rviz')
 roslib.load_manifest('rviz_backdrop')
@@ -32,6 +32,7 @@ import rviz
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import Image
 from SimpleFormat import SimpleFormat
+import std_srvs.srv._Empty
 
 app = QApplication(sys.argv)
 
@@ -277,6 +278,19 @@ index = main_window.scene_comboBox.findText('None')
 if index != -1:
     main_window.scene_comboBox.setCurrentIndex(index)
 
+
+
+def reset_sim():
+    print 'reset_sim()'
+    service = '/gazebo/reset_simulation'
+    rospy.wait_for_service(service)
+    reset_sim_service = rospy.ServiceProxy(service, std_srvs.srv._Empty.Empty)
+    try:
+        reset_sim_service()
+    except rospy.ServiceException, e:
+        print "Service did not process request: %s" % str(e)
+
+main_window.reset_sim_pushButton.clicked.connect(reset_sim)
 
 def autosave_program():
     print 'autosave_program()'
