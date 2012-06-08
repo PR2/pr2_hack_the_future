@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1243</width>
     <height>500</height>
    </rect>
   </property>
@@ -672,7 +672,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1243</width>
      <height>25</height>
     </rect>
    </property>
@@ -744,7 +744,10 @@
   </action>
   <action name="actionDefault_Pose">
    <property name="text">
-    <string>Default Pose</string>
+    <string>Append Default Pose</string>
+   </property>
+   <property name="toolTip">
+    <string>Append Default Pose</string>
    </property>
   </action>
   <action name="actionSave_Screenshot">

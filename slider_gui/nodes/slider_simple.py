@@ -905,7 +905,21 @@ def execute_default_pose():
     default_pose.execute()
 
 default_pose.execute_finished_signal.connect(finished_executing_default_pose)
-main_window.actionDefault_Pose.triggered.connect(execute_default_pose)
+
+def add_default_pose():
+    model = get_current_model()
+    action_set = ActionSet()
+    action = DefaultAction()
+    action_set.add_action(action)
+    action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    model.add_action(action_set)
+
+    table_view = get_table_view(get_current_tab_index())
+    rows = len(model.action_sequence().actions())
+    table_view.resizeColumnsToContents()
+    table_view.selectRow(rows - 1)
+
+main_window.actionDefault_Pose.triggered.connect(add_default_pose)
 
 
 main_window.actionTest_Program.triggered.connect(execute_current_sequence)
