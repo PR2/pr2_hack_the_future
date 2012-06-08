@@ -605,8 +605,8 @@ def stop_sequence():
     if running_sequence is None:
         print 'stop_sequence() skipped - not running'
         return
-    print 'stop_sequence()'
-    model = get_current_model()
+    print 'stop_sequence()', running_sequence
+    model = models[running_sequence]
     action_sequence = model.action_sequence()
     action_sequence.executing_action_signal.disconnect(set_selected_row_signal.emit)
     action_sequence.execute_sequence_finished_signal.disconnect(finished_executing_current_sequence)
@@ -620,7 +620,7 @@ def execute_sequence(index, first_action = None):
         return
     if running_sequence is not None:
         stop_sequence()
-    print 'execute_sequence()'
+    print 'execute_sequence()', index
     running_sequence = index
     set_tab(index)
     model = models[index]

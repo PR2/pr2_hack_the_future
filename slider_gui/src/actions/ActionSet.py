@@ -84,7 +84,7 @@ class ActionSet(Action):
         if self._executing > 0:
             print('ActionSet.execute() skipped because previous execute has not yet finished')
             return
-        print('ActionSet.execute() %d' % len(self._actions))
+        #print('ActionSet.execute() %d' % len(self._actions))
         self._executing = len(self._actions)
         for action in self._actions:
             action.execute_finished_signal.connect(self._action_finished)
@@ -94,7 +94,7 @@ class ActionSet(Action):
         assert(self._executing > 0)
         self._executing -= 1
         if self._executing == 0:
-            print('ActionSet.execute() finished\n')
+            #print('ActionSet.execute() finished\n')
             self.stop()
             self._execute_finished()
 
