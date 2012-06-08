@@ -95,11 +95,14 @@ class ActionSet(Action):
         self._executing -= 1
         if self._executing == 0:
             #print('ActionSet.execute() finished\n')
-            self.stop()
+            self._stop()
             self._execute_finished()
 
     def stop(self):
         print('ActionSet.stop()\n')
+        self._stop()
+        self._executing = 0
+
+    def _stop(self):
         for action in self._actions:
             action.execute_finished_signal.disconnect(self._action_finished)
-        self._executing = 0
