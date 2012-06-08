@@ -411,9 +411,19 @@ def custom_focusNextPrevChild(self, next, old_focusNextPrevChild=QTableView.focu
             return True
     return rc
 
+# override key press event to handle delete key pressed
+def custom_keyPressEvent(self, event, old_keyPressEvent=QTableView.keyPressEvent):
+    if event.key() == Qt.Key_Delete and event.modifiers() == Qt.NoModifier:
+        if delete_selected():
+            print 'custom_keyPressEvent()', 'delete row'
+            event.accept()
+            return True
+    return old_keyPressEvent(self, event)
+
 for i in range(main_window.PoseList_tabWidget.count()):
     table_view = get_table_view(i)
     table_view.focusNextPrevChild = new.instancemethod(custom_focusNextPrevChild, table_view, None)
+    table_view.keyPressEvent = new.instancemethod(custom_keyPressEvent, table_view, None)
 
 # create models for each table view in the tabs
 models = []
@@ -514,7 +524,7 @@ main_window.find_face_pushButton.clicked.connect(insert_find_face)
 def delete_selected():
     row = get_selected_row()
     if row is None:
-        return
+        return False
 
     model = get_current_model()
     model.remove_action(row)
@@ -525,6 +535,7 @@ def delete_selected():
         row = row - 1
     table_view.resizeColumnsToContents()
     table_view.selectRow(row)
+    return True
 
 main_window.delete_selected_pushButton.clicked.connect(delete_selected)
 
