@@ -316,6 +316,44 @@ def current_tab_changed(index):
 main_window.PoseList_tabWidget.currentChanged.connect(current_tab_changed)
 
 
+class TrajectoryLock():
+    def __init__(self, ns, joint_bounds):
+        self._ns = ns
+        self._subscriber = None
+        self._joint_bounds = joint_bounds
+        self._publisher = rospy.Publisher('/%s/command' % ns, trajectory_msgs.msg.JointTrajectory)
+
+    def start(self):
+        if self._subscriber is not None:
+            self._subscriber.unregister()
+        self._subscriber = rospy.Subscriber('state', pr2_controllers_msgs.msg.JointTrajectoryControllerState, self._receive_state)
+
+    def stop(self):
+        if self._subscriber is not None:
+            self._subscriber.unregister()
+            self._subscriber = None
+
+    def _receive_state(self, msg):
+        max_error = max([abs(x) for x in msg.error.positions])
+
+        exceeded = [abs(x) > y for x,y in zip(msg.error.positions, self._joint_bounds)]
+
+        #print "All: %s" % "  ".join(["% .4f" % x for x in msg.error.positions] )
+
+        if any(exceeded):
+            #print "Exceeded: %.4f" % max_error
+
+            # Copy our current state into the commanded state
+            cmd = trajectory_msgs.msg.JointTrajectory()
+            cmd.header.stamp = msg.header.stamp
+            cmd.joint_names = msg.joint_names
+            cmd.points.append(trajectory_msgs.msg.JointTrajectoryPoint())
+            cmd.points[0].time_from_start = rospy.Duration(.125)
+            cmd.points[0].positions = msg.actual.positions
+            self._publisher.publish(cmd)
+        #else:
+            #print "Small: %.4f" % max_error
+
 # pass signal across thread boundaries
 class JointObserver(QObject):
     current_values_changed = Signal(str)
@@ -326,27 +364,26 @@ class JointObserver(QObject):
         self._latest_joint_state = None
         self._update_current_value_signal.connect(self._update_current_value)
         self._subscriber = None
-        self._subscriber2 = None
-        self._publisher = rospy.Publisher('command', trajectory_msgs.msg.JointTrajectory)
-        self._joint_bounds = [.08] * 10
+        self._trajectory_locks = []
+        self._trajectory_locks.append(TrajectoryLock('head_traj_controller_loose', [.08, .08]))
+        self._trajectory_locks.append(TrajectoryLock('l_arm_controller_loose', [.02, .02, .02, .02, .02, .06, .06]))
+        self._trajectory_locks.append(TrajectoryLock('r_arm_controller_loose', [.02, .02, .02, .02, .02, .06, .06]))
 
     def start(self):
         print 'JointObserver.start()'
         if self._subscriber is not None:
             self._subscriber.unregister()
         self._subscriber = rospy.Subscriber('/joint_states', JointState, self._receive_joint_states)
-        if self._subscriber2 is not None:
-            self._subscriber2.unregister()
-        self._subscriber2 = rospy.Subscriber('state', pr2_controllers_msgs.msg.JointTrajectoryControllerState, self._receive_state)
+        for trajectory_lock in self._trajectory_locks:
+            trajectory_lock.start()
 
     def stop(self):
         print 'JointObserver.stop()'
         if self._subscriber is not None:
             self._subscriber.unregister()
             self._subscriber = None
-        if self._subscriber2 is not None:
-            self._subscriber2.unregister()
-            self._subscriber2 = None
+        for trajectory_lock in self._trajectory_locks:
+            trajectory_lock.stop()
 
     def _receive_joint_states(self, joint_state_msg):
         self._latest_joint_state = joint_state_msg
@@ -371,27 +408,6 @@ class JointObserver(QObject):
 
         value = self.action_set.to_string()
         self.current_values_changed.emit(value)
-
-    def _receive_state(self, msg):
-        max_error = max([abs(x) for x in msg.error.positions])
-
-        exceeded = [abs(x) > y for x,y in zip(msg.error.positions, joint_bounds)]
-
-        #print "All: %s" % "  ".join(["% .4f" % x for x in msg.error.positions] )
-
-        if any(exceeded):
-            #print "Exceeded: %.4f" % max_error
-
-            # Copy our current state into the commanded state
-            cmd = trajectory_msgs.msg.JointTrajectory()
-            cmd.header.stamp = msg.header.stamp
-            cmd.joint_names = msg.joint_names
-            cmd.points.append( trajectory_msgs.msg.JointTrajectoryPoint())
-            cmd.points[0].time_from_start = rospy.Duration(.125)
-            cmd.points[0].positions = msg.actual.positions
-            self._publisher.publish(cmd)
-        #else:
-            #print "Small: %.4f" % max_error
 
 joint_observer = JointObserver()
 joint_observer.current_values_changed.connect(main_window.lineEdit.setText)
