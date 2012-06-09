@@ -30,6 +30,9 @@ class Pr2JointTrajectoryAction(Action):
             # clamp values to valid range
             self._values[i] = max(desc['min'], min(values[i], desc['max']))
 
+    def get_labels(self):
+        return [data['label'] for data in self._joints]
+
     def get_value(self, label):
         indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
         if len(indexes) == 1:
@@ -40,6 +43,7 @@ class Pr2JointTrajectoryAction(Action):
         indexes = [i for i, data in enumerate(self._joints) if data['label'] == label]
         if len(indexes) == 1:
             self._values[indexes[0]] = value
+            return
         raise KeyError('joint with label "%s" not found' % label)
 
     def to_string(self):

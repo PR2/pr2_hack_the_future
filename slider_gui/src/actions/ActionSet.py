@@ -23,6 +23,16 @@ class ActionSet(Action):
         for action in self._actions:
             action.set_duration(duration)
 
+    def get_labels(self):
+        labels = []
+        for action in self._actions:
+            try:
+                labels += action.get_labels()
+            except AttributeError:
+                # action does not support get_value
+                pass
+        return labels
+
     def get_value(self, label):
         for action in self._actions:
             try:

@@ -20,7 +20,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Wrong slider mode - press SCENE button</string>
+   <string>Wrong input method - select SLIDER input</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import math
 import new
 import os
 import random
@@ -26,11 +27,18 @@ from KontrolSubscriber import KontrolSubscriber
 from PosesDataModel import PosesDataModel
 from actions.ActionSet import ActionSet
 from actions.Pr2LookAtFace import Pr2LookAtFace
+from actions.Pr2MoveHeadAction import Pr2MoveHeadAction
+from actions.Pr2MoveLeftArmAction import Pr2MoveLeftArmAction
+from actions.Pr2MoveRightArmAction import Pr2MoveRightArmAction
+import pr2_mechanism_msgs.srv._ListControllers
+import pr2_mechanism_msgs.srv._LoadController
+import pr2_mechanism_msgs.srv._SwitchController
 from ProgramQueue import ProgramQueue
 from Ps3Subscriber import Ps3Subscriber
 import rviz
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import Image
+from sensor_msgs.msg import JointState 
 from SimpleFormat import SimpleFormat
 import std_srvs.srv._Empty
 
@@ -306,18 +314,144 @@ def current_tab_changed(index):
 main_window.PoseList_tabWidget.currentChanged.connect(current_tab_changed)
 
 
+# pass signal across thread boundaries
+class JointObserver(QObject):
+    current_values_changed = Signal(str)
+    _update_current_value_signal = Signal()
+    def __init__(self):
+        super(JointObserver, self).__init__()
+        self.action_set = None
+        self._latest_joint_state = None
+        self._update_current_value_signal.connect(self._update_current_value)
+        self._subscriber = None
+
+    def start(self):
+        print 'JointObserver.start()'
+        if self._subscriber is not None:
+            self._subscriber.unregister()
+        self._subscriber = rospy.Subscriber('/joint_states', JointState, self._receive_joint_states)
+
+    def stop(self):
+        print 'JointObserver.stop()'
+        if self._subscriber is not None:
+            self._subscriber.unregister()
+            self._subscriber = None
+
+    def _receive_joint_states(self, joint_state_msg):
+        self._latest_joint_state = joint_state_msg
+        self._update_current_value_signal.emit()
+
+    def _update_current_value(self):
+        self.action_set = ActionSet()
+        self.action_set.add_action(Pr2MoveHeadAction())
+        self.action_set.add_action(Pr2MoveLeftArmAction())
+        self.action_set.add_action(Pr2MoveRightArmAction())
+
+        labels = self.action_set.get_labels()
+
+        for label in labels:
+            value = self._latest_joint_state.position[self._latest_joint_state.name.index(label)]
+            value *= 180.0 / math.pi
+            try:
+                self.action_set.update_value(label, value)
+            except KeyError, e:
+                print 'JointObserver._update_current_value() label "%s" not found' % label
+                pass
+
+        value = self.action_set.to_string()
+        self.current_values_changed.emit(value)
+
+joint_observer = JointObserver()
+joint_observer.current_values_changed.connect(main_window.lineEdit.setText)
+
+
 INPUT_METHOD_SLIDERS = 0
 INPUT_METHOD_INTERACTIVE_MARKERS = 1
 INPUT_METHOD_ROBOT = 2
-main_window.input_method_comboBox.insertItem(INPUT_METHOD_SLIDERS, 'Sliders')
-#main_window.input_method_comboBox.insertItem(INPUT_METHOD_INTERACTIVE_MARKERS, 'Interactive Markers')
+main_window.input_method_comboBox.addItem('Sliders', INPUT_METHOD_SLIDERS)
+#main_window.input_method_comboBox.addItem('Interactive Markers', INPUT_METHOD_INTERACTIVE_MARKERS)
 if not use_sim_time:
-    main_window.input_method_comboBox.insertItem(INPUT_METHOD_ROBOT, 'Robot')
+    main_window.input_method_comboBox.addItem('Robot', INPUT_METHOD_ROBOT)
 def is_in_slider_mode():
     return main_window.input_method_comboBox.currentIndex() == INPUT_METHOD_SLIDERS
+
+def load_controllers(controllers):
+    service = '/pr2_controller_manager/list_controllers'
+    rospy.wait_for_service(service)
+    service_proxy = rospy.ServiceProxy(service, pr2_mechanism_msgs.srv._ListControllers.ListControllers)
+    try:
+        request = pr2_mechanism_msgs.srv._ListControllers.ListControllersRequest()
+        response = service_proxy(request)
+        loaded_controllers = response.controllers
+    except rospy.ServiceException, e:
+        print 'Service did not process request: %s' % str(e)
+        return False
+
+    service = '/pr2_controller_manager/load_controller'
+    rospy.wait_for_service(service)
+    for name in controllers:
+        if name in loaded_controllers:
+            print 'load_controllers()', 'skip already loaded', name
+            continue
+        print 'load_controllers()', name
+        service_proxy = rospy.ServiceProxy(service, pr2_mechanism_msgs.srv._LoadController.LoadController)
+        try:
+            request = pr2_mechanism_msgs.srv._LoadController.LoadControllerRequest()
+            request.name = name
+            response = service_proxy(request)
+            if not response.ok:
+                return False
+        except rospy.ServiceException, e:
+            print 'Service did not process request: %s' % str(e)
+            return False
+    return True
+
+def switch_controllers(start_controllers, stop_controllers):
+    print 'switch_controllers()'
+    service = '/pr2_controller_manager/switch_controller'
+    rospy.wait_for_service(service)
+    service_proxy = rospy.ServiceProxy(service, pr2_mechanism_msgs.srv._SwitchController.SwitchController)
+    try:
+        request = pr2_mechanism_msgs.srv._SwitchController.SwitchControllerRequest()
+        request.start_controllers = start_controllers
+        request.stop_controllers = stop_controllers
+        response = service_proxy(request)
+        if not response.ok:
+            return False
+    except rospy.ServiceException, e:
+        print 'Service did not process request: %s' % str(e)
+        return False
+    return True
+
+manniquin_controllers_loaded = False
 def change_input_method():
+    global manniquin_controllers_loaded
+    global joint_observer
     index = main_window.input_method_comboBox.currentIndex()
+    input_method = main_window.input_method_comboBox.itemData(index)
     print 'change_input_method()', index
+
+    manniquin_controllers = ['r_arm_controller_loose', 'l_arm_controller_loose', 'head_traj_controller_loose']
+    standard_controllers = ['r_arm_controller', 'l_arm_controller', 'head_traj_controller']
+    if input_method == INPUT_METHOD_ROBOT:
+        # setup controllers for manniquin mode
+        if not manniquin_controllers_loaded:
+            # load controllers once
+            print 'change_input_method()', 'load manniquin controllers'
+            manniquin_controllers_loaded = load_controllers(manniquin_controllers)
+            if not manniquin_controllers_loaded:
+                QMessageBox.critical(main_window, main_window.tr('Loading controllers failed'), main_window.tr('Could not load manniquin controllers.'))
+        # switch to manniquin controllers
+        success = switch_controllers(manniquin_controllers, standard_controllers)
+        if success:
+            joint_observer.start()
+    else:
+        # restore standard controllers
+        success = switch_controllers(standard_controllers, manniquin_controllers)
+        if success:
+            joint_observer.stop()
+    if not success:
+        QMessageBox.critical(main_window, main_window.tr('Switching controllers failed'), main_window.tr('Could not switch controllers.'))
 
 main_window.input_method_comboBox.setCurrentIndex(INPUT_METHOD_SLIDERS)
 main_window.input_method_comboBox.currentIndexChanged.connect(change_input_method)
@@ -374,6 +508,7 @@ class Foo(QObject):
     def _update_current_value(self):
         global check_collisions
         global currently_in_collision
+        global joint_observer
 
         if self._action_set is not None:
             self._action_set.stop()
@@ -384,6 +519,7 @@ class Foo(QObject):
             # open dialog which closes after some s_hide_scene_notification_hide_scene_notificationeconds or when confirmed manually
             self._input_notification.show()
             self._input_notification_timer.start()
+            currently_in_collision = False
             return
         if self._input_notification_timer.isActive():
             self._hide_input_method_notification()
@@ -506,9 +642,12 @@ def get_current_model():
 
 
 def get_action_set():
-    action_set = kontrol_subscriber.get_action_set()
-    if action_set is not None:
-        action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    if is_in_slider_mode():
+        action_set = kontrol_subscriber.get_action_set()
+        if action_set is not None:
+            action_set.set_duration(main_window.duration_doubleSpinBox.value())
+    else:
+        action_set = joint_observer.action_set.deepcopy()
     return action_set
 
 def append_current():

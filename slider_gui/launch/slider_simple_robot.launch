@@ -7,4 +7,6 @@
   <node pkg="slider_gui" type="slider_simple.py" name="slider_simple">
     <remap from="ps3_joy" to="joy"/>
   </node>
+  <rosparam command="load" file="$(find pr2_mannequin_mode)/pr2_arm_controllers_loose.yaml"/>
+  <rosparam command="load" file="$(find pr2_mannequin_mode)/head_position_controller_loose.yaml"/>
 </launch>
