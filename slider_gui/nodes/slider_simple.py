@@ -30,6 +30,7 @@ from actions.Pr2LookAtFace import Pr2LookAtFace
 from actions.Pr2MoveHeadAction import Pr2MoveHeadAction
 from actions.Pr2MoveLeftArmAction import Pr2MoveLeftArmAction
 from actions.Pr2MoveRightArmAction import Pr2MoveRightArmAction
+from pr2_controllers_msgs.msg import *
 import pr2_mechanism_msgs.srv._ListControllers
 import pr2_mechanism_msgs.srv._LoadController
 import pr2_mechanism_msgs.srv._SwitchController
@@ -41,6 +42,7 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import JointState 
 from SimpleFormat import SimpleFormat
 import std_srvs.srv._Empty
+from trajectory_msgs.msg import *
 
 app = QApplication(sys.argv)
 
@@ -324,18 +326,27 @@ class JointObserver(QObject):
         self._latest_joint_state = None
         self._update_current_value_signal.connect(self._update_current_value)
         self._subscriber = None
+        self._subscriber2 = None
+        self._publisher = rospy.Publisher('command', trajectory_msgs.msg.JointTrajectory)
+        self._joint_bounds = [.08] * 10
 
     def start(self):
         print 'JointObserver.start()'
         if self._subscriber is not None:
             self._subscriber.unregister()
         self._subscriber = rospy.Subscriber('/joint_states', JointState, self._receive_joint_states)
+        if self._subscriber2 is not None:
+            self._subscriber2.unregister()
+        self._subscriber2 = rospy.Subscriber('state', pr2_controllers_msgs.msg.JointTrajectoryControllerState, self._receive_state)
 
     def stop(self):
         print 'JointObserver.stop()'
         if self._subscriber is not None:
             self._subscriber.unregister()
             self._subscriber = None
+        if self._subscriber2 is not None:
+            self._subscriber2.unregister()
+            self._subscriber2 = None
 
     def _receive_joint_states(self, joint_state_msg):
         self._latest_joint_state = joint_state_msg
@@ -360,6 +371,27 @@ class JointObserver(QObject):
 
         value = self.action_set.to_string()
         self.current_values_changed.emit(value)
+
+    def _receive_state(self, msg):
+        max_error = max([abs(x) for x in msg.error.positions])
+
+        exceeded = [abs(x) > y for x,y in zip(msg.error.positions, joint_bounds)]
+
+        #print "All: %s" % "  ".join(["% .4f" % x for x in msg.error.positions] )
+
+        if any(exceeded):
+            #print "Exceeded: %.4f" % max_error
+
+            # Copy our current state into the commanded state
+            cmd = trajectory_msgs.msg.JointTrajectory()
+            cmd.header.stamp = msg.header.stamp
+            cmd.joint_names = msg.joint_names
+            cmd.points.append( trajectory_msgs.msg.JointTrajectoryPoint())
+            cmd.points[0].time_from_start = rospy.Duration(.125)
+            cmd.points[0].positions = msg.actual.positions
+            self._publisher.publish(cmd)
+        #else:
+            #print "Small: %.4f" % max_error
 
 joint_observer = JointObserver()
 joint_observer.current_values_changed.connect(main_window.lineEdit.setText)
