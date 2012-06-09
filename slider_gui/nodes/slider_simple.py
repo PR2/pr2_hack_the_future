@@ -320,15 +320,17 @@ class TrajectoryLock():
     def __init__(self, ns, joint_bounds):
         self._ns = ns
         self._subscriber = None
-        self._joint_bounds = joint_bounds
+        self._joint_bounds = [float(x) for x in joint_bounds]
         self._publisher = rospy.Publisher('/%s/command' % ns, trajectory_msgs.msg.JointTrajectory)
 
     def start(self):
+        print 'TrajectoryLock.start()'
         if self._subscriber is not None:
             self._subscriber.unregister()
-        self._subscriber = rospy.Subscriber('state', pr2_controllers_msgs.msg.JointTrajectoryControllerState, self._receive_state)
+        self._subscriber = rospy.Subscriber('/%s/state' % self._ns, pr2_controllers_msgs.msg.JointTrajectoryControllerState, self._receive_state)
 
     def stop(self):
+        print 'TrajectoryLock.stop()'
         if self._subscriber is not None:
             self._subscriber.unregister()
             self._subscriber = None
