@@ -559,7 +559,7 @@
                 <locale language="English" country="UnitedStates"/>
                </property>
                <property name="text">
-                <string>Reset Boxes</string>
+                <string>Reset Blocks</string>
                </property>
               </widget>
              </item>

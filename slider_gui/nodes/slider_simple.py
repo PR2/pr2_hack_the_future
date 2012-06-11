@@ -301,6 +301,8 @@ def reset_sim():
         print "Service did not process request: %s" % str(e)
 
 main_window.reset_sim_pushButton.clicked.connect(reset_sim)
+if not show_point_clouds:
+    main_window.reset_sim_pushButton.setVisible(False)
 
 def autosave_program():
     print 'autosave_program()'
