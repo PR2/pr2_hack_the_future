@@ -15,6 +15,7 @@
   <depend package="korg_nanokontrol"/>
   <depend package="program_queue"/>
   <depend package="face_detector"/>
+  <depend package="sound_play"/>
 
   <depend package="rviz_backdrop"/>
   <depend package="sensor_msgs"/>

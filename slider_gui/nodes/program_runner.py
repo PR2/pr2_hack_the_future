@@ -12,6 +12,8 @@ from actions.DefaultAction import DefaultAction
 from Ps3Subscriber import Ps3Subscriber
 from SimpleFormat import SimpleFormat
 from program_queue.srv import *
+from sound_play.msg import SoundRequest
+from sound_play.libsoundplay import SoundClient
 
 class Runner:
     def __init__(self):
@@ -23,6 +25,8 @@ class Runner:
         self._default_pose.set_duration(8.0)
 
         self._ps3_subscriber = Ps3Subscriber()
+
+        self._soundhandle = SoundClient()
 
         rospy.Service('run_slider_program', CallProgram, self._handle_run_program)
         rospy.loginfo('Runner ready')
@@ -88,8 +92,17 @@ class Runner:
         elif Ps3Subscriber.cross_button in triggered_buttons:
             self._execute_sequence(3)
 
-        elif Ps3Subscriber.top_button in triggered_buttons or Ps3Subscriber.right_button in triggered_buttons or Ps3Subscriber.bottom_button in triggered_buttons or Ps3Subscriber.left_button in triggered_buttons:
-            self._stop_current_sequence()
+        elif Ps3Subscriber.top_button in triggered_buttons:
+            self._soundhandle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/sound1.wav')
+        elif Ps3Subscriber.right_button in triggered_buttons:
+            self._soundhandle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/four_beeps.wav')
+        elif Ps3Subscriber.bottom_button in triggered_buttons:
+            self._soundhandle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/sound3.wav')
+        elif Ps3Subscriber.left_button in triggered_buttons:
+            self._sound_handle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/two_beeps.wav')
+
+#        elif Ps3Subscriber.bottom_button in triggered_buttons or Ps3Subscriber.left_button in triggered_buttons:
+#            self._stop_current_sequence()
 
     def _execute_sequence(self, index):
         self._stop_current_sequence()
