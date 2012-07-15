@@ -99,10 +99,7 @@ class Runner:
         elif Ps3Subscriber.bottom_button in triggered_buttons:
             self._soundhandle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/sound3.wav')
         elif Ps3Subscriber.left_button in triggered_buttons:
-            self._sound_handle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/two_beeps.wav')
-
-#        elif Ps3Subscriber.bottom_button in triggered_buttons or Ps3Subscriber.left_button in triggered_buttons:
-#            self._stop_current_sequence()
+            self._soundhandle.playWave('/u/applications/ros/pr2_hack_the_future/slider_gui/sounds/thankyou.wav')
 
     def _execute_sequence(self, index):
         self._stop_current_sequence()
