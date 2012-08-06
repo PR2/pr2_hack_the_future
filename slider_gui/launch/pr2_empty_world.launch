@@ -1,14 +1,14 @@
 <launch>
   <!-- set use_sim_time flag -->
-  <arg name="use_sim_time" default="true" />
+  <param name="/use_sim_time" value="true" />
 
-  <!-- start empty world -->
-  <node name="gazebo" pkg="gazebo" type="gazebo" args="-u $(find gazebo_worlds)/worlds/empty.world" respawn="false" output="screen"/>
-
-
-  <!-- start gui -->
-  <!--<node name="gazebo_gui" pkg="gazebo" type="gui" respawn="false" output="screen"/>-->
+  <!-- start up empty world -->
+  <include file="$(find gazebo_worlds)/launch/empty_world_paused.launch">
+    <arg name="gui" value="false"/>
+  </include>
 
   <!-- start pr2 robot -->
   <include file="$(find pr2_gazebo)/launch/pr2.launch"/>
 </launch>
+
+
