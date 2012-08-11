@@ -37,7 +37,19 @@
 
       <div id="edit" style="display: none">
          <h1>Edit Program</h1>
-         <div id="editor">#!/usr/bin/env python</div>
+         <form>
+            <!-- pseudocode:
+              Header above edit window:
+             Pulldown for program selection/"Load program" button
+             "New Program" Button
+             "Save Program" button
+             Text field for program name 
+
+             Link to documentation
+             Link to copy/pasteable copy of stock code
+            -->
+         </form>
+         <div id="editor"></div>
          <script>
             var editor = ace.edit("editor");
             var PythonMode = require("ace/mode/python").Mode;

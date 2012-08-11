@@ -32,43 +32,20 @@ function login(f) {
 
    connection.callServiceRaw("/login", "[\"" + username + "\", \"" + 
          password + "\"]", function(resp) {
-            //output("Got login token: " + introspect("resp", resp, "", 4));
-            var raw = JSON.parse(resp);
-            //str = resp.replace(/ (\d)/g, ' "\$1').replace(/(\d),/g, '\$1",');
-            //var msg = JSON.parse(str);
-            output("resp: " + resp + "<br/>raw: " + introspect(raw));
-               //"<br/>JSON: " + str + " <br/>Msg: " + introspect(msg));
+            str = resp.replace(/ (\d)/g, ' "\$1').replace(/(\d),/g, '\$1",');
+            var msg = JSON.parse(str);
+            token = msg.msg.token;
 
-            /* show editor section */ /*
-            document.getElementById("login").style.display = "none";
-            document.getElementById("edit").style.display = "block";
-            */
+            if( token != "0" ) {
+               /* show editor section */ 
+               output("");
+               document.getElementById("login").style.display = "none";
+               document.getElementById("edit").style.display = "block";
+            } else {
+               output("Login Failed");
+            }
          });
 }
 
 function createAccount(f) {
-}
-
-function introspect(name, obj, indent, levels) {
-   indent = indent || "";
-   if (typeof(levels) !== "number") levels = 1;
-   var objType = typeof(obj);
-   var result = [indent, name, " ", objType, " :"].join('');
-   if (objType === "object") {
-      if (levels > 0) {
-         indent = [indent, "  "].join('');
-         for (prop in obj) {
-            var prop = this.introspect(prop, obj[prop], indent, levels - 1);
-            result = [result, "\n", prop].join('');
-         }
-         return result;
-      }
-      else {
-         return [result, " ..."].join('');
-      }
-   }
-   else if (objType === "null") {
-      return [result, " null"].join('');
-   }
-   return [result, " ", obj].join('');
 }
