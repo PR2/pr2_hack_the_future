@@ -1,0 +1,50 @@
+<html>
+   <head>
+      <meta charset="utf-8"/>
+      <script type="text/JavaScript" src="ros.js" ></script>
+      <script type="text/JavaScript" src="login.js"></script>
+      <script type="text/JavaScript" src="editor.js"></script>
+
+      <script type="text/JavaScript" src="ace/ace.js"></script>
+      <script type="text/JavaScript" src="ace/mode-python.js"></script>
+
+      <link rel="stylesheet" type="text/css" href="editor.css"/>
+   </head>
+
+   <body onload="main()" >
+      <div id="login" style="display: none">
+         <h1>Login</h1>
+
+         <form>
+            <table>
+               <tr>
+                  <td>Username</td>
+                  <td><input id="username" type="text"></input></td>
+               </tr>
+               <tr>
+                  <td>Password</td>
+                  <td><input id="password" type="password"></input></td>
+               </tr>
+               <tr>
+                  <td><input type="button" value="Create Account"
+                     onClick="createAccount(this.form);"/></td>
+                  <td><input type="button" value="Login"
+                     onClick="login(this.form);"/></td>
+               </tr>
+            </table>
+         </form>
+      </div>
+
+      <div id="edit" style="display: none">
+         <h1>Edit Program</h1>
+         <div id="editor">#!/usr/bin/env python</div>
+         <script>
+            var editor = ace.edit("editor");
+            var PythonMode = require("ace/mode/python").Mode;
+            editor.getSession().setMode(new PythonMode());
+         </script>
+      </div>
+
+      <div id="output">Please Wait...</div>
+   </body>
+</html>

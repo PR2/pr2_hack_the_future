@@ -1,0 +1,13 @@
+#editor {
+   position: relative;
+   width: 500px;
+   height: 400px;
+}
+
+h1 {
+   text-align: center;
+}
+
+#login {
+   text-align: center;
+}

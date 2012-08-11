@@ -68,7 +68,7 @@ for index, filename in icons.iteritems():
         main_window.PoseList_tabWidget.setTabIcon(index, icon)
 
 # hide design-only widgets
-main_window.square_tableWidget.setVisible(False)
+#main_window.square_tableWidget.setVisible(False)
 
 sigint_called = False
 def sigint_handler(*args):

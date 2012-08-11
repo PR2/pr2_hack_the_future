@@ -152,6 +152,7 @@
             <string>Square</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
+              <!--
             <item>
              <widget class="QTableWidget" name="square_tableWidget">
               <property name="dragDropMode">
@@ -178,6 +179,7 @@
               </column>
              </widget>
             </item>
+            -->
             <item>
              <widget class="QTableView" name="square_tableView">
               <property name="acceptDrops">

@@ -1,0 +1,14 @@
+<package>
+  <description brief="queue_web">
+
+     queue_web
+
+  </description>
+  <author>Austin Hendrix</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/queue_web</url>
+
+</package>
+
+
