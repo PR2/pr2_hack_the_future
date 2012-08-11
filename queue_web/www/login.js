@@ -32,7 +32,13 @@ function login(f) {
 
    connection.callServiceRaw("/login", "[\"" + username + "\", \"" + 
          password + "\"]", function(resp) {
-            output("Got login token: " + resp + "; " + introspect("resp", resp, "", 4));
+            //output("Got login token: " + introspect("resp", resp, "", 4));
+            var raw = JSON.parse(resp);
+            //str = resp.replace(/ (\d)/g, ' "\$1').replace(/(\d),/g, '\$1",');
+            //var msg = JSON.parse(str);
+            output("resp: " + resp + "<br/>raw: " + introspect(raw));
+               //"<br/>JSON: " + str + " <br/>Msg: " + introspect(msg));
+
             /* show editor section */ /*
             document.getElementById("login").style.display = "none";
             document.getElementById("edit").style.display = "block";
