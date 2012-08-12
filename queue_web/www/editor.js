@@ -9,10 +9,7 @@ function save(f) {
 function newprogram(f) {
    editor.setValue(document.getElementById("sample").innerHTML);
    editor.clearSelection();
-   f.program_name.value = "New Program 1";
-   program_name = document.getElementById("program_name");
-   program_name.value = "New Program 2";
-   program_name.innerHTML = "New Program 3";
+   f.program_name.value = "New Program";
 }
 
 function start_editor() {
