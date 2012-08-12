@@ -1,15 +1,18 @@
+/* global veriables. ick, but useful */
 var host = "localhost";
 var port = 9090;
 var connection;
-
 var token;
 
+/* general functions */
 function output(m) {
    var output = document.getElementById("output");
    output.innerHTML = m;
 }
 
 function main() {
+   token = jaaulde.utils.cookies.get('token');
+
    output("Opening RosJs connection");
    connection = new ros.Connection("ws://" + host + ":" + port);
    connection.setOnClose(function(e) {
@@ -20,12 +23,22 @@ function main() {
       output("RosJs Error: " + e);
    });
 
-   connection.setOnOpen(function(e) {
-      document.getElementById("login").style.display = "block";
-      output("");
-   });
+   if( token ) {
+      connection.setOnOpen(function(e) {
+         document.getElementById("edit").style.display = "block";
+         output("");
+      });
+   } else {
+      connection.setOnOpen(function(e) {
+         document.getElementById("login").style.display = "block";
+         output("");
+      });
+   }
+
+   start_editor();
 }
 
+/* session management functions */
 function login(f) {
    var username = f.username.value;
    var password = f.password.value;
@@ -37,8 +50,10 @@ function login(f) {
             token = msg.msg.token;
 
             if( token != "0" ) {
-               /* show editor section */ 
                output("");
+               /* save token to cookie */
+               jaaulde.utils.cookies.set('token', token);
+               /* show editor section */ 
                document.getElementById("login").style.display = "none";
                document.getElementById("edit").style.display = "block";
             } else {
@@ -48,4 +63,14 @@ function login(f) {
 }
 
 function createAccount(f) {
+}
+
+function logout(f) {
+   if( token ) {
+      connection.callService('/logout', '["' + token + '"]');
+      jaaulde.utils.cookies.del('token');
+      /* show login screen */ 
+      document.getElementById("edit").style.display = "none";
+      document.getElementById("login").style.display = "block";
+   }
 }
