@@ -1,4 +1,4 @@
 <launch>
-  <include file="$(find pr2_gazebo)/pr2_empty_world.launch"/>
+  <include file="$(find pr2_gazebo)/launch/pr2_empty_world.launch"/>
   <node pkg="slider_gui" type="test_actions.py" name="test_actions"/>
 </launch>
