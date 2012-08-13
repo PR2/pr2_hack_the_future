@@ -67,7 +67,7 @@ function createAccount(f) {
 
 function logout(f) {
    if( token ) {
-      connection.callService('/logout', '["' + token + '"]');
+      connection.callService('/logout', '[' + token + ']');
       jaaulde.utils.cookies.del('token');
       /* show login screen */ 
       document.getElementById("edit").style.display = "none";
