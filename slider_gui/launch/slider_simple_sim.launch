@@ -1,5 +1,8 @@
 <launch>
-  <include file="$(find slider_gui)/launch/pr2_empty_world.launch"/>
+  <arg name="gui" default="false"/>
+  <include file="$(find slider_gui)/launch/pr2_empty_world.launch">
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
   <include file="$(find slider_gui)/launch/state_check_service.launch"/>
   <node pkg="korg_nanokontrol" type="kontrol.py" name="kontrol" args="3">
     <remap from="joy" to="korg_joy"/>
