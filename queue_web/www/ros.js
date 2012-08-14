@@ -47,18 +47,15 @@ function jsonHandler(func) {
    };
 }
 
-Connection.prototype.callService = function(service, json, callback) {
-  this.handlers[service] = new Array(jsonHandler(callback));
-  var call = '{"receiver":"' + service + '"';
-  call += ',"msg":' + json + '}';
-  this.socket.send(call);
-}
-
 Connection.prototype.callServiceRaw = function(service, json, callback) {
   this.handlers[service] = new Array(callback);
   var call = '{"receiver":"' + service + '"';
   call += ',"msg":' + json + '}';
   this.socket.send(call);
+}
+
+Connection.prototype.callService = function(service, json, callback) {
+  this.callServiceRaw(service, json, jsonHandler(callback));
 }
 
 Connection.prototype.publish = function(topic, typeStr, json) {
