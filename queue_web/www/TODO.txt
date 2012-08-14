@@ -4,4 +4,4 @@ Open Issues/TODO items:
  * Program Duplication
  * Documentation links on edit page
  * Add to Queue button
- * Save/Load program ID from cookie
+ * Credits and License

@@ -25,10 +25,11 @@ function load(f) {
    connection.callService('/get_program', JSON.stringify([id]),
       function(resp) {
          editor.setValue(resp.program.code);
-         editor.clearSelection();
+         editor.navigateFileStart();
          f.program_name.value = resp.program.info.name;
          programs[selected] = resp.program.info;
          update_list(selected);
+         jaaulde.utils.cookies.set('program_id', resp.program.info.id);
       });
 }
 
@@ -50,26 +51,26 @@ function save(f) {
 function newprogram(f) {
    var sample = document.getElementById("sample").innerHTML;
    editor.setValue(sample);
-   editor.clearSelection();
+   editor.navigateFileStart();
    f.program_name.value = "New Program";
 
    connection.callService('/create_program', '[' + token + ']',
       function(resp) {
-         console.log("Create new program: " + resp.id);
          var program = {};
          program.code = sample;
          program.info = {};
          program.info.id = resp.id;
          program.info.type = 1;
          program.info.name = "New Program";
-         var sel = programs.length;
+         selected = programs.length;
          programs.push(program.info);
 
          connection.callService('/update_program', 
             '[' + token + ', ' + JSON.stringify(program) + ']',
             null);
 
-         update_list(sel);
+         jaaulde.utils.cookies.set('program_id', resp.id);
+         update_list(selected);
       });
 }
 
@@ -85,19 +86,21 @@ function get_programs() {
    // get program list; display in selection box
    connection.callService('/get_my_programs', '[' + token + ']',
       function(resp) {
-         // display a program.
-         //  if the last program is save in a cookie, show it
-         //  else, show the first program
          programs = [];
+         // load last program ID from cookie
+         var id = jaaulde.utils.cookies.get('program_id');
          for (var i = 0 ; i < resp.programs.length ; i++ ) {
             // only show python programs
             if( resp.programs[i].type === 1 ) {
+               if( resp.programs[i].id === id ) {
+                  selected = programs.length;
+               }
                programs.push(resp.programs[i]);
             }
          }
 
-         // TODO: load program ID from cookie
-         update_list(0);
+         // populate pulldown list
+         update_list(selected);
 
          // load the selected program
          load(document.getElementById("program_info"));
