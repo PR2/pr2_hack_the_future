@@ -1,13 +1,26 @@
 #editor {
    position: relative;
-   width: 600px;
+   width: 100%;
    height: 800px;
+   margin-left: auto;
+   margin-right: auto;
 }
 
 h1 {
    text-align: center;
 }
 
-#login {
+#login table {
+   margin-left: auto;
+   margin-right: auto;
+}
+
+#program_info table {
+   margin-left: auto;
+   margin-right: auto;
+   text-align: center;
+}
+
+#program_info table input {
    text-align: center;
 }

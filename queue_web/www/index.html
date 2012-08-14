@@ -47,27 +47,34 @@
              Link to documentation
              Link to copy/pasteable copy of stock code
 
-             Rename program button?
+             Duplicate program button?
             -->
-            <select id="program"></select>
-            <input type="button" value="Load Program" 
-               onclick="load(this.form);"/><br/>
-            <input type="button" value="New Program"
-               onclick="newprogram(this.form);"/><br/>
+            <table>
+               <tr>
+                  <td><input type="button" value="New Program"
+                     onclick="newprogram(this.form);"/></td>
+                  <td><select id="program"></select></td>
+                  <td><input type="text" value="" id="program_name"/></td>
+                  <td><input type="button" value="Logout" 
+                     onclick="logout();"/></td>
+               </tr>
+               <tr>
+                  <td></td>
+                  <td><input type="button" value="Load Program" 
+                     onclick="load(this.form);"/></td>
+                  <td><input type="button" value="Save Program"
+                     onclick="save(this.form);"/></td>
+                  <td></td>
+               </tr>
+            </table>
 
-            Program Name: <input type="text" value="" id="program_name"/>
-            <input type="button" value="Save Program"
-               onclick="save(this.form);"/><br/>
-
-            <input type="button" value="Logout" onclick="logout();"/>
          </form>
          <div id="editor"></div>
       </div>
 
       <div id="output">Please Wait...</div>
 
-      <div id="sample" style="display: none">
-#!/usr/bin/env python
+      <div id="sample" style="display: none">#!/usr/bin/env python
 
 import roslib
 roslib.load_manifest('pr2_simple_interface')
