@@ -13,7 +13,7 @@ function output(m) {
 function main() {
    token = jaaulde.utils.cookies.get('token');
 
-   output("Opening RosJs connection");
+   //output("Opening RosJs connection");
    connection = new ros.Connection("ws://" + host + ":" + port);
    connection.setOnClose(function(e) {
       output("RosJs Connection Closed: " + e);
@@ -27,6 +27,7 @@ function main() {
       connection.setOnOpen(function(e) {
          document.getElementById("edit").style.display = "block";
          output("");
+         get_programs();
       });
    } else {
       connection.setOnOpen(function(e) {
@@ -56,6 +57,8 @@ function login(f) {
                /* show editor section */ 
                document.getElementById("login").style.display = "none";
                document.getElementById("edit").style.display = "block";
+
+               get_programs();
             } else {
                output("Login Failed");
             }

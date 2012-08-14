@@ -1,7 +1,7 @@
 <html>
    <head>
       <meta charset="utf-8"/>
-      <script type="text/JavaScript" src="jquery.cookies.2.2.0.min.js"></script>
+      <script type="text/JavaScript" src="jquery.cookies.2.2.0.js"></script>
 
       <script type="text/JavaScript" src="ros.js" ></script>
       <script type="text/JavaScript" src="login.js"></script>
@@ -12,6 +12,8 @@
 
 
       <link rel="stylesheet" type="text/css" href="editor.css"/>
+
+      <title>Hack the Future!</title>
    </head>
 
    <body onload="main()" >
@@ -40,16 +42,12 @@
 
       <div id="edit" style="display: none">
          <h1>Edit Program</h1>
-         <form>
-            <!-- pseudocode:
-              Header above edit window:
-             Pulldown for program selection/"Load program" button
-             "New Program" Button
-             "Save Program" button
-             Text field for program name 
-
+         <form id="program_info">
+            <!-- TODO: Header above edit window:
              Link to documentation
              Link to copy/pasteable copy of stock code
+
+             Rename program button?
             -->
             <select id="program"></select>
             <input type="button" value="Load Program" 
