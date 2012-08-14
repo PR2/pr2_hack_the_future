@@ -2,6 +2,8 @@ var editor;
 
 var programs;
 
+var selected = 0;
+
 // update the list of programs from the programs array
 function update_list(selection) {
    var form = document.getElementById("program_info");
@@ -18,22 +20,22 @@ function update_list(selection) {
 
 // load the program specified on the form
 function load(f) {
-   var sel = f.program.selectedIndex;
-   var id = programs[sel].id;
+   selected = f.program.selectedIndex;
+   var id = programs[selected].id;
    connection.callService('/get_program', JSON.stringify([id]),
       function(resp) {
          editor.setValue(resp.program.code);
          editor.clearSelection();
          f.program_name.value = resp.program.info.name;
-         programs[sel] = resp.program.info;
-         update_list(sel);
+         programs[selected] = resp.program.info;
+         update_list(selected);
       });
 }
 
 // save the program specified on the form
 function save(f) {
    var program = {};
-   program.info = programs[f.program.selectedIndex];
+   program.info = programs[selected];
    program.info.name = f.program_name.value;
    program.code = editor.getValue();
 
@@ -41,7 +43,7 @@ function save(f) {
          "[" + token + ", " + JSON.stringify(program) + "]",
          null);
 
-   update_list(f.program.selectedIndex);
+   update_list(selected);
 }
 
 // create a new program
