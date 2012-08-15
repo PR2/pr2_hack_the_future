@@ -1,0 +1,6 @@
+Possible todo-list for Hack the Future:
+ * Head pointing by angle
+ * detect if face is visible
+ * input from PS3 joystick
+ * Time parameter to movement commands
+ * Mirror arms

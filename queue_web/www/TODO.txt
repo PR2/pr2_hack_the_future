@@ -6,3 +6,4 @@ Open Issues/TODO items:
  * Add to Queue button
  * Credits and License
  * Display user name on page
+ * Escape closes connection???
