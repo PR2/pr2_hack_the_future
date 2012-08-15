@@ -212,19 +212,30 @@ class Head:
     def look_at_face(self):
         print "Looking at a face"
         fgoal = FaceDetectorGoal()
-        nfaces = 0
+        nfaces = 0            
+        closest = -1
+        closest_dist = 1000
         while nfaces < 1:
             face_client.send_goal(fgoal)
             face_client.wait_for_result()
             f = face_client.get_result()
             nfaces = len(f.face_positions)
+                   
+            for i in range(nfaces):
+                dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
+ + f.face_positions[i].pos.z*f.face_positions[i].pos.z
+                if dist < closest_dist:
+                    closest = i
+                    closest_dist = dist
             
-        g.target.header.frame_id = f.face_positions[0].header.frame_id
-        g.target.point.x = f.face_positions[0].pos.x
-        g.target.point.y = f.face_positions[0].pos.y
-        g.target.point.z = f.face_positions[0].pos.z
-        g.min_duration = rospy.Duration(1.0)
-        head_client.send_goal(g)
+            if closest > -1:
+                g = PointHeadGoal()
+                g.target.header.frame_id = f.face_positions[closest].header.frame_id
+                g.target.point.x = f.face_positions[closest].pos.x
+                g.target.point.y = f.face_positions[closest].pos.y
+                g.target.point.z = f.face_positions[closest].pos.z
+                g.min_duration = rospy.Duration(1.0)
+                head_client.send_goal(g)
         
     def wait_for(self):
         print "Wait for head positioning"
