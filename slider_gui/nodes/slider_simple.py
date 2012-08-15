@@ -524,6 +524,11 @@ class Foo(QObject):
     current_values_changed = Signal(str)
     current_duration_changed = Signal(float)
     _update_current_value_signal = Signal()
+    _show_input_notification_signal = Signal()
+    _hide_input_notification_signal = Signal()
+    _show_scene_notification_signal = Signal()
+    _hide_scene_notification_signal = Signal()
+    _update_color_of_line_edit_signal = Signal()
     def __init__(self):
         super(Foo, self).__init__()
         self._action_set = None
@@ -547,6 +552,12 @@ class Foo(QObject):
         self._input_notification_timer.timeout.connect(self._hide_input_method_notification)
         self._input_notification.finished.connect(self._hide_input_method_notification)
 
+        self._show_input_notification_signal.connect(self._show_input_notification)
+        self._hide_input_notification_signal.connect(self._hide_input_method_notification)
+        self._show_input_notification_signal.connect(self._show_scene_notification)
+        self._hide_input_notification_signal.connect(self._hide_scene_notification)
+        self._update_color_of_line_edit_signal.connect(self._update_color_of_line_edit)
+
     def _hide_scene_notification(self, result=None):
         self._scene_notification_timer.stop()
         self._scene_notification.hide()
@@ -555,52 +566,68 @@ class Foo(QObject):
         self._input_notification_timer.stop()
         self._input_notification.hide()
 
+    # this method is call by ROS, all UI interaction is delayed via signals
     def update_current_value(self):
-        self._update_current_value_signal.emit()
-
-    def _update_current_value(self):
         global check_collisions
         global currently_in_collision
-        global joint_observer
 
         if self._action_set is not None:
             self._action_set.stop()
         self._action_set = kontrol_subscriber.get_action_set()
-        self.current_duration_changed.emit(self._action_set.get_duration())
+        if self._action_set is not None:
+            self.current_duration_changed.emit(self._action_set.get_duration())
 
         if not is_in_slider_mode():
-            # open dialog which closes after some s_hide_scene_notification_hide_scene_notificationeconds or when confirmed manually
-            self._input_notification.show()
-            self._input_notification_timer.start()
             currently_in_collision = False
+            self._show_input_notification_signal.emit()
             return
         if self._input_notification_timer.isActive():
-            self._hide_input_method_notification()
+            self._hide_input_notification_signal.emit()
 
         #print('update_current_value()')
         if not kontrol_subscriber.is_valid_action_set():
-            # open dialog which closes after some seconds or when confirmed manually
-            self._scene_notification.show()
-            self._scene_notification_timer.start()
+            self._show_scene_notification_signal.emit()
             return
         if self._scene_notification_timer.isActive():
-            self._hide_scene_notification()
+            self._hide_scene_notification_signal.emit()
 
         joint_values = kontrol_subscriber.get_joint_values()
         if check_collisions:
             in_collision = collision_checker.is_in_collision(joint_values)
         else:
             in_collision = False
-        main_window.append_pushButton.setEnabled(not in_collision)
-        main_window.insert_before_pushButton.setEnabled(not in_collision)
-        if in_collision != currently_in_collision:
-            palette = main_window.lineEdit.palette()
-            if in_collision:
-                palette.setColor(QPalette.Text, QColor(255, 0, 0))
-            else:
-                palette.setColor(QPalette.Text, default_color)
-            main_window.lineEdit.setPalette(palette)
-            currently_in_collision = in_collision
+
+        collision_toggled = (currently_in_collision != in_collision)
+        currently_in_collision = in_collision
+
+        if collision_toggled:
+            self._update_color_of_line_edit_signal.emit()
+
+        self._update_current_value_signal.emit()
+
+    def _show_input_notification(self):
+        # open dialog which closes after some s_hide_scene_notification_hide_scene_notificationeconds or when confirmed manually
+        self._input_notification.show()
+        self._input_notification_timer.start()
+
+    def _show_scene_notification(self):
+        # open dialog which closes after some seconds or when confirmed manually
+        self._scene_notification.show()
+        self._scene_notification_timer.start()
+
+    def _update_color_of_line_edit(self):
+        global currently_in_collision
+        palette = main_window.lineEdit.palette()
+        if currently_in_collision:
+            palette.setColor(QPalette.Text, QColor(255, 0, 0))
+        else:
+            palette.setColor(QPalette.Text, default_color)
+        main_window.lineEdit.setPalette(palette)
+
+    def _update_current_value(self):
+        global currently_in_collision
+        main_window.append_pushButton.setEnabled(not currently_in_collision)
+        main_window.insert_before_pushButton.setEnabled(not currently_in_collision)
 
         value = self._action_set.to_string()
         self.current_values_changed.emit(value)
