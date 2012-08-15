@@ -514,7 +514,8 @@ if main_window.input_method_comboBox.count() <= 1:
 
 
 kontrol_subscriber = KontrolSubscriber()
-collision_checker = CollisionChecker()
+if check_collisions:
+    collision_checker = CollisionChecker()
 currently_in_collision = False
 default_color = main_window.lineEdit.palette().text().color()
 
