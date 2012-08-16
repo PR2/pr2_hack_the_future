@@ -109,4 +109,7 @@ gripper.wait_for(BOTH)
 head.look_at(1.0, 0.0, 1.0)
 head.wait_for()
 
+head.look_at_face()
+head.wait_for()
+
 sound.say("Goodbye.")
