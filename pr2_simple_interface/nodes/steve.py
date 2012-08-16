@@ -49,7 +49,7 @@ rospy.sleep(1)
 torso.set(0.1)
 
 #robot speaks
-sound.say("I'm Kiko.")
+sound.say("Hi! I'm PR2.")
 
 # nod head
 head.look_at(1.0, 0.0, 0.5) # look down
@@ -106,7 +106,15 @@ arm.wait_for(BOTH)
 gripper.close(BOTH)
 gripper.wait_for(BOTH)
 
+# Make the robot look for a face.
+# First, turn the robot's head to look forward (the robot can't see a face if it's staring at the ceiling!)
+# Second, tell people that the robot is waiting to see a face.
+# Third, wait to see a face. When the robot sees a face, it'll turn its head to look at the face.
 head.look_at(1.0, 0.0, 1.0)
 head.wait_for()
+sound.say("I'm looking for a face.")
+head.look_at_face()
+head.wait_for()
 
+# Tell everyone that you're program is done.
 sound.say("Goodbye.")
