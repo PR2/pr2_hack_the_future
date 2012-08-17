@@ -42,7 +42,7 @@ function save(f) {
 
    connection.callService('/update_program', 
          "[" + token + ", " + JSON.stringify(program) + "]",
-         null);
+         null); // null may cause errors on console
 
    update_list(selected);
 }
@@ -67,7 +67,7 @@ function newprogram(f) {
 
          connection.callService('/update_program', 
             '[' + token + ', ' + JSON.stringify(program) + ']',
-            null);
+            null); // may cause errors on console
 
          jaaulde.utils.cookies.set('program_id', resp.id);
          update_list(selected);
