@@ -4,5 +4,4 @@ Open Issues/TODO items:
  * Documentation links on edit page
  * Credits and License
  * Display user name on page
- * Escape closes connection???
  * Queue ordering by add time instead of ID?

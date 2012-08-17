@@ -11,14 +11,12 @@ function output(m) {
    output.innerHTML = m;
 }
 
-function main() {
-   token = jaaulde.utils.cookies.get('token');
-   is_admin = jaaulde.utils.cookies.get('is_admin');
-
-   //output("Opening RosJs connection");
+function setup_ros() {
+   output("Opening RosJs connection");
    connection = new ros.Connection("ws://" + host + ":" + port);
    connection.setOnClose(function(e) {
       output("RosJs Connection Closed: " + e);
+      setup_ros();
    });
 
    connection.setOnError(function(e) {
@@ -41,6 +39,13 @@ function main() {
          output("");
       });
    }
+}
+
+function main() {
+   token = jaaulde.utils.cookies.get('token');
+   is_admin = jaaulde.utils.cookies.get('is_admin');
+
+   setup_ros();
 
    start_editor();
 }
