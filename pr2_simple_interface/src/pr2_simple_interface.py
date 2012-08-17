@@ -212,67 +212,85 @@ class Head:
 
     def look_at_face(self):
         print "Looking at a face"
-        fgoal = FaceDetectorGoal()
-        nfaces = 0            
-        closest = -1
-        closest_dist = 1000
-        while nfaces < 1:
-            face_client.send_goal(fgoal)
-            face_client.wait_for_result()
-            f = face_client.get_result()
-            nfaces = len(f.face_positions)
+        if sim:
+            g = PointHeadGoal()
+            g.target.header.frame_id = 'base_link'
+            g.target.point.x = 2.0
+            g.target.point.y = 0.25
+            g.target.point.z = 1.5
+            g.min_duration = rospy.Duration(1.0)
+            head_client.send_goal(g)
+        else:
+            fgoal = FaceDetectorGoal()
+            nfaces = 0            
+            closest = -1
+            closest_dist = 1000
+            while nfaces < 1:
+                face_client.send_goal(fgoal)
+                face_client.wait_for_result()
+                f = face_client.get_result()
+                nfaces = len(f.face_positions)
                    
-            for i in range(nfaces):
-                dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
+                for i in range(nfaces):
+                    dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
  + f.face_positions[i].pos.z*f.face_positions[i].pos.z
-                if dist < closest_dist:
-                    closest = i
-                    closest_dist = dist
+                    if dist < closest_dist:
+                        closest = i
+                        closest_dist = dist
             
-            if closest > -1:
-                g = PointHeadGoal()
-                g.target.header.frame_id = f.face_positions[closest].header.frame_id
-                g.target.point.x = f.face_positions[closest].pos.x
-                g.target.point.y = f.face_positions[closest].pos.y
-                g.target.point.z = f.face_positions[closest].pos.z
-                g.min_duration = rospy.Duration(1.0)
-                head_client.send_goal(g)
+                if closest > -1:
+                    g = PointHeadGoal()
+                    g.target.header.frame_id = f.face_positions[closest].header.frame_id
+                    g.target.point.x = f.face_positions[closest].pos.x
+                    g.target.point.y = f.face_positions[closest].pos.y
+                    g.target.point.z = f.face_positions[closest].pos.z
+                    g.min_duration = rospy.Duration(1.0)
+                    head_client.send_goal(g)
 
 
     def random_look_at_face(self):
         print "Looking at a face"
-        fgoal = FaceDetectorGoal()
-        nfaces = 0
-        closest = -1
-        closest_dist = 1000
-        while nfaces < 1:
-            face_client.send_goal(fgoal)
-            face_client.wait_for_result()
-            f = face_client.get_result()
-            nfaces = len(f.face_positions)
+        if sim:
+            g = PointHeadGoal()
+            g.target.header.frame_id = 'base_link'
+            g.target.point.x = 2.0
+            g.target.point.y = 0.25
+            g.target.point.z = 1.5
+            g.min_duration = rospy.Duration(1.0)
+            head_client.send_goal(g)
+        else:
+            fgoal = FaceDetectorGoal()
+            nfaces = 0
+            closest = -1
+            closest_dist = 1000
+            while nfaces < 1:
+                face_client.send_goal(fgoal)
+                face_client.wait_for_result()
+                f = face_client.get_result()
+                nfaces = len(f.face_positions)
 
-            iter = 0
-            while iter < 10 and closest <= -1:
-                iter = iter + 1
-                i = random.randrange(0,nfaces)
+                iter = 0
+                while iter < 10 and closest <= -1:
+                    iter = iter + 1
+                    i = random.randrange(0,nfaces)
 
-                dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
+                    dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
  + f.face_positions[i].pos.z*f.face_positions[i].pos.z
-                print "This face has position and dist ", f.face_positions[i].pos.x, f.face_positions[i].pos.y, f.face_positions[i].pos.z, dist
-                if dist < closest_dist and f.face_positions[i].pos.y > -1.0 :
-                    closest = i
-                    closest_dist = dist
-                    break
+                    print "This face has position and dist ", f.face_positions[i].pos.x, f.face_positions[i].pos.y, f.face_positions[i].pos.z, dist
+                    if dist < closest_dist and f.face_positions[i].pos.y > -1.0 :
+                        closest = i
+                        closest_dist = dist
+                        break
 
-            if closest > -1:
-                print "Turning to face ",  f.face_positions[closest].pos.x,  f.face_positions[closest].pos.y,  f.face_positions[closest].pos.z
-                g = PointHeadGoal()
-                g.target.header.frame_id = f.face_positions[closest].header.frame_id
-                g.target.point.x = f.face_positions[closest].pos.x
-                g.target.point.y = f.face_positions[closest].pos.y
-                g.target.point.z = f.face_positions[closest].pos.z
-                g.min_duration = rospy.Duration(1.0)
-                head_client.send_goal(g)
+                if closest > -1:
+                    print "Turning to face ",  f.face_positions[closest].pos.x,  f.face_positions[closest].pos.y,  f.face_positions[closest].pos.z
+                    g = PointHeadGoal()
+                    g.target.header.frame_id = f.face_positions[closest].header.frame_id
+                    g.target.point.x = f.face_positions[closest].pos.x
+                    g.target.point.y = f.face_positions[closest].pos.y
+                    g.target.point.z = f.face_positions[closest].pos.z
+                    g.min_duration = rospy.Duration(1.0)
+                    head_client.send_goal(g)
 
 
     def wait_for(self):
