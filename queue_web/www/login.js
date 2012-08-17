@@ -11,16 +11,24 @@ function output(m) {
    output.innerHTML = m;
 }
 
+var timeout = 10;
+
 function setup_ros() {
    output("Opening RosJs connection");
    connection = new ros.Connection("ws://" + host + ":" + port);
    connection.setOnClose(function(e) {
-      output("RosJs Connection Closed: " + e);
-      setup_ros();
+      document.getElementById("edit").style.display = "none";
+      document.getElementById("login").style.display = "none";
+      timeout = timeout * 2;
+      if( timeout > 5000 ) timeout = 5000;
+      output("Connection Closed, reconnecting in " + timeout);
+      console.log("Connection Closed, reconnecting in " + timeout);
+      setTimeout(setup_ros, timeout);
    });
 
    connection.setOnError(function(e) {
       output("RosJs Error: " + e);
+      console.log(e);
    });
 
    if( token ) {
@@ -28,6 +36,7 @@ function setup_ros() {
          document.getElementById("edit").style.display = "block";
          output("");
          get_programs();
+         timeout = 10;
       });
       if( is_admin ) {
          // if admin, show admin select button
@@ -37,6 +46,7 @@ function setup_ros() {
       connection.setOnOpen(function(e) {
          document.getElementById("login").style.display = "block";
          output("");
+         timeout = 10;
       });
    }
 }

@@ -105,7 +105,9 @@ function get_programs() {
          update_list(selected);
 
          // load the selected program
-         load(document.getElementById("program_info"));
+         if( editor.getValue() === "" ) {
+            load(document.getElementById("program_info"));
+         }
       });
 }
 
