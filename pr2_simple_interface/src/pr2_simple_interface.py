@@ -6,6 +6,7 @@ roslib.load_manifest('pr2_simple_interface')
 import rospy
 import actionlib
 import math
+import random
 
 from pr2_controllers_msgs.msg import *
 from pr2_gripper_sensor_msgs.msg import *
@@ -236,7 +237,44 @@ class Head:
                 g.target.point.z = f.face_positions[closest].pos.z
                 g.min_duration = rospy.Duration(1.0)
                 head_client.send_goal(g)
-        
+
+
+    def random_look_at_face(self):
+        print "Looking at a face"
+        fgoal = FaceDetectorGoal()
+        nfaces = 0
+        closest = -1
+        closest_dist = 1000
+        while nfaces < 1:
+            face_client.send_goal(fgoal)
+            face_client.wait_for_result()
+            f = face_client.get_result()
+            nfaces = len(f.face_positions)
+
+            iter = 0
+            while iter < 10 and closest <= -1:
+                iter = iter + 1
+                i = random.randrange(0,nfaces)
+
+                dist = f.face_positions[i].pos.x*f.face_positions[i].pos.x + f.face_positions[i].pos.y*f.face_positions[i].pos.y\
+ + f.face_positions[i].pos.z*f.face_positions[i].pos.z
+                print "This face has position and dist ", f.face_positions[i].pos.x, f.face_positions[i].pos.y, f.face_positions[i].pos.z, dist
+                if dist < closest_dist and f.face_positions[i].pos.y > -1.0 :
+                    closest = i
+                    closest_dist = dist
+                    break
+
+            if closest > -1:
+                print "Turning to face ",  f.face_positions[closest].pos.x,  f.face_positions[closest].pos.y,  f.face_positions[closest].pos.z
+                g = PointHeadGoal()
+                g.target.header.frame_id = f.face_positions[closest].header.frame_id
+                g.target.point.x = f.face_positions[closest].pos.x
+                g.target.point.y = f.face_positions[closest].pos.y
+                g.target.point.z = f.face_positions[closest].pos.z
+                g.min_duration = rospy.Duration(1.0)
+                head_client.send_goal(g)
+
+
     def wait_for(self):
         print "Wait for head positioning"
         head_client.wait_for_result()
