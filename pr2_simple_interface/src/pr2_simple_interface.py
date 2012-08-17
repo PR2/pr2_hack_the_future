@@ -269,7 +269,7 @@ class Head:
                 g = PointHeadGoal()
                 g.target.header.frame_id = f.face_positions[closest].header.frame_id
                 g.target.point.x = f.face_positions[closest].pos.x
-                g.target.point.y = f.face_positions[closest].pos.y
+                g.target.point.y = f.face_positions[closest].pos.y + 0.05
                 g.target.point.z = f.face_positions[closest].pos.z
                 g.min_duration = rospy.Duration(1.0)
                 head_client.send_goal(g)
