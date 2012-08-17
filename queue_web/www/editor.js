@@ -154,8 +154,9 @@ function ui_mode(f) {
 
 // update the outputs div
 function update_outputs(f) {
-   var id = programs[selected].id;
-   connection.callService('/get_output', '[' + token + ', ' + id + ', 0]',
+   if( editor_mode === 'output' ) {
+      var id = programs[selected].id;
+      connection.callService('/get_output', '[' + token + ', ' + id + ', 0]',
          function(o) {
             var program_output = document.getElementById('program_output');
             program_output.innerHTML = '';
@@ -169,13 +170,15 @@ function update_outputs(f) {
             }
             f();
          });
+   }
 }
 
 // update the admin div
 function update_admin(f) {
-   var admin_panel = document.getElementById('admin_panel');
-   admin_panel.style.display = 'block';
-   connection.callService('/get_queue', '[]', function(queue) {
+   if( editor_mode === 'admin' ) {
+      var admin_panel = document.getElementById('admin_panel');
+      admin_panel.style.display = 'block';
+      connection.callService('/get_queue', '[]', function(queue) {
          var table = "<table>";
          for( var i=0; i<queue.programs.length; i++ ) {
             var p = queue.programs[i];
@@ -186,6 +189,7 @@ function update_admin(f) {
          admin_panel.innerHTML = table;
          f();
       });
+   }
 }
 
 // run a program
