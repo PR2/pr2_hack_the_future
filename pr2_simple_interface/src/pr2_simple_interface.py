@@ -170,7 +170,7 @@ class RobotArm:
         #we are done; return the goal
         return goal
 
-    def move_to(self, goal, s):
+    def move_to(self, goal, s, dur=2.0):
         arm = False
         if (s == RIGHT):
             print "Moving right arm to:", goal
@@ -179,7 +179,7 @@ class RobotArm:
             print "Moving left arm to:", goal
         if (s == BOTH):
             print "WARNING: you can't send a goal of both to the arms"
-        self.startTrajectory(self.arm_trajectoryPoint(goal, 2.0, arm), arm)
+        self.startTrajectory(self.arm_trajectoryPoint(goal, dur, arm), arm)
 
     def wait_for(self, s):
         print "Wait for arm:", convert_s(s)
