@@ -31,61 +31,88 @@ def convert_s(s):
         return "both"
     return "ERROR"
 
-#def Face():
-#    c = actionLib.SimpleActionClient('face_detector_action',face_detector.msg.FaceDetectorAction)
-#    c.wait_for_server()
-#    return c
+def pose_(position, joints, client, dur):
+   goal = JointTrajectoryGoal()
+   goal.trajectory.joint_names = joints
+
+   goal.trajectory.points = [ JointTrajectoryPoint() ]
+
+   goal.trajectory.points[0].velocities = [0.0] * len(joints);
+   goal.trajectory.points[0].positions = position;
+   goal.trajectory.points[0].time_from_start = rospy.Duration.from_sec(dur)
+   client.send_goal(goal)
+
+def pose_r(position, dur):
+   joints = ["r_shoulder_pan_joint", "r_shoulder_lift_joint", "r_upper_arm_roll_joint", "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"]
+   pose_(position, joints, traj_client_r, dur)
+
+def pose_l(position, dur):
+   joints = ["l_shoulder_pan_joint", "l_shoulder_lift_joint", "l_upper_arm_roll_joint", "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"]
+   pose_(position, joints, traj_client_l, dur)
+
+def pose_head(position, dur):
+   joints = [ 'head_pan_joint', 'head_tilt_joint' ]
+   pose_(position, joints, traj_client_head, dur)
+
+def pose_torso(position, dur):
+   joints = [ 'torso_lift_joint' ]
+   pose_(position, joints, traj_client_torso, dur)
+
+def actionClient(topic, t):
+    if debug:
+      print t
+    c = actionlib.SimpleActionClient(topic, t)
+    c.wait_for_server()
+    return c
 
 def TrajClient(t):
-    print t
-    c = actionlib.SimpleActionClient(t, JointTrajectoryAction)
-    c.wait_for_server()
-    return c
-
-def PlaceClient(t):
-    print t
-    c = actionlib.SimpleActionClient(t, PR2GripperEventDetectorAction)
-    c.wait_for_server()
-    return c
+    return actionClient(t, JointTrajectoryAction)
 
 def GripperClient(t):
-    print t
-    c = actionlib.SimpleActionClient(t, Pr2GripperCommandAction)
-    c.wait_for_server()
-    return c
+    return actionClient(t, Pr2GripperCommandAction)
 
 class Gripper:
     def __init__(self):
         pass
     
+    # release the gripper
     def rel(self, s):
+        print "Please use gripper.release() instead of gripper.rel()"
+        self.release(s)
+
+    # release the gripper
+    def release(self, s):
         print "Release gripper:", convert_s(s)
+        self.pose(s, 0.09) # position open (9 cm)
+
+    # open the gripper to a specified position
+    def pose(self, s, pos):
+        if pos < 0:
+           pos = 0
+        if pos > 0.09:
+           pos = 0.09
+
+        print "Set gripper %s to %d"%(convert_s(s), pos)
         openg = Pr2GripperCommandGoal()
-        openg.command.position = 0.09    # position open (9 cm)
+        openg.command.position = pos    # position
         openg.command.max_effort = -1.0  # Do not limit effort (negative)
         if(s == LEFT or s == BOTH):
             gripper_client_l.send_goal(openg)
         if(s == RIGHT or s == BOTH):
             gripper_client_r.send_goal(openg)
 
-    #Close the gripper
+    # close the gripper
     def close(self, s):
         print "Close gripper:", convert_s(s) 
-        close = Pr2GripperCommandGoal()
-        close.command.position = 0.002    # position open (9 cm)
-        close.command.max_effort = -1.0  # Do not limit effort (negative)
-        if(s == LEFT or s == BOTH):
-            gripper_client_l.send_goal(close)
-        if(s == RIGHT or s == BOTH):
-            gripper_client_r.send_goal(close)
+        self.pose(s, 0.002) # closed position (0.002m spacing)
 
+    # wait for the gripper action to complete
     def wait_for(self, s):
         if(s == LEFT or s == BOTH):
             gripper_client_l.wait_for_result()
         if(s == RIGHT or s == BOTH):
             gripper_client_r.wait_for_result()
 
-    # //move into place mode to drop an object
     def slap(self, s):
         place_goal = PR2GripperEventDetectorGoal()
         place_goal.command.trigger_conditions = 4 # use just acceleration as our contact signal
@@ -139,75 +166,48 @@ class Gripper:
 class RobotArm:
     def __init__(self):
         pass
-    
-    def startTrajectory(self, goal, right_arm):
-        #//Start the trjaectory immediately
-        goal.trajectory.header.stamp = rospy.get_rostime()
-        if(right_arm):
-            traj_client_r.send_goal(goal)
-        else:
-            traj_client_l.send_goal(goal)
-
-    def arm_trajectoryPoint(self, angles, duration, right_arm):
-        goal = JointTrajectoryGoal();
-        # First, the joint names, which apply to all waypoints
-        #starts at 17
-        if(right_arm):
-            goal.trajectory.joint_names = ["r_shoulder_pan_joint", "r_shoulder_lift_joint", "r_upper_arm_roll_joint", "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"]
-        else:
-            goal.trajectory.joint_names = ["l_shoulder_pan_joint", "l_shoulder_lift_joint", "l_upper_arm_roll_joint", "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"]
-            
-        # We will have N waypoints in this goal trajectory
-        goal.trajectory.points = [JointTrajectoryPoint() ];
-
-        # First trajectory point
-        # Positions
-        ind = 0
-        goal.trajectory.points[ind].positions = [ a * math.pi / 180.0 for a in angles ]
-        # Velocities
-        goal.trajectory.points[ind].velocities = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        goal.trajectory.points[ind].time_from_start = rospy.Duration.from_sec(duration)
-        #we are done; return the goal
-        return goal
 
     def move_to(self, goal, s, dur=2.0):
-        arm = False
+        positions = [ a * math.pi / 180.0 for a in goal ]
         if (s == RIGHT):
             print "Moving right arm to:", goal
+            pose_r(positions, dur)
             arm = True
         if (s == LEFT):
             print "Moving left arm to:", goal
+            pose_l(positions, dur)
         if (s == BOTH):
             print "WARNING: you can't send a goal of both to the arms"
-        self.startTrajectory(self.arm_trajectoryPoint(goal, dur, arm), arm)
 
     def wait_for(self, s):
         print "Wait for arm:", convert_s(s)
-        left = False
-        right = False
         if (s == LEFT or s == BOTH):
-            left = True
-        if (s == RIGHT or s == BOTH):
-            right = True
-        if(left):
             traj_client_l.wait_for_result()
-        if(right):
+        if (s == RIGHT or s == BOTH):
             traj_client_r.wait_for_result()
 
 
 class Head:
     def __init__(self):
+        self.mode = 0
         pass
 
-    def look_at(self, x, y, z):
+    def look_at(self, x, y, z, dur=1.0):
         print "Look at:", x, y, z
         g = PointHeadGoal()
         g.target.header.frame_id = 'base_link'
         g.target.point.x = x
         g.target.point.y = y
         g.target.point.z = z
-        g.min_duration = rospy.Duration(1.0)
+        g.min_duration = rospy.Duration(dur)
         head_client.send_goal(g)
+        self.mode = 1
+
+    def look(self, x, y, dur=1.0):
+        pose = [ x * math.pi / 180.0, y * math.pi / 180.0 ]
+        print "Look: ", pose
+        pose_head(pose, dur)
+        self.mode = 2
 
     def look_at_face(self):
         print "Looking at a face"
@@ -236,34 +236,49 @@ class Head:
                 g.target.point.z = f.face_positions[closest].pos.z
                 g.min_duration = rospy.Duration(1.0)
                 head_client.send_goal(g)
+                self.mode = 1
         
     def wait_for(self):
         print "Wait for head positioning"
-        head_client.wait_for_result()
+        if self.mode == 1:
+            head_client.wait_for_result()
+        if self.mode == 2:
+            traj_client_head.wait_for_result()
+        self.mode = 0
+            
 
 class Torso:
     def __init__(self):
-        self.torso_pub = rospy.Publisher('torso_controller/command', JointTrajectory)
-        self.torso_sub = rospy.Subscriber('joint_states', JointState, self.joint_state_callback)
-        self.pos = -1.0
+       pass
 
-    def joint_state_callback(self, msg):
-        for i in range(0, len(msg.name)):
-            if (msg.name[i] == "torso_lift_joint"):
-                self.pos = msg.position[i]
-
-    def set(self, h):
+    def set(self, h, dur=10.0):
+        if h > 0.3:
+           h = 0.3
+        if h < 0:
+           h = 0
         print "Setting torso height to", h
-        while not rospy.is_shutdown() and (self.pos > h + 0.02 or self.pos < h - 0.02):
-            traj = JointTrajectory()
-            traj.header.stamp = rospy.get_rostime()
-            traj.joint_names.append("torso_lift_joint");
-            traj.points.append(JointTrajectoryPoint())
-            traj.points[0].positions.append(h)
-            traj.points[0].velocities.append(0.1)
-            traj.points[0].time_from_start = rospy.Duration(0.2)
-            self.torso_pub.publish(traj)
-            rospy.sleep(rospy.Duration.from_sec(0.2))
+        pose_torso([h], dur)
+
+    def wait_for(self):
+       print "Waiting for torso"
+       torso_client.wait_for_result();
+
+class Sound(SoundClient):
+   def __init__(self):
+      if debug:
+         print "Initializing Sound Client"
+      SoundClient.__init__(self)
+      # wait for subscribers
+      timeout = 10
+      while timeout > 0:
+         if self.pub.get_num_connections() > 0:
+            timeout = 0
+         else:
+            rospy.sleep(1)
+
+   def say(self, text):
+      print "Saying: \"%s\""%text
+      SoundClient.say(self, text)
 
 def hug():
    rospy.wait_for_service('/pr2_props/hug')
@@ -275,14 +290,13 @@ def hug():
       print "Hug service call failed"
 
 
-def start():
-  print "Initializing pr2_simple_interface"
+def start(d = False):
+  global debug
+  debug = d
+  if debug:
+      print "Initializing pr2_simple_interface"
   rospy.init_node('pr2_simple_interface')
-  
-  print "Sound Client"
-  global sound
-  sound = SoundClient()
-  
+
   global traj_client_r
   global traj_client_l
   global place_client_r
@@ -297,8 +311,8 @@ def start():
   if( not rospy.has_param('gazebo') ):
     gripper_client_l = GripperClient("l_gripper_sensor_controller/gripper_action")
     gripper_client_r = GripperClient("r_gripper_sensor_controller/gripper_action")
-    place_client_l = PlaceClient("l_gripper_sensor_controller/event_detector")
-    place_client_r = PlaceClient("r_gripper_sensor_controller/event_detector")
+    place_client_l = actionClient("l_gripper_sensor_controller/event_detector", PR2GripperEventDetectorAction)
+    place_client_r = actionClient("r_gripper_sensor_controller/event_detector", PR2GripperEventDetectorAction)
     sim = False
   else:
     gripper_client_l = GripperClient("l_gripper_controller/gripper_action")
@@ -306,53 +320,17 @@ def start():
     sim = True
 
   global face_client
-  face_client = actionlib.SimpleActionClient('face_detector_action',FaceDetectorAction)
-  face_client.wait_for_server()
-  print "Got face server"
+  face_client = actionClient('face_detector_action',FaceDetectorAction)
 
   global head_client
-  head_client = actionlib.SimpleActionClient('/head_traj_controller/point_head_action', PointHeadAction)
-  head_client.wait_for_server()
+  head_client = actionClient('/head_traj_controller/point_head_action', PointHeadAction)
+
+  global traj_client_torso
+  traj_client_torso = TrajClient('torso_controller/joint_trajectory_action')
+
+  global traj_client_head
+  traj_client_head = TrajClient('head_traj_controller/joint_trajectory_action')
+
   
-  print "pr2_simple_interface init done"
-
-
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-# HowTo:
-# 
-# Look around:
-# head.look_at( 1.0, [left+/right-], [ up>1, down <1 ])
-# head.look_at_face()
-#
-# Open grippers:
-# gripper.rel( [LEFT | RIGHT | BOTH] )
-#
-# Close grippers
-# gripper.close( [LEFT | RIGHT | BOTH] )
-#
-# Wait for slap on gripper
-# gripper.wait_for_slap( [LEFT | RIGHT | BOTH] )
-#
-# Move torso up/down
-# torso.set( [height] )
-#
-# Move arms
-# arm.move_to([-1.42, 0.640, 0.647, -1.925, 30.931, -0.521, -16.642], RIGHT)
-#             [ position ], [ LEFT | RIGHT | BOTH] )
-#
-# Speech:
-# sound.say("Something")
+  if debug:
+     print "pr2_simple_interface init done"
