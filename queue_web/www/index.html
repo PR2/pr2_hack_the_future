@@ -23,11 +23,11 @@
          <form>
             <table>
                <tr>
-                  <td>Username</td>
+                  <td><label for="username">Username</label></td>
                   <td><input id="username" type="text"></input></td>
                </tr>
                <tr>
-                  <td>Password</td>
+                  <td><label for="password">Password</label></td>
                   <td><input id="password" type="password"></input></td>
                </tr>
                <tr>
@@ -45,9 +45,10 @@
          <form id="program_info">
             <!-- TODO: Header above edit window:
              Link to documentation
-             Link to copy/pasteable copy of stock code
 
              Duplicate program button?
+
+             View Queue
             -->
             <table>
                <tr>
@@ -55,6 +56,8 @@
                      onclick="newprogram(this.form);"/></td>
                   <td><select id="program"></select></td>
                   <td><input type="text" value="" id="program_name"/></td>
+                  <td><input type="button" value="Add to Queue"
+                     onclick="queue_program();"/></td>
                   <td><input type="button" value="Logout" 
                      onclick="logout();"/></td>
                </tr>
@@ -65,11 +68,43 @@
                   <td><input type="button" value="Save Program"
                      onclick="save(this.form);"/></td>
                   <td></td>
+                  <td></td>
+               </tr>
+
+               <tr>
+                  <td></td>
+                  <td>
+                     <input type="radio" name="mode" value="edit" 
+                     checked="True" id="edit_mode"
+                     onclick="ui_mode(this.form);"/>
+                     <label for="edit_mode">Edit</label>
+                  </td>
+                  <td>
+                     <input type="radio" name="mode" value="output" 
+                     id="output_mode"
+                     onclick="ui_mode(this.form);"/>
+                     <label for="output_mode">Output</label>
+                  </td>
+                  <td id="admin_button" style="display: none">
+                     <input type="radio" name="mode" value="admin" 
+                     id="admin_mode"
+                     onclick="ui_mode(this.form);"/>
+                     <label for="admin_mode">Admin</label>
+                  </td>
+                  <td></td>
                </tr>
             </table>
 
          </form>
+         <div id="program_output" style="display: none"></div>
          <div id="editor"></div>
+         <div id="admin_panel" style="display: none">
+            <!-- TODO: admin panel
+              * Display Queue
+              * Run Programs
+              * View output?
+              -->
+         </div>
       </div>
 
       <div id="output">Please Wait...</div>

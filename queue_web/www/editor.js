@@ -1,8 +1,9 @@
 var editor;
-
 var programs;
-
 var selected = 0;
+var editor_mode = 'edit';
+
+function nop() {}
 
 // update the list of programs from the programs array
 function update_list(selection) {
@@ -30,6 +31,7 @@ function load(f) {
          programs[selected] = resp.program.info;
          update_list(selected);
          jaaulde.utils.cookies.set('program_id', resp.program.info.id);
+         update_outputs(nop);
       });
 }
 
@@ -42,7 +44,7 @@ function save(f) {
 
    connection.callService('/update_program', 
          "[" + token + ", " + JSON.stringify(program) + "]",
-         null); // null may cause errors on console
+         nop);
 
    update_list(selected);
 }
@@ -67,7 +69,7 @@ function newprogram(f) {
 
          connection.callService('/update_program', 
             '[' + token + ', ' + JSON.stringify(program) + ']',
-            null); // may cause errors on console
+            nop); // may cause errors on console
 
          jaaulde.utils.cookies.set('program_id', resp.id);
          update_list(selected);
@@ -104,5 +106,92 @@ function get_programs() {
 
          // load the selected program
          load(document.getElementById("program_info"));
+      });
+}
+
+// add current program to queue
+function queue_program() {
+   var id = programs[selected].id;
+   connection.callService('/queue_program', '[' + token + ',' + id + ']',
+         function(n) {
+            if( is_admin ) {
+               update_admin(nop);
+            }
+         });
+}
+
+// mode selection
+function ui_mode(f) {
+   var m = 0;
+   for( var i=0; i<f.mode.length; i++ ) {
+      if(f.mode[i].checked) {
+         m = f.mode[i].value;
+      }
+   }
+   if( m ) {
+      editor_mode = m;
+   }
+
+   if( editor_mode === 'output' ) {
+      update_outputs(function() {
+            document.getElementById('program_output').style.display = 'block';
+         });
+   } else {
+      document.getElementById('program_output').style.display = 'none';
+   }
+
+   document.getElementById('editor').style.display = (m === 'edit')?
+      'block':'none';
+
+   if( m === 'admin' ) {
+      update_admin(function() {
+            document.getElementById('admin_panel').style.display = 'block';
+         });
+   } else {
+      document.getElementById('admin_panel').style.display = 'none';
+   }
+}
+
+// update the outputs div
+function update_outputs(f) {
+   var id = programs[selected].id;
+   connection.callService('/get_output', '[' + token + ', ' + id + ', 0]',
+         function(o) {
+            var program_output = document.getElementById('program_output');
+            program_output.innerHTML = '';
+            for( var i=0; i<o.output.length; i++ ) {
+               var date = new Date(o.output[i].header.stamp.secs*1000 + 
+                  o.output[i].header.stamp.nsecs / 1000);
+               program_output.innerHTML += '<h3>' + 
+               date + '</h3>';
+               program_output.innerHTML += '<pre>' + 
+               o.output[i].output + '</pre>';
+            }
+            f();
+         });
+}
+
+// update the admin div
+function update_admin(f) {
+   var admin_panel = document.getElementById('admin_panel');
+   admin_panel.style.display = 'block';
+   connection.callService('/get_queue', '[]', function(queue) {
+         var table = "<table>";
+         for( var i=0; i<queue.programs.length; i++ ) {
+            var p = queue.programs[i];
+            table += "<tr><td>" + p.id + "</td>" + '<td>' + p.name + 
+            ' <a href="javascript:run(' + p.id + ');">run</a></td></tr>';
+         }
+         table += "</table>";
+         admin_panel.innerHTML = table;
+         f();
+      });
+}
+
+// run a program
+function run(id) {
+   connection.callService('/run_program', '[' + token + ', ' + id + ']',
+      function(n) {
+         update_admin(nop);
       });
 }

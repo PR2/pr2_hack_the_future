@@ -330,6 +330,7 @@ class Queue:
          row = cur.fetchone()
          if row:
             if row[0] == ProgramInfo.PYTHON:
+               rospy.loginfo("Run python program %d"%(req.id))
                py = subprocess.Popen(['python'], stdin=subprocess.PIPE, 
                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                output = py.communicate(row[1])[0]

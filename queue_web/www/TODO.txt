@@ -1,9 +1,8 @@
 Open Issues/TODO items:
- * Admin Interface
  * User creation/signup
  * Program Duplication
  * Documentation links on edit page
- * Add to Queue button
  * Credits and License
  * Display user name on page
  * Escape closes connection???
+ * Queue ordering by add time instead of ID?
