@@ -136,5 +136,8 @@ function logout(f) {
       /* show login screen */ 
       document.getElementById("edit").style.display = "none";
       document.getElementById("login").style.display = "block";
+
+      document.getElementById("login_form").password.value = "";
+      document.getElementById("login_form").username.value = "";
    }
 }
