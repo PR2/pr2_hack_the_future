@@ -96,9 +96,14 @@ function login(f) {
 function createAccount(f) {
    var username = f.username.value;
    var password = f.password.value;
+   var password2 = f.password2.value;
 
    if( username.length === 0 ) {
       output("Username should not be blank");
+   } else if( password != password2 ) {
+      output("Passwords do not match");
+   } else if( password.length === 0 ) {
+      output("Password may not be blank");
    } else {
       console.log("Creating account for " + username);
       connection.callServiceRaw('/create_user', 
@@ -120,6 +125,8 @@ function createAccount(f) {
                /* show editor section */ 
                document.getElementById("login").style.display = "none";
                document.getElementById("edit").style.display = "block";
+
+               get_programs();
             } else {
                output("That name is already in use; please pick another");
             }
