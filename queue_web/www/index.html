@@ -61,7 +61,7 @@
                   <td><select id="program"></select></td>
                   <td><input type="text" value="" id="program_name"/></td>
                   <td><input type="button" value="Add to Queue"
-                     onclick="queue_program();"/></td>
+                     onclick="queue_program(this.form);"/></td>
                   <td><input type="button" value="Logout" 
                      onclick="logout();"/></td>
                </tr>
@@ -144,7 +144,7 @@ head.wait_for()
 
 # move arms individually
 arm.move_to([-80, 40, 30, -110, 0, 0, -5], RIGHT)
-arm.move_to([80, 40, -30, -110, 0, 0, 5], LEFT)
+arm.mirror(RIGHT)
 arm.wait_for(BOTH)
 
 # open grippers

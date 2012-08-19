@@ -117,7 +117,8 @@ function get_programs() {
 }
 
 // add current program to queue
-function queue_program() {
+function queue_program(f) {
+   save(f);
    var id = programs[selected].id;
    connection.callService('/queue_program', '[' + token + ',' + id + ']',
          function(n) {
