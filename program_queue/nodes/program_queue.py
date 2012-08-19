@@ -196,7 +196,7 @@ class Queue:
       user = self.get_user(db, req.token)
       if user:
          (owner, program) = self.get_program_info(db, req.id)
-         if user.id != owner and not user.is_admin:
+         if user.id != owner and not user.admin:
             rospy.loginfo("User %s is not allowed to dequeue %d"%(user.name, req.id))
          else:
             db.execute('delete from queue where program_id = ?',(req.id,))
@@ -259,7 +259,7 @@ class Queue:
    def handle_get_queue(self, req):
       db = self.db()
       cur = db.cursor()
-      cur.execute('select programs.id, programs.name, programs.type, users.name from programs join queue on programs.id = queue.program_id join users on programs.user_id = users.id')
+      cur.execute('select programs.id, programs.name, programs.type, users.name from programs join queue on programs.id = queue.program_id join users on programs.user_id = users.id order by queue.id')
       resp = GetQueueResponse()
       for r in cur.fetchall():
          resp.programs.append(ProgramInfo(r[0], r[1].encode('ascii'), r[2], r[3].encode('ascii')))

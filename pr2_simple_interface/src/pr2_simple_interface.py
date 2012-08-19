@@ -341,7 +341,7 @@ class Torso:
 
     def wait_for(self):
        print "Waiting for torso"
-       torso_client.wait_for_result();
+       traj_client_torso.wait_for_result();
 
 class Sound(SoundClient):
    def __init__(self):
