@@ -5,3 +5,4 @@ Open Issues/TODO items:
  * Display user name on page
  * Queue ordering by add time instead of ID?
  * Get rosbridge port and hostname from URL
+ * Load program on dropdown select
