@@ -1,6 +1,6 @@
 /* global veriables. ick, but useful */
-var host = "localhost";
-var port = 9090;
+var host = "prp1.willowgarage.com";
+var port = 9091;
 var connection;
 var token;
 var is_admin;
@@ -67,7 +67,7 @@ function login(f) {
 
    connection.callServiceRaw("/login", "[\"" + username + "\", \"" + 
          password + "\"]", function(resp) {
-            str = resp.replace(/ (\d)/g, ' "\$1').replace(/(\d),/g, '\$1",');
+            var str = resp.replace(/ (\d)/g, ' "\$1').replace(/(\d),/g, '\$1",');
             var msg = JSON.parse(str);
             token = msg.msg.token;
             is_admin = msg.msg.is_admin;
@@ -94,6 +94,38 @@ function login(f) {
 }
 
 function createAccount(f) {
+   var username = f.username.value;
+   var password = f.password.value;
+
+   if( username.length === 0 ) {
+      output("Username should not be blank");
+   } else {
+      console.log("Creating account for " + username);
+      connection.callServiceRaw('/create_user', 
+         JSON.stringify([username, password]),
+         function(resp) {
+            console.log("create_account response: " + resp);
+            var str = resp.replace(/ (\d)/g,' "\$1').replace(/(\d)([,}])/g,'\$1"\$2');
+            console.log("create_account str: " + str);
+            var msg = JSON.parse(str);
+
+            token = msg.msg.token;
+            is_admin = 0;
+
+            if( token != "0" ) {
+               output("");
+               /* save token to cookie */
+               jaaulde.utils.cookies.set('token', token);
+               jaaulde.utils.cookies.set('is_admin', is_admin);
+               /* show editor section */ 
+               document.getElementById("login").style.display = "none";
+               document.getElementById("edit").style.display = "block";
+            } else {
+               output("That name is already in use; please pick another");
+            }
+         }
+      );
+   }
 }
 
 function logout(f) {

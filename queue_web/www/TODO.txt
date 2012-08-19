@@ -1,5 +1,4 @@
 Open Issues/TODO items:
- * User creation/signup
  * Program Duplication
  * Documentation links on edit page
  * Credits and License

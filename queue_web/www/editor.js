@@ -101,12 +101,17 @@ function get_programs() {
             }
          }
 
-         // populate pulldown list
-         update_list(selected);
-
-         // load the selected program
-         if( editor.getValue() === "" ) {
-            load(document.getElementById("program_info"));
+         // if the user has no programs, create one
+         if( programs.length === 0 ) {
+            newprogram(document.getElementById("program_info"));
+         } else {
+            // populate pulldown list
+            update_list(selected);
+   
+            // load the selected program
+            if( editor.getValue() === "" ) {
+               load(document.getElementById("program_info"));
+            }
          }
       });
 }
