@@ -231,7 +231,7 @@ class Queue:
          else:
             cur = db.cursor()
             # TODO: enforce output limit
-            cur.execute('select time, output from output where program_id = ?',
+            cur.execute('select time, output from output where program_id = ? order by time desc',
                   (req.program_id,))
             for r in cur.fetchall():
                resp.output.append(Output(Header(0, rospy.Time(r[0]), ''), r[1].encode('ascii')))
