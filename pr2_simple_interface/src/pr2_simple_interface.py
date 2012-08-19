@@ -166,16 +166,23 @@ class Gripper:
 
 class RobotArm:
     def __init__(self):
+        self.l = [ 0, 0, 0, 0, 0, 0, 0]
+        self.r = [ 0, 0, 0, 0, 0, 0, 0]
+        self.dur = 2.0
         pass
 
     def move_to(self, goal, s, dur=2.0):
         positions = [ a * math.pi / 180.0 for a in goal ]
         if (s == RIGHT):
             print "Moving right arm to:", goal
+            self.r = positions
+            self.dur = dur
             pose_r(positions, dur)
             arm = True
         if (s == LEFT):
             print "Moving left arm to:", goal
+            self.l = positions
+            self.dur = dur
             pose_l(positions, dur)
         if (s == BOTH):
             print "WARNING: you can't send a goal of both to the arms"
@@ -186,6 +193,20 @@ class RobotArm:
             traj_client_l.wait_for_result()
         if (s == RIGHT or s == BOTH):
             traj_client_r.wait_for_result()
+
+    def mirror(self, s):
+        if ( s == RIGHT ):
+           print "Left arm mirroring right arm"
+           positions = self.r
+           for i in [0, 2, 4, 6]:
+              positions[i] = -positions[i]
+           pose_l(positions, self.dur)
+        if ( s == LEFT ):
+           print "Right arm mirroring left arm"
+           positions = self.l
+           for i in [0, 2, 4, 6]:
+              positions[i] = -positions[i]
+           pose_r(positions, self.dur)
 
 
 class Head:
