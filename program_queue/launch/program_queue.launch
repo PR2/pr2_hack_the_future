@@ -10,6 +10,7 @@
    </node>
    <include file="$(find face_detector)/launch/face_detector_action.wide.launch"/>
    <include file="$(find pr2_gripper_sensor_action)/launch/pr2_gripper_sensor_actions.launch" />
-
+   <node pkg="hack_the_web_program_executor" type="poser_real_robot.py" name="poser_real_robot" />
+   <node pkg="hack_the_web_program_executor" type="robot_program_executor.py" name="robot_program_executor" />
    <node pkg="rosbridge" type="rosbridge.py" name="rosbridge" args="--port 9091"/>
 </launch>

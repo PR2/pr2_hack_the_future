@@ -342,7 +342,7 @@ class Queue:
                rospy.loginfo("Run slider program %d"%(req.id))
                rospy.ServiceProxy('run_slider_program', CallProgram)(row[1])
                output = "Slider program run"
-            elif row[0] == ProgramInfo.WEB:
+            elif row[0] == 4:
                rospy.loginfo("Run web slider program %d"%(req.id))
                rospy.ServiceProxy('/museum/run_web_slider_program', CallProgram)(row[1])
                output = "Web slider program run"

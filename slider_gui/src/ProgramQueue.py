@@ -39,7 +39,7 @@ class ProgramQueue():
             return False
 
         if label is None:
-            label = 'program%d' % sefl._next_serial
+            label = 'program%d' % self._next_serial
             self._next_serial += 1
         print 'ProgramQueue.upload_program() %s' % label
 
