@@ -1,0 +1,14 @@
+<package>
+  <description brief="hack_the_web_program_executor">
+
+     hack_the_web_program_executor
+
+  </description>
+  <author>Jonathan Mace</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hack_the_web_program_executor</url>
+
+</package>
+
+
