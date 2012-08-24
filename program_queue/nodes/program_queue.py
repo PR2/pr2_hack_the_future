@@ -37,6 +37,7 @@ import sqlite3
 import bcrypt
 import random
 import subprocess
+import base64
 
 class Queue:
    def __init__(self):
@@ -341,6 +342,10 @@ class Queue:
                rospy.loginfo("Run slider program %d"%(req.id))
                rospy.ServiceProxy('run_slider_program', CallProgram)(row[1])
                output = "Slider program run"
+            elif row[0] == ProgramInfo.WEB:
+               rospy.loginfo("Run web slider program %d"%(req.id))
+               rospy.ServiceProxy('/museum/run_web_slider_program', CallProgram)(row[1])
+               output = "Web slider program run"
             else:
                output = "Error: Unknown program type " + row[0]
                rospy.logerr(output)
