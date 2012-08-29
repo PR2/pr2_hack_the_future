@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import roslib
 import random
+roslib.load_manifest("hack_the_web_program_executor")
 roslib.load_manifest("robot_poser")
 roslib.load_manifest("museum_srvs")
 
 import rospy
 import sys
 
-import poseutils
+from hack_the_web_program_executor import poseutils
 
 from museum_srvs.srv import PoseRobot, PoseRobotResponse
 

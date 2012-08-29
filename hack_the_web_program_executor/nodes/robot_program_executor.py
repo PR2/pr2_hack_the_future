@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest("robot_program_executor")
+roslib.load_manifest("hack_the_web_program_executor")
 roslib.load_manifest("museum_srvs")
+roslib.load_manifest("slider_gui")
 
 import rospy
 import base64
