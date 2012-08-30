@@ -140,6 +140,8 @@ function logout(f) {
       connection.callService('/logout', '[' + token + ']');
       jaaulde.utils.cookies.del('token');
       jaaulde.utils.cookies.del('is_admin');
+      jaaulde.utils.cookies.del('program_id');
+      editor.setValue("");
       /* show login screen */ 
       document.getElementById("edit").style.display = "none";
       document.getElementById("login").style.display = "block";
