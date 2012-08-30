@@ -1,6 +1,6 @@
 /* global veriables. ick, but useful */
-var host = "prp1.willowgarage.com";
-var port = 9091;
+var host = "ian.willowgarage.com";
+var port = 9090;
 var connection;
 var token;
 var is_admin;
@@ -149,4 +149,5 @@ function logout(f) {
       document.getElementById("login_form").password.value = "";
       document.getElementById("login_form").username.value = "";
    }
+   is_admin = False
 }

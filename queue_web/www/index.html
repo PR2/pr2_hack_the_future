@@ -89,19 +89,25 @@
                      onclick="ui_mode(this.form);"/>
                      <label for="output_mode">Output</label>
                   </td>
+                  <td>
+                     <input type="radio" name="mode" value="all_programs"
+                     id="all_programs_mode"
+                     onclick="ui_mode(this.form);"/>
+                     <label for="all_programs_mode">All Programs</label>
+                  </td>
                   <td id="admin_button" style="display: none">
                      <input type="radio" name="mode" value="admin" 
                      id="admin_mode"
                      onclick="ui_mode(this.form);"/>
                      <label for="admin_mode">Admin</label>
                   </td>
-                  <td></td>
                </tr>
             </table>
 
          </form>
          <div id="program_output" style="display: none"></div>
          <div id="editor"></div>
+         <div id="all_programs"></div>
          <div id="admin_panel" style="display: none">
             <!-- TODO: admin panel
               * Display Queue

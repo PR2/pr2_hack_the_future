@@ -151,6 +151,38 @@ function ui_mode(f) {
    document.getElementById('editor').style.display = (m === 'edit')?
       'block':'none';
 
+   if( m === 'all_programs' ) {
+      document.getElementById('all_programs').style.display = 'block';
+      connection.callService('/get_programs', '[]', function(resp) {
+            var listing = document.getElementById('all_programs');
+            console.log("got " + resp.programs.length + " programs");
+            console.log(resp.programs);
+            var html = "<table>";
+            html += "<tr><td>ID</td><td>Name</td><td>User</td></tr>";
+            for( var j=0; j<resp.programs.length; j++ ) {
+               var p = resp.programs[j];
+               console.log("Adding program " + p.id);
+               html += "<tr><td>";
+               html += p.id;
+               html += "</td><td>";
+               if( is_admin ) {
+                  html += '<a href="javascript:run(' + p.id + ')">';
+               }
+               html += p.name;
+               if( is_admin ) {
+                  html += "</a>";
+               }
+               html += "</td><td>";
+               html += p.owner;
+               html += "</td></tr>";
+            }
+            html += "</table>";
+            listing.innerHTML = html;
+         });
+   } else {
+      document.getElementById('all_programs').style.display = 'none';
+   }
+
    if( m === 'admin' ) {
       update_admin(function() {
             document.getElementById('admin_panel').style.display = 'block';
