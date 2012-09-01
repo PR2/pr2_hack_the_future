@@ -27,7 +27,7 @@ class WebProgramExecutor:
         self.execution_service = rospy.Service("/museum/run_web_slider_program", CallProgram, self.execute_program)
         self._default_pose = DefaultAction()
         self._default_pose.set_duration(8.0)
-        rospy.Subscriber('ps3_joy', Joy, self._joy_callback)
+        rospy.Subscriber('joy', Joy, self._joy_callback)
     
     def execute_program(self, request):
         print "Received program execution request"
