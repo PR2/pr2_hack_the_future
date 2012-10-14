@@ -148,6 +148,7 @@ function logout(f) {
 
       document.getElementById("login_form").password.value = "";
       document.getElementById("login_form").username.value = "";
+      document.getElementById("all_programs").innerHTML = "";
    }
    is_admin = False
 }
