@@ -1,0 +1,6 @@
+<launch>
+   <node pkg="program_queue" type="program_queue.py" name="program_queue" output="screen" />
+   <include file="$(find face_detector)/launch/face_detector_action.wide.launch"/>
+   <include file="$(find pr2_gripper_sensor_action)/launch/pr2_gripper_sensor_actions.launch" />
+   <node pkg="rosbridge" type="rosbridge.py" name="rosbridge" args="--port 9091"/>
+</launch>
