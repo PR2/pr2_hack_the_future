@@ -1,6 +1,6 @@
 /* global veriables. ick, but useful */
-var host = "ian.willowgarage.com";
-var port = 9090;
+var host = window.location.hostname;
+var port = 9091;
 var connection;
 var token;
 var is_admin;
