@@ -354,47 +354,50 @@ class Queue:
          return QueueProgramResponse(p)
 
    def handle_run_program(self, req):
-      with self.dblock:
-         # FIXME: stub
-         db = self.db()
-         user = self.get_user(db, req.token)
-         if user and user.admin:
+      # FIXME: stub
+      db = self.db()
+      user = self.get_user(db, req.token)
+      if user and user.admin:
+         with self.dblock:
             cur = db.cursor()
             cur.execute('select type, code from programs where id = %s', (req.id,))
             row = cur.fetchone()
-            if row:
-               if row[0] == ProgramInfo.PYTHON:
-                  rospy.loginfo("Run python program %d"%(req.id))
-                  py = subprocess.Popen(['python'], stdin=subprocess.PIPE, 
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                  output = py.communicate(row[1])[0]
-               elif row[0] == ProgramInfo.PUPPET:
-                  output = "Puppet program execution is not supported"
-                  rospy.logerr(output)
-               elif row[0] == ProgramInfo.SLIDER:
-                  rospy.loginfo("Run slider program %d"%(req.id))
-                  rospy.ServiceProxy('run_slider_program', CallProgram)(row[1])
-                  output = "Slider program run"
-               elif row[0] == 4:
-                  rospy.loginfo("Run web slider program %d"%(req.id))
-                  rospy.ServiceProxy('/museum/run_web_slider_program', CallProgram)(row[1])
-                  output = "Web slider program run"
-               else:
-                  output = "Error: Unknown program type " + row[0]
-                  rospy.logerr(output)
+            cur.close()
+         if row:
+            if row[0] == ProgramInfo.PYTHON:
+               rospy.loginfo("Run python program %d"%(req.id))
+               py = subprocess.Popen(['python'], stdin=subprocess.PIPE, 
+                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+               output = py.communicate(row[1])[0]
+            elif row[0] == ProgramInfo.PUPPET:
+               output = "Puppet program execution is not supported"
+               rospy.logerr(output)
+            elif row[0] == ProgramInfo.SLIDER:
+               rospy.loginfo("Run slider program %d"%(req.id))
+               rospy.ServiceProxy('run_slider_program', CallProgram)(row[1])
+               output = "Slider program run"
+            elif row[0] == 4:
+               rospy.loginfo("Run web slider program %d"%(req.id))
+               rospy.ServiceProxy('/museum/run_web_slider_program', CallProgram)(row[1])
+               output = "Web slider program run"
+            else:
+               output = "Error: Unknown program type " + row[0]
+               rospy.logerr(output)
    
+            with self.dblock:
+               cur = db.cursor()
                cur.execute('insert into output (program_id, time, output) values'+
-                     '(%s, %s, %s)', (req.id, rospy.Time.now().to_sec(), output,))
+                  '(%s, %s, %s)', (req.id, rospy.Time.now().to_sec(), output,))
                cur.execute('delete from queue where program_id = %s', (req.id,))
                db.commit()
-            else:
-               rospy.logerror("Bad program: " + req.id)
-            cur.close()
+               cur.close()
          else:
-            rospy.loginfo("%s is not allowed to run programs"%user.name)
+            rospy.logerror("Bad program: " + req.id)
+      else:
+         rospy.loginfo("%s is not allowed to run programs"%user.name)
    
    
-         return RunProgramResponse()
+      return RunProgramResponse()
 
    def handle_start_queue(self, req):
       # TODO: require an admin token
