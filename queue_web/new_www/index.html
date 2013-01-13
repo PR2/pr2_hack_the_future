@@ -1,0 +1,179 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script type="text/JavaScript" src="js/jquery-1.8.3.js"></script>
+    <script type="text/JavaScript" src="js/jquery-ui.js"></script>
+    <script type="text/JavaScript" src="js/jquery.cookies.2.2.0.js"></script>
+    <script type="text/javascript" src="js/ace/ace.js" charset="utf-8">
+    </script>
+
+    <script type="text/JavaScript" src="js/ros.js"></script>
+    <script type="text/JavaScript" src="js/login.js"></script>
+    <script type="text/JavaScript" src="js/editor.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+
+    <link rel="stylesheet" type="text/css" href="css/screen.css"/>
+
+    <title>Hack the Future!</title>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <div id="header">
+      <table cellpadding="0">
+        <tr>
+          <td style="width: 53px;">
+            <img style="float: left; height: 53px;" src="images/htf.jpeg"/>
+          </td>
+          <td>
+            <p style="font-size: 20px;">PR2 Hack the Future Interface</p>
+          </td>
+          <td>
+            <p id="user">Please login</p>
+          </td>
+          <td style="width: 83px;">
+            <img style="float: right; height: 53px" src="images/wg.gif"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Login -->
+    <form name="login-form" class="login-form" onsubmit="return false;">
+      <div class="header">
+        <h1>Login</h1>
+      </div>
+      <div class="content">
+        <input name="username" type="text" class="input username"
+               value="Username" onfocus="this.value=''" />
+        <input name="password" type="password" class="input password"
+               value="Password" onfocus="this.value=''" />
+      </div>
+      <div class="footer">
+        <button name="submit" class="register">Register</button>
+        <button name="submit" class="button" onclick="login(this.form)">Login</button>
+      </div>
+    </form>
+
+    <!-- Main Page -->
+    <div id="content">
+      <table>
+        <tr>
+          <td>
+            <div id="editor-control">
+              <button id="editor-new" onclick="newprogram();">New Program</button>
+              <span>ID: <span id="editor-id">?</span></span>
+              <input id="editor-name" type="text" value="program_name"
+                     class="input login-form username"
+                     onfocus="this.value='untitled'" />
+              <button id="editor-save">Save</button>
+              <button id="editor-queue" onclick="queue_program();">Queue</button>
+            </div>
+            <div id="editor">Loading...</div>
+          </td>
+          <td>
+            <div id="tabs">
+              <ul>
+                <li><a href="#output">Program Output</a></li>
+                <li><a href="#queue">Program Queue</a></li>
+                <li id="admin-tab"><a href="#admin">Administration</a></li>
+              </ul>
+              <div id="output">
+                output
+              </div>
+              <div id="queue">
+                queue
+              </div>
+              <div id="admin">
+                Computer, lights up! Not if I weaken first. Congratulations - you just destroyed the Enterprise. Travel time to the nearest starbase? Well, that's certainly good to know. I recommend you don't fire until you're within 40,000 kilometers. You did exactly what you had to do. You considered all your options, you tried every alternative and then you made the hard choice. Why don't we just give everybody a promotion and call it a night - 'Commander'? Sorry, Data. I'll be sure to note that in my log. Now, how the hell do we defeat an enemy that knows us better than we know ourselves? I will obey your orders. I will serve this ship as First Officer. And in an attack against the Enterprise, I will die with this crew. But I will not break my oath of loyalty to Starfleet. I'll alert the crew. Mr. Crusher, ready a collision course with the Borg ship. Flair is what marks the difference between artistry and mere competence. and attack the Romulans. Computer, belay that order. A lot of things can change in twelve years, Admiral. I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them. I can't. As much as I care about you, my first duty is to the ship. When has justice ever been as simple as a rule book? Yes, absolutely, I do indeed concur, wholeheartedly! We finished our first sensor sweep of the neutral zone. Then maybe you should consider this: if anything happens to them, Starfleet is going to want a full investigation. About four years. I got tired of hearing how young I looked. They were just sucked into space. The game's not big enough unless it scares you a little. Maybe we better talk out here; the observation lounge has turned into a swamp. A surprise party? Mr. Worf, I hate surprise parties. I would *never* do that to you.
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="status-bar">
+    </div>
+
+    <div id="sample" style="display: none">#!/usr/bin/env python
+
+# startup code
+import roslib
+roslib.load_manifest('pr2_simple_interface')
+from pr2_simple_interface import *
+start()
+
+# create robot objects
+gripper = Gripper()
+arm = RobotArm()
+head = Head()
+torso = Torso()
+sound = Sound()
+
+# robot speaks
+sound.say("I'm Kiko.")
+
+# nod head
+for i in range(2):
+   head.look_at(1.0, 0.0, 0.5) # look down
+   head.wait_for()             # wait for head to stop moving
+   head.look_at(1.0, 0.0, 1.5) # look up
+   head.wait_for()
+
+# look straight ahead
+head.look_at(1.0, 0.0, 1.0)
+head.wait_for()
+
+# move arms individually
+arm.move_to([-80, 40, 30, -110, 0, 0, -5], RIGHT)
+arm.mirror(RIGHT)
+arm.wait_for(BOTH)
+
+# open grippers
+gripper.release(BOTH)
+gripper.wait_for(BOTH)
+
+# mirror arms
+arm.move_to([-20, -15, -20, -50, 30, -30, -180], RIGHT)
+arm.move_to([20, -15, 20, -50, -30, -30, 180], LEFT)
+
+# start talking before arms are done moving
+sound.say("Double high fives.")
+
+# wait for arms to finish moving
+arm.wait_for(BOTH)
+
+# wait for a slap on both hands
+gripper.wait_for_slap(BOTH)
+
+# nod up
+head.look_at(1.0, 0.0, 1.5)
+head.wait_for()
+head.look_at(1.0, 0.0, 1.0)
+head.wait_for()
+
+sound.say("Slap one hand.")
+
+if (gripper.determine_slap() == LEFT):
+    head.look_at(1.0, 1.0, 0.5)
+    head.wait_for()
+else:
+    head.look_at(1.0, -1.0, 0.0)
+    head.wait_for()
+
+#arms
+arm.move_to([70, 50, 40, -120, 100, -20, 20], LEFT)
+arm.move_to([-70, 50, -40, -120, -100, -20, -20], RIGHT)
+arm.wait_for(BOTH)
+
+gripper.close(BOTH)
+gripper.wait_for(BOTH)
+
+head.look_at(1.0, 0.0, 1.0)
+head.wait_for()
+
+sound.say("Goodbye.")</div>
+  </body>
+</html>

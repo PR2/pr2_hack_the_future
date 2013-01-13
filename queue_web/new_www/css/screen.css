@@ -1,0 +1,272 @@
+td {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+#header {
+  border-bottom: solid 2px;
+  height: 53px;
+  padding: 0;
+  margin: 0;
+  background-image: url('/images/header.png');
+  background-repeat: repeat-x;
+}
+
+#header div {
+  padding: 0;
+  margin: 0;
+}
+
+#header table {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#header td {
+  padding: 0;
+  margin: 0;
+}
+
+#header tr {
+  padding: 0;
+  margin: 0;
+}
+
+#header p {
+  color: white;
+}
+
+#user {
+  text-align: right;
+}
+
+#login {
+  width: 200px;
+  border: solid 1px;
+  margin: 30px auto 0 auto;
+}
+
+#content {
+  display: none;
+}
+
+#content table {
+  width: 100%;
+}
+
+#content table td {
+  width: 50%;
+  vertical-align: top;
+}
+
+#editor {
+  position: relative;
+  height: 500px;
+  padding: 0;
+  margin: 0;
+}
+
+#tabs {
+  vertical-align: top;
+}
+
+/*******************
+LOGIN FORM
+*******************/
+
+.login-form {
+  width: 300px;
+  margin: 0 auto;
+  position: relative;
+  z-index:5;
+  
+  background: #f3f3f3;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/*******************
+HEADER
+*******************/
+
+.login-form .header {
+  padding: 40px 30px 30px 30px;
+}
+
+.login-form .header h1 {
+  font-family: 'Bree Serif', serif;
+  font-weight: 300;
+  font-size: 28px;
+  line-height:34px;
+  color: #414848;
+  text-shadow: 1px 1px 0 rgba(256,256,256,1.0);
+  margin-bottom: 10px;
+}
+
+.login-form .header span {
+  font-size: 11px;
+  line-height: 16px;
+  color: #678889;
+  text-shadow: 1px 1px 0 rgba(256,256,256,1.0);
+}
+
+/*******************
+CONTENT
+*******************/
+
+.login-form .content {
+  padding: 0 30px 25px 30px;
+}
+
+/* Input field */
+.login-form .content .input {
+  width: 188px;
+  padding: 15px 25px;
+  
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #9d9e9e;
+  text-shadow: 1px 1px 0 rgba(256,256,256,1.0);
+  
+  background: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.50);
+  -moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.50);
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.50);
+}
+
+/* Second input field */
+.login-form .content .password, .login-form .content .pass-icon {
+  margin-top: 25px;
+}
+
+.login-form .content .input:hover {
+  background: #dfe9ec;
+  color: #414848;
+}
+
+.login-form .content .input:focus {
+  background: #dfe9ec;
+  color: #414848;
+  
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+}
+
+/*******************
+FOOTER
+*******************/
+
+.login-form .footer {
+  padding: 25px 15px 40px 15px;
+  overflow: auto;
+  
+  background: #d4dedf;
+  border-top: 1px solid #fff;
+  
+  box-shadow: inset 0 1px 0 rgba(0,0,0,0.15);
+  -moz-box-shadow: inset 0 1px 0 rgba(0,0,0,0.15);
+  -webkit-box-shadow: inset 0 1px 0 rgba(0,0,0,0.15);
+}
+
+/* Login button */
+.login-form .footer .button {
+  float: right;
+  padding: 11px 25px;
+  
+  font-family: 'Bree Serif', serif;
+  font-weight: 300;
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 0px 1px 0 rgba(0,0,0,0.25);
+  
+  background: #425270;
+  border: 1px solid #46b3d3;
+  border-radius: 5px;
+  cursor: pointer;
+  
+  box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+  -moz-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+  -webkit-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+}
+
+.login-form .footer .button:hover {
+  background: #3f9db8;
+  border: 1px solid rgba(256,256,256,0.75);
+  
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.login-form .footer .button:focus {
+  position: relative;
+  bottom: -1px;
+  
+  background: #56c2e1;
+  
+  box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+  -moz-box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+  -webkit-box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+}
+
+/* Register button */
+.login-form .footer .register {
+  display: inline;
+  float: left;
+  padding: 10px;
+  margin-right: 10px;
+  
+  background: none;
+  border: none;
+  cursor: pointer;
+  
+  font-family: 'Bree Serif', serif;
+  font-weight: 300;
+  font-size: 18px;
+  color: #414848;
+  text-shadow: 0px 1px 0 rgba(256,256,256,0.5);
+}
+
+.login-form .footer .register:hover {
+  color: #3f9db8;
+}
+
+.login-form .footer .register:focus {
+  position: relative;
+  bottom: -1px;
+}
+
+#editor-name {
+  display: auto;
+  height: 30px;
+  top: -2px;
+  font-size: 18px;
+  color: #777;
+}
+
+#editor-name:focus {
+  color: black;
+}
+
+#status-bar {
+  border: solid 1px;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
