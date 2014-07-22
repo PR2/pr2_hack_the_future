@@ -1,0 +1,49 @@
+<package>
+  <name>pr2_simple_interface</name>
+  <version>1.0.0</version>
+  <description>pr2_simple_interface</description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/pr2_simple_interface</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Austin Hendrix</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>rospy</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>pr2_gripper_sensor_action</build_depend>
+  <build_depend>pr2_gripper_sensor_controller</build_depend>
+  <build_depend>pr2_gripper_sensor_msgs</build_depend>
+  <build_depend>sound_play</build_depend>
+  <build_depend>face_detector</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>rospy</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>pr2_gripper_sensor_action</run_depend>
+  <run_depend>pr2_gripper_sensor_controller</run_depend>
+  <run_depend>pr2_gripper_sensor_msgs</run_depend>
+  <run_depend>sound_play</run_depend>
+  <run_depend>face_detector</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>rospy</test_depend> -->
+  <!-- <test_depend>roscpp</test_depend> -->
+  <!-- <test_depend>actionlib</test_depend> -->
+  <!-- <test_depend>pr2_gripper_sensor_action</test_depend> -->
+  <!-- <test_depend>pr2_gripper_sensor_controller</test_depend> -->
+  <!-- <test_depend>pr2_gripper_sensor_msgs</test_depend> -->
+  <!-- <test_depend>sound_play</test_depend> -->
+  <!-- <test_depend>face_detector</test_depend> -->
+
+</package>
+

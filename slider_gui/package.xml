@@ -1,0 +1,67 @@
+<package>
+  <name>slider_gui</name>
+  <version>1.0.0</version>
+  <description>slider_gui</description>
+  <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
+
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/slider_gui</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Dirk Thomas</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>actionlib</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>pr2_controllers_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
+  <build_depend>korg_nanokontrol</build_depend>
+  <build_depend>program_queue</build_depend>
+  <build_depend>face_detector</build_depend>
+  <build_depend>sound_play</build_depend>
+  <build_depend>rviz_backdrop</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>planning_environment</build_depend>
+  <build_depend>pr2_arm_navigation_config</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>pr2_mechanism_msgs</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>actionlib</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>pr2_controllers_msgs</run_depend>
+  <run_depend>trajectory_msgs</run_depend>
+  <run_depend>korg_nanokontrol</run_depend>
+  <run_depend>program_queue</run_depend>
+  <run_depend>face_detector</run_depend>
+  <run_depend>sound_play</run_depend>
+  <run_depend>rviz_backdrop</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>planning_environment</run_depend>
+  <run_depend>pr2_arm_navigation_config</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>pr2_mechanism_msgs</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>actionlib</test_depend> -->
+  <!-- <test_depend>rospy</test_depend> -->
+  <!-- <test_depend>pr2_controllers_msgs</test_depend> -->
+  <!-- <test_depend>trajectory_msgs</test_depend> -->
+  <!-- <test_depend>korg_nanokontrol</test_depend> -->
+  <!-- <test_depend>program_queue</test_depend> -->
+  <!-- <test_depend>face_detector</test_depend> -->
+  <!-- <test_depend>sound_play</test_depend> -->
+  <!-- <test_depend>rviz_backdrop</test_depend> -->
+  <!-- <test_depend>sensor_msgs</test_depend> -->
+  <!-- <test_depend>planning_environment</test_depend> -->
+  <!-- <test_depend>pr2_arm_navigation_config</test_depend> -->
+  <!-- <test_depend>std_srvs</test_depend> -->
+  <!-- <test_depend>pr2_mechanism_msgs</test_depend> -->
+
+</package>
+
