@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(hack_the_web_program_executor)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED )
+find_package(catkin REQUIRED message_generation message_runtime)
 
 # include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 # CATKIN_MIGRATION: removed during catkin migration
