@@ -2,7 +2,7 @@
   <name>pr2_joint_teleop</name>
   <version>1.0.0</version>
   <description>pr2_joint_teleop</description>
-  <maintainer email="">Austin Hendrix</maintainer>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
   <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
 
   <license>BSD</license>
