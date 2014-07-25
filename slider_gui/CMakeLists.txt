@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(slider_gui)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS actionlib rospy pr2_controllers_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs planning_environment pr2_arm_navigation_config std_srvs pr2_mechanism_msgs)
+find_package(catkin REQUIRED COMPONENTS actionlib rospy pr2_controllers_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs std_srvs pr2_mechanism_msgs)
 
 # include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 # CATKIN_MIGRATION: removed during catkin migration
@@ -41,7 +41,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 # rosbuild_add_boost_directories()
 #find_package(Boost REQUIRED COMPONENTS thread)
 include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 #add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 ## Generate added messages and services with any dependencies listed here
