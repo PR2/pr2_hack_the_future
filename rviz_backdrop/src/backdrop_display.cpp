@@ -37,10 +37,11 @@
 #include <tf/transform_listener.h>
 
 #include <rviz/visualization_manager.h>
-#include <rviz/properties/property.h>
-#include <rviz/properties/property_manager.h>
+#include <rviz/properties/property.h> 
+//#include <rviz/properties/property_manager.h> Note: Removed in Hydro
 #include <rviz/frame_manager.h>
 
+#include <rviz/image/ros_image_texture.h>
 #include "backdrop_display.h"
 
 namespace rviz_backdrop
@@ -49,11 +50,11 @@ namespace rviz_backdrop
 
 BackdropDisplay::BackdropDisplay()
   : Display()
-  , texture_( update_nh_ )
-  , scene_node_( NULL )
-  , scale_( 0.01 )
+ // , texture_( update_nh_ )
+ // , scene_node_( NULL )
+ // , scale_( 0.01 )
 {
-  texture_.setTransportType( "compressed" );
+  //texture_.setTransportType( "compressed" );
 }
 
 // After the parent rviz::Display::initialize() does its own setup, it
@@ -141,10 +142,10 @@ void BackdropDisplay::setTopic( const std::string& topic )
   subscribe();
 
   // Broadcast the fact that the variable has changed.
-  propertyChanged( topic_property_ );
+  //Property::changed();
 
   // Make sure rviz renders the next time it gets a chance.
-  causeRender();
+ // causeRender();
 }
 
 void BackdropDisplay::subscribe()
@@ -157,18 +158,18 @@ void BackdropDisplay::subscribe()
 
   try
   {
-    texture_.setTopic( topic_ );
-    setStatus( rviz::status_levels::Ok, "Topic", "OK" );
+   // texture_.setTopic( topic_ );
+   // setStatus( rviz::status_levels::Ok, "Topic", "OK" );
   }
   catch( ros::Exception& e )
   {
-    setStatus( rviz::status_levels::Error, "Topic", std::string("Error subscribing: ") + e.what() );
+    //setStatus( rviz::status_levels::Error, "Topic", std::string("Error subscribing: ") + e.what() );
   }
 }
 
 void BackdropDisplay::unsubscribe()
 {
-  texture_.setTopic( "" );
+  //texture_.setTopic( "" );
 }
 
 void BackdropDisplay::onEnable()
@@ -185,18 +186,18 @@ void BackdropDisplay::onDisable()
 
 void BackdropDisplay::update( float dt, float ros_dt )
 {
-  if (texture_.getImageCount() == 0)
+  if (!texture_.getImage())
   {
-    setStatus(rviz::status_levels::Warn, "Image", "No image received");
+   // setStatus(rviz::status_levels::Warn, "Image", "No image received");
   }
   else
   {
     std::stringstream ss;
-    ss << texture_.getImageCount() << " images received";
-    setStatus(rviz::status_levels::Ok, "Image", ss.str());
+    //ss << texture_.getImageCount() << " images received";
+ //   setStatus(rviz::status_levels::Ok, "Image", ss.str());
   }
 
-  texture_.update();
+  //texture_.update();
 
   sensor_msgs::Image::ConstPtr current_image = texture_.getImage();
   if( current_image )
@@ -206,30 +207,30 @@ void BackdropDisplay::update( float dt, float ros_dt )
     std::string image_frame = current_image->header.frame_id;
     if( image_frame == "" )
     {
-      image_frame = fixed_frame_;
-      setStatus(rviz::status_levels::Warn, "Frame", "Image header has empty frame_id.");
+    //  image_frame = fixed_frame_;
+    //  setStatus(rviz::status_levels::Warn, "Frame", "Image header has empty frame_id.");
     }
 
     Ogre::Vector3 position;
     Ogre::Quaternion orientation;
-    if( vis_manager_->getFrameManager()->getTransform( image_frame, ros::Time(), position, orientation ))
-    {
-      scene_node_->setPosition( position );
-      scene_node_->setOrientation( orientation );
-      setStatus( rviz::status_levels::Ok, "Frame", "Ok" );
-    }
-    else
-    {
-      setStatus( rviz::status_levels::Error,
-                 "Frame", "Can't find a transform from " + fixed_frame_ + " to " + image_frame + "." );
-    }
+    //if( vis_manager_->getFrameManager()->getTransform( image_frame, ros::Time(), position, orientation ))
+    //{
+    //  scene_node_->setPosition( position );
+    //  scene_node_->setOrientation( orientation );
+    //  setStatus( rviz::status_levels::Ok, "Frame", "Ok" );
+    //}
+  //  else
+   // {
+   //   setStatus( rviz::status_levels::Error,
+   //              "Frame", "Can't find a transform from " + fixed_frame_ + " to " + image_frame + "." );
+   // }
   }
 }
 
 void BackdropDisplay::setScale( float scale )
 {
   scale_ = scale;
-  propertyChanged( scale_property_ );
+  //changed( scale_property_ );
 }
 
 // Override createProperties() to build and configure a Property
@@ -238,25 +239,30 @@ void BackdropDisplay::setScale( float scale )
 // this is called.
 void BackdropDisplay::createProperties()
 {
-  topic_property_ =
-    property_manager_->createProperty<rviz::ROSTopicStringProperty>( "Topic",
-                                                                     property_prefix_,
-                                                                     boost::bind( &BackdropDisplay::getTopic, this ),
-                                                                     boost::bind( &BackdropDisplay::setTopic, this, _1 ),
-                                                                     parent_category_,
-                                                                     this );
-  setPropertyHelpText( topic_property_, "sensor_msgs::Image topic to subscribe to." );
-  rviz::ROSTopicStringPropertyPtr topic_prop = topic_property_.lock();
-  topic_prop->setMessageType( ros::message_traits::datatype<sensor_msgs::Image>() );
+  //topic_property_ =
+  //  new rviz::RosTopicProperty( "Topic",
+                                                                //     property_prefix_,
+            //                                                         boost::bind( &BackdropDisplay::getTopic, this ),
+              //                                                       boost::bind( &BackdropDisplay::setTopic, this, _1 ),
+                                     //                                "sensor_msgs::Image topic to //subscribe to.",//
+                                                                 //    parent_category_,
+                                //                                     SLOT(updateAcc()),
+                                 //                                    this );
 
-  scale_property_ =
-    property_manager_->createProperty<rviz::FloatProperty>( "Scale",
-                                                            property_prefix_,
-                                                            boost::bind( &BackdropDisplay::getScale, this ),
-                                                            boost::bind( &BackdropDisplay::setScale, this, _1 ),
-                                                            parent_category_,
-                                                            this );
-  setPropertyHelpText( scale_property_, "Scale of image, in meters per pixel." );
+  //DEPRECATED:Hydro//setPropertyHelpText( topic_property_, "sensor_msgs::Image topic to subscribe to." );
+  //rviz::ROSTopicStringPropertyPtr topic_prop = topic_property_.lock();
+  //topic_prop->setMessageType( ros::message_traits::datatype<sensor_msgs::Image>() );
+
+  //scale_property_ =
+  //  new rviz::FloatProperty( "Scale",
+                                                         //   property_prefix_,
+                              //                              "Scale of image, in meters per pixel",
+                                                            //boost::bind( &BackdropDisplay::getScale, this ),
+                                                            //boost::bind( &BackdropDisplay::setScale, this, _1 ),                                                          
+      //                                                      SLOT(updateAcc()),
+                                                         //   parent_category_,
+        //                                                    this );
+  //DEPRECATED:Hydro//setPropertyHelpText( scale_property_, "Scale of image, in meters per pixel." );
 }
 
 } // end namespace rviz_backdrop

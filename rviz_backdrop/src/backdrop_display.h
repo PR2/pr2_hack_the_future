@@ -34,6 +34,8 @@
 #include <tf/message_filter.h>
 #include <rviz/display.h>
 #include <rviz/image/ros_image_texture.h>
+#include <rviz/properties/float_property.h>
+#include <rviz/properties/ros_topic_property.h>
 
 namespace Ogre
 {
@@ -96,8 +98,11 @@ private:
   float scale_;
 
   // Property objects for user-editable properties.
-  rviz::ROSTopicStringPropertyWPtr topic_property_;
-  rviz::FloatPropertyWPtr scale_property_;
+  //rviz::ROSTopicStringPropertyWPtr topic_property_;
+  //rviz::FloatPropertyWPtr scale_property_;
+
+  rviz::FloatProperty* scale_property_;
+  rviz::RosTopicProperty* topic_property_;
 };
 
 } // end namespace rviz_backdrop
