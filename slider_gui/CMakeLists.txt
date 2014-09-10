@@ -18,7 +18,7 @@ generate_messages(
 )
 catkin_package(
     DEPENDS 
-    CATKIN_DEPENDS actionlib rospy pr2_controller_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs std_srvs pr2_mechanism_msgs 
+    CATKIN_DEPENDS actionlib rospy pr2_controllers_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs std_srvs pr2_mechanism_msgs 
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
