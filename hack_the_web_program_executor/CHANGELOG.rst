@@ -2,5 +2,5 @@
 Changelog for package hack_the_web_program_executor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2014-09-10)
+------------------
