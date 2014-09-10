@@ -48,14 +48,17 @@ namespace rviz_backdrop
 {
 
 
+
+// Hydro re-write, see groovy-devel for how code was before.
+// scale 0.01, scene node NULL, teture update(nh)
+// Removed initializations.
 BackdropDisplay::BackdropDisplay()
   : Display()
- // , texture_( update_nh_ )
- // , scene_node_( NULL )
- // , scale_( 0.01 )
+  , scale_( 0.01 )
 {
-  //texture_.setTransportType( "compressed" );
+  // ---------- Empty Intentionally ---------- //
 }
+
 
 // After the parent rviz::Display::initialize() does its own setup, it
 // calls the subclass's onInitialize() function.  This is where we
@@ -148,6 +151,8 @@ void BackdropDisplay::setTopic( const std::string& topic )
  // causeRender();
 }
 
+/* Hydro development removal 
+
 void BackdropDisplay::subscribe()
 {
   // If we are not actually enabled, don't do it.
@@ -167,10 +172,16 @@ void BackdropDisplay::subscribe()
   }
 }
 
+*/
+
+/* Hydro development removal 
+
 void BackdropDisplay::unsubscribe()
 {
   //texture_.setTopic( "" );
 }
+
+*/
 
 void BackdropDisplay::onEnable()
 {
