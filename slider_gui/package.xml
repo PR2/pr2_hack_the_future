@@ -26,7 +26,6 @@
   <build_depend>sound_play</build_depend>
   <build_depend>rviz_backdrop</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <build_depend>planning_environment</build_depend>
   <build_depend>pr2_arm_navigation_config</build_depend>
   <build_depend>std_srvs</build_depend>
   <build_depend>pr2_mechanism_msgs</build_depend>
@@ -42,7 +41,6 @@
   <run_depend>sound_play</run_depend>
   <run_depend>rviz_backdrop</run_depend>
   <run_depend>sensor_msgs</run_depend>
-  <run_depend>planning_environment</run_depend>
   <run_depend>pr2_arm_navigation_config</run_depend>
   <run_depend>std_srvs</run_depend>
   <run_depend>pr2_mechanism_msgs</run_depend>

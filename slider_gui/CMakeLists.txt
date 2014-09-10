@@ -1,59 +1,31 @@
-# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
-# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
 cmake_minimum_required(VERSION 2.8.3)
 project(slider_gui)
-# Load catkin and all dependencies required for this package
-# TODO: remove all from COMPONENTS that are not catkin packages.
 find_package(catkin REQUIRED COMPONENTS actionlib rospy pr2_controllers_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs std_srvs pr2_mechanism_msgs)
 
-# include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
-# CATKIN_MIGRATION: removed during catkin migration
-# cmake_minimum_required(VERSION 2.4.6)
-
-# CATKIN_MIGRATION: removed during catkin migration
-# include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
-
-# CATKIN_MIGRATION: removed during catkin migration
-# rosbuild_init()
-
 #set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-#uncomment if you have defined messages
-#add_message_files(
-
-#common commands for building c++ executables and libraries
-#add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#
-# CATKIN_MIGRATION: removed during catkin migration
-# rosbuild_add_boost_directories()
-#find_package(Boost REQUIRED COMPONENTS thread)
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 include_directories(${Boost_INCLUDE_DIRS})
-#add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-    #TODO DEPENDENCIES geometry_msgs std_msgs
+
+add_service_files(
+  FILES
+  RunProgram.srv
 )
 
-# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
-# TODO: fill in what other packages will need to use this package
+generate_messages(
+    DEPENDENCIES std_msgs
+)
 catkin_package(
-    DEPENDS actionlib rospy pr2_controllers_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs planning_environment pr2_arm_navigation_config std_srvs pr2_mechanism_msgs
-    CATKIN_DEPENDS # TODO
+    DEPENDS 
+    CATKIN_DEPENDS actionlib rospy pr2_controller_msgs trajectory_msgs korg_nanokontrol program_queue face_detector sound_play rviz_backdrop sensor_msgs std_srvs pr2_mechanism_msgs 
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
+
+install(DIRECTORY icons/ images/ launch/ nodes/ sounds/ urdf/ worlds/ DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+install(PROGRAMS scripts/image_hack.py scripts/setup_env_for_robot.sh scripts/upload-program.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+
 
