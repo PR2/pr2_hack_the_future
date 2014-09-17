@@ -2,6 +2,9 @@
 Changelog for package pr2_simple_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2014-09-10)
 ------------------
 
