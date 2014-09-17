@@ -2,8 +2,8 @@
 Changelog for package queue_web
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.5 (2014-09-17)
+------------------
 * Updated CMakeLists
 * Contributors: TheDash
 
