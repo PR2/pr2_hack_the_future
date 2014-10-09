@@ -8,4 +8,4 @@ catkin_package(
     LIBRARIES # TODO
 )
 
-install(PROGRAMS nodes/poser_real_robot.py nodes/robot_program_executor.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(PROGRAMS scripts/poser_real_robot.py scripts/robot_program_executor.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
