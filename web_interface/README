@@ -1,1 +1,0 @@
-Web interface components. Must run rosbridge (command: rosrun rosbridge rosbridge.py --port 9091) and program_queue.
