@@ -12,11 +12,11 @@
   <run_depend>hack_the_web_program_executor</run_depend>
   <run_depend> pr2_joint_teleop</run_depend>
  <run_depend> program_queue</run_depend>
- <run_depend> robosite</run_depend>
+ <!-- Deprecate <run_depend> robosite</run_depend> -->
  <run_depend> slider_gui</run_depend>
 <run_depend> queue_web</run_depend>
 <run_depend> rviz_backdrop</run_depend>
-<run_depend> web_interface</run_depend>
+ <!-- Deprecate <run_depend> web_interface</run_depend> -->
 <run_depend> pr2_simple_interface</run_depend>
 
   <export>
