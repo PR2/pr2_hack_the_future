@@ -2,7 +2,7 @@
 # Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
 cmake_minimum_required(VERSION 2.8.3)
 project(program_queue)
-find_package(catkin REQUIRED COMPONENTS rospy std_msgs std_srvs hack_the_web_program_executor message_generation)
+find_package(catkin REQUIRED COMPONENTS rospy std_msgs std_srvs hack_the_web_program_executor message_generation geometry_msgs)
 #uncomment if you have defined messages
 add_message_files(
   FILES
