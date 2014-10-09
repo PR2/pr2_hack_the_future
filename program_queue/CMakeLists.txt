@@ -2,43 +2,32 @@
 # Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
 cmake_minimum_required(VERSION 2.8.3)
 project(program_queue)
-# Load catkin and all dependencies required for this package
-# TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS rospy std_msgs std_srvs hack_the_web_program_executor)
-
-# include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
-# CATKIN_MIGRATION: removed during catkin migration
-# cmake_minimum_required(VERSION 2.4.6)
-
-# CATKIN_MIGRATION: removed during catkin migration
-# include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
-
-# CATKIN_MIGRATION: removed during catkin migration
-# rosbuild_init()
-
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
+find_package(catkin REQUIRED COMPONENTS rospy std_msgs std_srvs hack_the_web_program_executor message_generation)
 #uncomment if you have defined messages
 add_message_files(
   FILES
-  # TODO: List your msg files here
+  Output.msg
+  ProgramInfo.msg
+  Program.msg 
 )
-#uncomment if you have defined services
+
 add_service_files(
   FILES
-  # TODO: List your msg files here
+CallProgram.srv    
+CreateUser.srv      
+GetOutput.srv   
+ GetQueue.srv 
+ QueueProgram.srv
+ClearQueue.srv    
+ DequeueProgram.srv  
+GetProgram.srv  
+ Login.srv     
+RunProgram.srv
+CreateProgram.srv 
+ GetMyPrograms.srv  
+ GetPrograms.srv  
+Logout.srv    
+UpdateProgram.srv
 )
 
 #common commands for building c++ executables and libraries
@@ -53,7 +42,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 #target_link_libraries(example ${PROJECT_NAME})
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-    #TODO DEPENDENCIES geometry_msgs std_msgs
+    DEPENDENCIES geometry_msgs std_msgs
 )
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
@@ -64,4 +53,15 @@ catkin_package(
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
+
+
+#Add install files 
+install(PROGRAMS nodes/program_queue_mysql.py nodes/program_queue.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY nodes/ msg/ launch/ srv/ test/ backups/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+
+
+
+
 
