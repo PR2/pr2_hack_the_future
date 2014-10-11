@@ -2,6 +2,11 @@
 Changelog for package pr2_simple_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removed Austin from maintainers
+* Contributors: TheDash
+
 1.0.5 (2014-09-17)
 ------------------
 

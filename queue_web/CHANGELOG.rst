@@ -2,6 +2,11 @@
 Changelog for package queue_web
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removed Austin from maintainers
+* Contributors: TheDash
+
 1.0.5 (2014-09-17)
 ------------------
 * Updated CMakeLists
