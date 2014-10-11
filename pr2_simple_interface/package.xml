@@ -2,7 +2,6 @@
   <name>pr2_simple_interface</name>
   <version>1.0.6</version>
   <description>pr2_simple_interface</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
   <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
 
   <license>BSD</license>

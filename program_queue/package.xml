@@ -2,7 +2,6 @@
   <name>program_queue</name>
   <version>1.0.6</version>
   <description>program_queue</description>
-  <maintainer email="ahrendrix@willowgarage.com">Austin Hendrix</maintainer>
   <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
 
   <license>BSD</license>
