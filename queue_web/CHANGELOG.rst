@@ -2,6 +2,9 @@
 Changelog for package queue_web
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.7 (2014-10-11)
 ------------------
 * Removed Austin from maintainers

@@ -2,6 +2,9 @@
 Changelog for package pr2_hack_the_future
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.7 (2014-10-11)
 ------------------
 * Deprecated web_interface and robosite
