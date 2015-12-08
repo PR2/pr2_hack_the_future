@@ -64,3 +64,6 @@ catkin_package(
     LIBRARIES # TODO
 )
 
+install(FILES
+  plugin_description.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
