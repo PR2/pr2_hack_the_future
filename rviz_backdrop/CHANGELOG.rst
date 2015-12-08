@@ -2,6 +2,11 @@
 Changelog for package rviz_backdrop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* install the plugin description xml, fixes `#2 <https://github.com/PR2/pr2_hack_the_future/issues/2>`_
+* Contributors: William Woodall
+
 1.0.9 (2015-02-10)
 ------------------
 
