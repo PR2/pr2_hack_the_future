@@ -281,5 +281,5 @@ void BackdropDisplay::createProperties()
 // Tell pluginlib about this class.  It is important to do this in
 // global scope, outside our package's namespace.
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS( rviz_backdrop, Backdrop, rviz_backdrop::BackdropDisplay, rviz::Display )
+PLUGINLIB_EXPORT_CLASS(rviz_backdrop::BackdropDisplay, rviz::Display)
 // END_TUTORIAL
